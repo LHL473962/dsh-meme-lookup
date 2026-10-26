@@ -1,0 +1,55 @@
+
+  ctx.tools.register({
+    name: 'meme_suggest',
+    description: '主动抛梗：给一段对话上下文，推荐 1~3 个「对方大概率认识、且不冒犯」的梗。只推荐大众认识的，冷门不抛。',
+    parameters: {
+      context: { type: 'string', description: '对话上下文（对方刚说的话）' },
+      limit: { type: 'number', description: '推荐几个，默认 3，最多 5' },
+      tone: { type: 'string', description: '想要的味道：稳/皮/损，默认稳' },
+    },
+    output: textOutput,
+    async execute(args) {
+      try {
+        const ctxText = String((args && args.context) || '').trim()
+        const n = Math.min(Math.max(Number(args.limit) || 3, 1), 5)
+        const tone = String((args && args.tone) || '稳')
+        const already = new Set(detectMemes(ctxText).map((m) => m.span))
+
+        const pool = []
+        for (const e of AUTO_LEX) {
+          if (!e.title || e.title.length < 2 || e.title.length > 10) continue
+          if (already.has(e.title)) continue
+          if (e.provenance !== 'complete') continue
+          if (e.tier !== 'live' && e.tier !== 'fading') continue
+          const tags = e.tags_raw || []
+          if (tags.some((t) => RISKY_TAGS.some((r) => String(t).includes(r)))) continue
+          const view = HEAT_INDEX[e.bvid] || 0
+          if (view < 100000) continue
+          pool.push({ ...e, view })
+        }
+        if (!pool.length) return { ok: true, suggestions: [], note: '没有够大众的候选' }
+
+        const ctxWords = keywords(ctxText, 8)
+        const scored = pool.map((e) => {
+          let rel = 0
+          const hay = String(e.title) + ' ' + (e.tags_raw || []).join(' ')
+          for (const w of ctxWords) if (hay.includes(w)) rel += w.length
+          const heatBonus = e.view >= 1000000 ? 30 : e.view >= 300000 ? 18 : 8
+          return { ...e, score: rel * 2 + heatBonus, rel }
+        }).sort((a, b) => b.score - a.score)
+
+        const picked = scored.slice(0, n).map((e) => ({
+          title: e.title,
+          slug: e.slug,
+          view: e.view,
+          heat: heatLevelOf(e.view),
+          tags: (e.tags_raw || []).slice(0, 3),
+          why: e.rel > 0 ? '跟当前话题有词重叠，好接' : '大众梗，安全但不算贴题',
+        }))
+
+        return { ok: true, tone, count: picked.length, suggestions: picked, note: '只抛对方大概率认识的梗；冷门不出现在这里' }
+      } catch (e) {
+        return { ok: false, error: 'SUGGEST_FAILED', message: String((e && e.message) || e) }
+      }
+    },
+  })

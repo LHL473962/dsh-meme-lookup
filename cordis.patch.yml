@@ -1,0 +1,4 @@
+# 梗库查询插件：注册 meme_lookup 工具
+- insert:
+    - id: meme-lookup
+      name: 'dsh-meme-lookup'

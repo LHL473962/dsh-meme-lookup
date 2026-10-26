@@ -1,0 +1,142 @@
+[
+  {
+    "input": "尼罗河二圣",
+    "scene": "开场",
+    "expected": "USABLE",
+    "why": "常见动物梗，低争议",
+    "db_expected": true
+  },
+  {
+    "input": "大肥鱼",
+    "scene": "中段",
+    "expected": "USABLE",
+    "why": "团队自有称呼，语境清楚",
+    "db_expected": true
+  },
+  {
+    "input": "我真的会谢",
+    "scene": "开场",
+    "expected": "USABLE",
+    "why": "常见口语梗，短句可懂",
+    "db_expected": false
+  },
+  {
+    "input": "破防了",
+    "scene": "中段",
+    "expected": "USABLE",
+    "why": "常用网络口语，语义稳定",
+    "db_expected": false
+  },
+  {
+    "input": "尊嘟假嘟",
+    "scene": "结尾",
+    "expected": "USABLE",
+    "why": "常见谐音梗，轻量使用",
+    "db_expected": true
+  },
+  {
+    "input": "电子榨菜",
+    "scene": "开场",
+    "expected": "USABLE",
+    "why": "常见网络词，适合文字卡",
+    "db_expected": true
+  },
+  {
+    "input": "赛博功德",
+    "scene": "中段",
+    "expected": "USABLE",
+    "why": "常见网络表达，语境明确",
+    "db_expected": false
+  },
+  {
+    "input": "遥遥领先",
+    "scene": "结尾",
+    "expected": "USE_WITH_CARE",
+    "why": "容易带出品牌或时事联想，需看上下文",
+    "db_expected": true
+  },
+  {
+    "input": "我也不想努力了",
+    "scene": "中段",
+    "expected": "USE_WITH_CARE",
+    "why": "可能被理解为消极躺平，需避免替人贴标签",
+    "db_expected": false
+  },
+  {
+    "input": "鼠鼠我啊",
+    "scene": "开场",
+    "expected": "USE_WITH_CARE",
+    "why": "拟人化和自嘲意味较强，不能用于严肃段落",
+    "db_expected": false
+  },
+  {
+    "input": "芭比Q了",
+    "scene": "结尾",
+    "expected": "USE_WITH_CARE",
+    "why": "有夸张和负面语气，不适合真实事故描述",
+    "db_expected": true
+  },
+  {
+    "input": "雪糕刺客",
+    "scene": "中段",
+    "expected": "USE_WITH_CARE",
+    "why": "消费争议语境明显，需确认观众仍能理解",
+    "db_expected": true
+  },
+  {
+    "input": "鱼八股",
+    "scene": "开场",
+    "expected": "UNKNOWN",
+    "why": "当前来信明确说未进库，先不要当成已收录梗",
+    "db_expected": true
+  },
+  {
+    "input": "zzzz不存在的梗zzzz",
+    "scene": "中段",
+    "expected": "UNKNOWN",
+    "why": "查不到且无法补充出处，不能硬用",
+    "db_expected": true
+  },
+  {
+    "input": "一条临时拼出的热词甲",
+    "scene": "结尾",
+    "expected": "UNKNOWN",
+    "why": "没有可核对的出处或公共语境",
+    "db_expected": true
+  },
+  {
+    "input": "某张来源不明的截图梗",
+    "scene": "开场",
+    "expected": "UNKNOWN",
+    "why": "缺少原作者和原视频，无法署名核证",
+    "db_expected": true
+  },
+  {
+    "input": "耗子尾汁",
+    "scene": "中段",
+    "expected": "USABLE",
+    "why": "常见文字梗，短句使用即可",
+    "db_expected": false
+  },
+  {
+    "input": "yyds",
+    "scene": "结尾",
+    "expected": "USABLE",
+    "why": "常见缩写，观众理解度较高",
+    "db_expected": false
+  },
+  {
+    "input": "绝绝子",
+    "scene": "开场",
+    "expected": "USABLE",
+    "why": "常见口语表达，适合轻松语境",
+    "db_expected": false
+  },
+  {
+    "input": "拿来吧你",
+    "scene": "中段",
+    "expected": "USE_WITH_CARE",
+    "why": "带有索取语气，需避免对具体个人或群体使用",
+    "db_expected": true
+  }
+]

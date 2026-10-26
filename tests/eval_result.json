@@ -1,0 +1,142 @@
+[
+  {
+    "input": "尼罗河二圣",
+    "expected": "USABLE",
+    "got": "USABLE",
+    "db": "尼罗河二圣",
+    "why": "常见动物梗，低争议"
+  },
+  {
+    "input": "大肥鱼",
+    "expected": "USABLE",
+    "got": "USABLE",
+    "db": "蓝色大肥鱼",
+    "why": "团队自有称呼，语境清楚"
+  },
+  {
+    "input": "我真的会谢",
+    "expected": "USABLE",
+    "got": "UNKNOWN",
+    "db": null,
+    "why": "常见口语梗，短句可懂"
+  },
+  {
+    "input": "破防了",
+    "expected": "USABLE",
+    "got": "UNKNOWN",
+    "db": null,
+    "why": "常用网络口语，语义稳定"
+  },
+  {
+    "input": "尊嘟假嘟",
+    "expected": "USABLE",
+    "got": "USABLE",
+    "db": "尊嘟假嘟",
+    "why": "常见谐音梗，轻量使用"
+  },
+  {
+    "input": "电子榨菜",
+    "expected": "USABLE",
+    "got": "USABLE",
+    "db": "电子榨菜",
+    "why": "常见网络词，适合文字卡"
+  },
+  {
+    "input": "赛博功德",
+    "expected": "USABLE",
+    "got": "UNKNOWN",
+    "db": null,
+    "why": "常见网络表达，语境明确"
+  },
+  {
+    "input": "遥遥领先",
+    "expected": "USE_WITH_CARE",
+    "got": "USE_WITH_CARE",
+    "db": "CF遥遥领先",
+    "why": "容易带出品牌或时事联想，需看上下文"
+  },
+  {
+    "input": "我也不想努力了",
+    "expected": "USE_WITH_CARE",
+    "got": "UNKNOWN",
+    "db": null,
+    "why": "可能被理解为消极躺平，需避免替人贴标签"
+  },
+  {
+    "input": "鼠鼠我啊",
+    "expected": "USE_WITH_CARE",
+    "got": "UNKNOWN",
+    "db": null,
+    "why": "拟人化和自嘲意味较强，不能用于严肃段落"
+  },
+  {
+    "input": "芭比Q了",
+    "expected": "USE_WITH_CARE",
+    "got": "USE_WITH_CARE",
+    "db": "芭比Q了",
+    "why": "有夸张和负面语气，不适合真实事故描述"
+  },
+  {
+    "input": "雪糕刺客",
+    "expected": "USE_WITH_CARE",
+    "got": "USE_WITH_CARE",
+    "db": "雪糕刺客",
+    "why": "消费争议语境明显，需确认观众仍能理解"
+  },
+  {
+    "input": "鱼八股",
+    "expected": "UNKNOWN",
+    "got": "UNKNOWN",
+    "db": null,
+    "why": "当前来信明确说未进库，先不要当成已收录梗"
+  },
+  {
+    "input": "zzzz不存在的梗zzzz",
+    "expected": "UNKNOWN",
+    "got": "UNKNOWN",
+    "db": null,
+    "why": "查不到且无法补充出处，不能硬用"
+  },
+  {
+    "input": "一条临时拼出的热词甲",
+    "expected": "UNKNOWN",
+    "got": "UNKNOWN",
+    "db": null,
+    "why": "没有可核对的出处或公共语境"
+  },
+  {
+    "input": "某张来源不明的截图梗",
+    "expected": "UNKNOWN",
+    "got": "UNKNOWN",
+    "db": null,
+    "why": "缺少原作者和原视频，无法署名核证"
+  },
+  {
+    "input": "耗子尾汁",
+    "expected": "USABLE",
+    "got": "UNKNOWN",
+    "db": null,
+    "why": "常见文字梗，短句使用即可"
+  },
+  {
+    "input": "yyds",
+    "expected": "USABLE",
+    "got": "UNKNOWN",
+    "db": null,
+    "why": "常见缩写，观众理解度较高"
+  },
+  {
+    "input": "绝绝子",
+    "expected": "USABLE",
+    "got": "UNKNOWN",
+    "db": null,
+    "why": "常见口语表达，适合轻松语境"
+  },
+  {
+    "input": "拿来吧你",
+    "expected": "USE_WITH_CARE",
+    "got": "USE_WITH_CARE",
+    "db": "拿来吧你",
+    "why": "带有索取语气，需避免对具体个人或群体使用"
+  }
+]
