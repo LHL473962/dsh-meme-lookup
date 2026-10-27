@@ -424,7 +424,14 @@ export function apply(ctx) {
         let ctxText = text
         for (const m of memes) ctxText = ctxText.split(m.span).join(' ')
         const context = classifyContext(ctxText, memes)
+        const evasionNow = detectEvasion(text)
         const policy = replyPolicy(context, memes)
+// 脏话类（含避审写法）不接
+if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
+  policy.use_meme = false
+  policy.why = "脏话类（避审写法也算脏话），别接"
+  policy.max = 0
+}
         const scenes = detectReactionScene(text)
         const heatNotes = []
         for (const m of memes) {
@@ -448,6 +455,7 @@ export function apply(ctx) {
           ok: true,
           memes,
           scenes,
+          evasion: detectEvasion(text),
           self_reaction: scenes.length ? { scene: scenes[0].name, character: scenes[0].reaction.name, note: scenes[0].usage } : null,
           meme_tiers: {
             live: memes.filter((m) => m.tier === 'live').map((m) => m.span),
@@ -1098,6 +1106,21 @@ try {
   REACTIONS = (raw && raw.scenes) || []
 } catch {}
 
+const EVASION_FILE = new URL('./evasion.json', import.meta.url)
+let EVASION = []
+try { EVASION = (JSON.parse(readFileSync(EVASION_FILE, 'utf8')) || {}).items || [] } catch {}
+
+function detectEvasion(text) {
+  const hits = []
+  const v = normalizeVariant(text)
+  for (const it of EVASION) {
+    for (const w of it.variants || []) {
+      const nw = normalizeVariant(w)
+      if (nw && v.includes(nw)) { hits.push({ canonical: it.canonical, matched: w, level: it.level, note: it.note }); break }
+    }
+  }
+  return hits
+}
 const VARIANT_FILE = new URL('./variants.json', import.meta.url)
 let VARIANT = { emoji_map: {}, manual: {} }
 try {
