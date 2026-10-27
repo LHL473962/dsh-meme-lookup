@@ -1,0 +1,1 @@
+{"version":3,"file":"lifecycle.d.ts","sourceRoot":"","sources":["../../../../../src/backends/claude/session/lifecycle.ts"],"names":[],"mappings":"AAwCA,OAAO,KAAK,EAAc,YAAY,EAAoD,MAAM,2BAA2B,CAAA;AA0B3H,OAAO,KAAK,EAAe,iBAAiB,EAAO,MAAM,YAAY,CAAA;AAgBrE;2EAC2E;AAC3E,wBAAsB,iBAAiB,CAAC,KAAK,EAAE,iBAAiB,GAAG,OAAO,CAAC,YAAY,CAAC,CAkwBvF"}

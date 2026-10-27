@@ -1,0 +1,877 @@
+{
+  "repository": "https://github.com/LiPu-jpg/Openwrite",
+  "commit": "9390c7826024ee78cc91d5a144825a55ca0016e0",
+  "tree": "d59236a0d5dd77ce0d960586cd7c59eeaf0b96c9",
+  "dirty": false,
+  "acquisition": "git-checkout",
+  "sourceTreeSha256": "b257753216e9ff918bae3ef04487531cb27d186f65d2e0cc613343c4663db1c8",
+  "components": [
+    {
+      "name": "@deepseek-ai/schemastery",
+      "version": "3.18.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+        "directory": "vendor/schemastery"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "@standard-schema/spec",
+      "version": "1.1.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/standard-schema/standard-schema"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "@deepseek-ai/cosmokit",
+      "version": "1.8.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+        "directory": "vendor/cosmokit"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "ajv",
+      "version": "8.20.0",
+      "license": "MIT",
+      "repository": "ajv-validator/ajv",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "fast-deep-equal",
+      "version": "3.1.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/epoberezkin/fast-deep-equal.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "fast-uri",
+      "version": "3.1.7",
+      "license": "BSD-3-Clause",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/fastify/fast-uri.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "json-schema-traverse",
+      "version": "1.0.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/epoberezkin/json-schema-traverse.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "require-from-string",
+      "version": "2.0.2",
+      "license": "MIT",
+      "repository": "floatdrop/require-from-string",
+      "files": [
+        "license"
+      ]
+    },
+    {
+      "name": "ajv-formats",
+      "version": "3.0.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ajv-validator/ajv-formats.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "fflate",
+      "version": "0.8.2",
+      "license": "MIT",
+      "repository": "https://github.com/101arrowz/fflate",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "proper-lockfile",
+      "version": "4.1.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git@github.com:moxystudio/node-proper-lockfile.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "graceful-fs",
+      "version": "4.2.11",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/isaacs/node-graceful-fs"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "retry",
+      "version": "0.12.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/tim-kos/node-retry.git"
+      },
+      "files": [
+        "License"
+      ]
+    },
+    {
+      "name": "signal-exit",
+      "version": "3.0.7",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/tapjs/signal-exit.git"
+      },
+      "files": [
+        "LICENSE.txt"
+      ]
+    },
+    {
+      "name": "tar",
+      "version": "7.5.7",
+      "license": "BlueOak-1.0.0",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/isaacs/node-tar.git"
+      },
+      "files": [
+        "LICENSE.md"
+      ]
+    },
+    {
+      "name": "@isaacs/fs-minipass",
+      "version": "4.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/npm/fs-minipass.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "minipass",
+      "version": "7.1.3",
+      "license": "BlueOak-1.0.0",
+      "repository": "https://github.com/isaacs/minipass",
+      "files": [
+        "LICENSE.md"
+      ]
+    },
+    {
+      "name": "chownr",
+      "version": "3.0.0",
+      "license": "BlueOak-1.0.0",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/isaacs/chownr.git"
+      },
+      "files": [
+        "LICENSE.md"
+      ]
+    },
+    {
+      "name": "minizlib",
+      "version": "3.1.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/isaacs/minizlib.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "yallist",
+      "version": "5.0.0",
+      "license": "BlueOak-1.0.0",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/isaacs/yallist.git"
+      },
+      "files": [
+        "LICENSE.md"
+      ]
+    },
+    {
+      "name": "js-yaml",
+      "version": "4.3.1",
+      "license": "MIT",
+      "repository": "nodeca/js-yaml",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "argparse",
+      "version": "2.0.1",
+      "license": "Python-2.0",
+      "repository": "nodeca/argparse",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "@xyflow/react",
+      "version": "12.11.6",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/xyflow/xyflow.git",
+        "directory": "packages/react"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "classcat",
+      "version": "5.0.5",
+      "license": "MIT",
+      "repository": "jorgebucaran/classcat",
+      "files": [
+        "LICENSE.md"
+      ]
+    },
+    {
+      "name": "zustand",
+      "version": "4.5.7",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pmndrs/zustand.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "use-sync-external-store",
+      "version": "1.6.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/facebook/react.git",
+        "directory": "packages/use-sync-external-store"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "@xyflow/system",
+      "version": "0.0.82",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/xyflow/xyflow.git",
+        "directory": "packages/system"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "@types/d3-drag",
+      "version": "3.0.7",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-drag"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "@types/d3-selection",
+      "version": "3.0.11",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-selection"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "@types/d3-interpolate",
+      "version": "3.0.4",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-interpolate"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "@types/d3-color",
+      "version": "3.1.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-color"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "@types/d3-transition",
+      "version": "3.0.9",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-transition"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "@types/d3-zoom",
+      "version": "3.0.8",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-zoom"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-drag",
+      "version": "3.0.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-drag.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-dispatch",
+      "version": "3.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-dispatch.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-selection",
+      "version": "3.0.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-selection.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-interpolate",
+      "version": "3.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-interpolate.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-color",
+      "version": "3.1.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-color.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-zoom",
+      "version": "3.0.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-zoom.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-transition",
+      "version": "3.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-transition.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-ease",
+      "version": "3.0.1",
+      "license": "BSD-3-Clause",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-ease.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-timer",
+      "version": "3.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-timer.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3",
+      "version": "7.9.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-array",
+      "version": "3.2.4",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-array.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "internmap",
+      "version": "2.0.3",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mbostock/internmap.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-axis",
+      "version": "3.0.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-axis.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-brush",
+      "version": "3.0.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-brush.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-chord",
+      "version": "3.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-chord.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-path",
+      "version": "3.1.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-path.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-contour",
+      "version": "4.0.2",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-contour.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-delaunay",
+      "version": "6.0.4",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-delaunay.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "delaunator",
+      "version": "5.1.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mapbox/delaunator.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "robust-predicates",
+      "version": "3.0.3",
+      "license": "Unlicense",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mourner/robust-predicates.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-dsv",
+      "version": "3.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-dsv.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "commander",
+      "version": "7.2.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/tj/commander.js.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "iconv-lite",
+      "version": "0.6.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/ashtuchkin/iconv-lite.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "safer-buffer",
+      "version": "2.1.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ChALkeR/safer-buffer.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "rw",
+      "version": "1.3.3",
+      "license": "BSD-3-Clause",
+      "repository": {
+        "type": "git",
+        "url": "http://github.com/mbostock/rw.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-fetch",
+      "version": "3.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-fetch.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-force",
+      "version": "3.0.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-force.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-quadtree",
+      "version": "3.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-quadtree.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-format",
+      "version": "3.1.2",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-format.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-geo",
+      "version": "3.1.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-geo.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-hierarchy",
+      "version": "3.1.2",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-hierarchy.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-polygon",
+      "version": "3.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-polygon.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-random",
+      "version": "3.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-random.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-scale",
+      "version": "4.0.2",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-scale.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-time",
+      "version": "3.1.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-time.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-time-format",
+      "version": "4.1.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-time-format.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-scale-chromatic",
+      "version": "3.1.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-scale-chromatic.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "d3-shape",
+      "version": "3.2.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-shape.git"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "elkjs",
+      "version": "0.12.0",
+      "license": "EPL-2.0 OR GPL-3.0-or-later",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/kieler/elkjs.git"
+      },
+      "files": [
+        "LICENSE.md"
+      ]
+    },
+    {
+      "name": "lucide-react",
+      "version": "0.468.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/lucide-icons/lucide.git",
+        "directory": "packages/lucide-react"
+      },
+      "files": [
+        "LICENSE"
+      ]
+    }
+  ]
+}

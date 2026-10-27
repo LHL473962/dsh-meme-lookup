@@ -1,0 +1,90 @@
+{
+  "name": "@anysearch/anysearch-dsh",
+  "version": "0.1.8",
+  "description": "AnySearch web search and fetch providers plus advanced tools for DeepSeek Harness",
+  "keywords": [
+    "anysearch",
+    "deepseek-harness",
+    "dsh-plugin",
+    "web-search",
+    "web-fetch"
+  ],
+  "homepage": "https://github.com/anysearch-team/anysearch-dsh#readme",
+  "bugs": {
+    "url": "https://github.com/anysearch-team/anysearch-dsh/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anysearch-team/anysearch-dsh.git"
+  },
+  "license": "MIT",
+  "author": "AnySearch Team",
+  "type": "module",
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/**/*.js",
+    "lib/**/*.d.ts",
+    "cordis.patch.yml",
+    "docs/**/*.md",
+    "docs/assets/**/*",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "pnpm run check:dist && tsc -p tsconfig.test.json && vitest run && node scripts/check-package.mjs",
+    "check:package": "pnpm run check:dist && node scripts/check-package.mjs",
+    "test": "vitest run",
+    "test:e2e": "pnpm run check:dist && node scripts/live-e2e.mjs",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test:compat": "pnpm run check:dist && node scripts/check-dsh-compat.mjs",
+    "check:dist": "node scripts/check-dist.mjs"
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "packageManager": "pnpm@11.7.0",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": ">=4.0.1-rc.1 <5 || 4.0.5-alpha.1",
+    "@deepseek-ai/dsh-credentials": "*",
+    "@deepseek-ai/dsh-system-prompt": "*",
+    "@deepseek-ai/dsh-tool-web": "*",
+    "@deepseek-ai/dsh-tools": "*",
+    "@deepseek-ai/dsh-web": "*"
+  },
+  "dependencies": {
+    "@deepseek-ai/schemastery": ">=3.18.1-rc.1 <4 || 3.18.5-alpha.1"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.0.5-alpha.1",
+    "@deepseek-ai/dsh-credentials": "0.2.1-alpha.1",
+    "@deepseek-ai/dsh-llm": "0.2.1-alpha.1",
+    "@deepseek-ai/dsh-system-prompt": "0.2.1-alpha.1",
+    "@deepseek-ai/dsh-tool-web": "0.2.1-alpha.1",
+    "@deepseek-ai/dsh-tools": "0.2.1-alpha.1",
+    "@deepseek-ai/dsh-web": "0.2.1-alpha.1",
+    "@types/node": "^22.20.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  }
+}

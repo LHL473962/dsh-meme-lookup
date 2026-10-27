@@ -1,0 +1,1 @@
+{"version":3,"file":"driver-types.d.ts","sourceRoot":"","sources":["../../../../src/adapter/kernel/driver-types.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAEH,MAAM,WAAW,kBAAkB;IACjC,QAAQ,CAAC,UAAU,EAAE,MAAM,CAAA;IAC3B,QAAQ,CAAC,IAAI,EAAE,MAAM,CAAA;CACtB;AAED,MAAM,WAAW,WAAY,SAAQ,kBAAkB;IACrD,QAAQ,CAAC,QAAQ,CAAC,EAAE,OAAO,CAAA;IAC3B,QAAQ,CAAC,QAAQ,CAAC,EAAE,MAAM,CAAA;CAC3B"}

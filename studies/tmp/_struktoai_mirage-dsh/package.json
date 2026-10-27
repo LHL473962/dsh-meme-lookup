@@ -1,0 +1,86 @@
+{
+  "name": "@struktoai/mirage-dsh",
+  "version": "0.0.7",
+  "description": "DeepSeek Harness (dsh) providers backed by a mirage workspace: ctx.fs and ctx.shell over mounts",
+  "homepage": "https://github.com/strukto-ai/mirage#readme",
+  "bugs": {
+    "url": "https://github.com/strukto-ai/mirage/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/strukto-ai/mirage.git",
+    "directory": "typescript/packages/dsh"
+  },
+  "license": "Apache-2.0",
+  "author": "Zecheng Zhang <zecheng@strukto.ai>",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "engines": {
+    "node": "^22.20 || ^24.12 || >=25"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./service": {
+      "types": "./dist/plugin/service.d.ts",
+      "import": "./dist/plugin/service.js"
+    },
+    "./fs": {
+      "types": "./dist/plugin/fs.d.ts",
+      "import": "./dist/plugin/fs.js"
+    },
+    "./shell": {
+      "types": "./dist/plugin/shell.d.ts",
+      "import": "./dist/plugin/shell.js"
+    },
+    "./spill-store": {
+      "types": "./dist/plugin/spill-store.d.ts",
+      "import": "./dist/plugin/spill-store.js"
+    },
+    "./subprocess": {
+      "types": "./dist/plugin/subprocess.d.ts",
+      "import": "./dist/plugin/subprocess.js"
+    }
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "files": [
+    "dist",
+    "cordis.patch.yml"
+  ],
+  "dependencies": {
+    "@struktoai/mirage-core": "0.0.7",
+    "@struktoai/mirage-node": "0.0.7"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.0.4",
+    "@deepseek-ai/dsh-fs": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-shell": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-spill": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-subprocess": "0.2.0-rc.2"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "~4.0.4",
+    "@deepseek-ai/dsh-fs": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-shell": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-spill": "0.2.0-rc.2",
+    "tsup": "^8.5.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.1.11",
+    "@deepseek-ai/dsh-subprocess": "0.2.0-rc.2"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  }
+}

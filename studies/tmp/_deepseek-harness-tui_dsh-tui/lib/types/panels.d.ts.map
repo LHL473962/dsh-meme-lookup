@@ -1,0 +1,1 @@
+{"version":3,"file":"panels.d.ts","sourceRoot":"","sources":["../../src/panels.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,IAAI,EAAE,eAAe,EAAE,qBAAqB,EAAE,MAAM,yBAAyB,CAAA;AACtF,YAAY,EACV,kBAAkB,EAClB,aAAa,EACb,oBAAoB,EACpB,qBAAqB,EACrB,sBAAsB,EACtB,eAAe,EACf,gBAAgB,EAChB,gBAAgB,EAChB,UAAU,EACV,aAAa,EACb,eAAe,GAChB,MAAM,yBAAyB,CAAA;AAChC,OAAO,EAAE,OAAO,EAAE,MAAM,yBAAyB,CAAA"}

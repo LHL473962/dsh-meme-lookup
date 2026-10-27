@@ -1,0 +1,1 @@
+{"version":3,"file":"cordis-host.d.ts","sourceRoot":"","sources":["../../../../src/dsh-adapter/channel/cordis-host.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AACH,OAAO,KAAK,EAAE,OAAO,EAAE,MAAM,qBAAqB,CAAA;AAKlD,OAAO,KAAK,EAAE,WAAW,EAAE,MAAM,mBAAmB,CAAA;AAEpD;;;GAGG;AACH,wBAAgB,iBAAiB,CAAC,GAAG,EAAE,OAAO,EAAE,QAAQ,GAAE,QAAQ,CAAC,MAAM,CAAC,MAAM,EAAE,OAAO,CAAC,CAAM,GAAG,WAAW,CA2B7G"}

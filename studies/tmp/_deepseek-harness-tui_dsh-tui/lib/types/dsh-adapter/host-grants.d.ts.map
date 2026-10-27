@@ -1,0 +1,1 @@
+{"version":3,"file":"host-grants.d.ts","sourceRoot":"","sources":["../../../src/dsh-adapter/host-grants.ts"],"names":[],"mappings":"AAAA;;;;;;;;;GASG;AAEH,OAAO,KAAK,EAAE,UAAU,EAAE,MAAM,+BAA+B,CAAA;AAK/D,kEAAkE;AAClE,wBAAgB,kBAAkB,CAAC,IAAI,EAAE,MAAM,EAAE,KAAK,EAAE,UAAU,GAAG,IAAI,CAExE;AAED;;;;;;;gDAOgD;AAChD,wBAAgB,iBAAiB,CAAC,IAAI,EAAE,OAAO,GAAG,UAAU,GAAG,SAAS,CAevE"}

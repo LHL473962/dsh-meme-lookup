@@ -1,0 +1,309 @@
+import { codexText } from '../text.js';
+import { CODEX_MODE_PARAMS, isCodexModeId } from '../modes.js';
+import { arr, errorText, num, rec, str } from '../narrow.js';
+import { CLIENT, NOTIFY } from '../protocol/index.js';
+import { rpcCode, RPC_ERROR } from '../rpc/client.js';
+import { CODEX_INIT_PROMPT } from './prompts.js';
+const catalogs = new WeakMap();
+/** Policy objects used by turn/start and thread/settings/update. */
+export function sandboxPolicy(mode, cwd) {
+    switch (mode) {
+        case 'read-only': return { type: 'readOnly', networkAccess: false };
+        case 'danger-full-access': return { type: 'dangerFullAccess' };
+        default: return { type: 'workspaceWrite', writableRoots: [cwd], networkAccess: false, excludeTmpdirEnvVar: false, excludeSlashTmp: false };
+    }
+}
+function permissionOptions() {
+    return [
+        { id: 'read-only', label: codexText('codex-mode-read-only'), description: codexText('codex-mode-read-only-desc') },
+        { id: 'auto', label: codexText('codex-mode-auto'), description: codexText('codex-mode-auto-desc') },
+        { id: 'full-access', label: codexText('codex-mode-full-access'), description: codexText('codex-mode-full-access-desc') },
+    ];
+}
+const planOption = () => ({ id: 'plan', label: codexText('codex-mode-plan'), description: codexText('codex-mode-plan-desc') });
+export function createCodexControls(deps) {
+    const { hub, settings, ctx, prefs } = deps;
+    let rows;
+    let planSupported = true;
+    let settingsSupported = true;
+    let pending = {};
+    let appliedCollaboration = settings.collaborationMode;
+    let context = { used: 0, max: undefined };
+    let requestedTitle;
+    let catalog = catalogs.get(hub);
+    if (catalog === undefined) {
+        catalog = {};
+        catalogs.set(hub, catalog);
+    }
+    const models = async () => {
+        catalog.rows ??= (async () => {
+            const collected = [];
+            let cursor;
+            do {
+                const answer = rec(await hub.call(CLIENT.modelList, { includeHidden: false, limit: 100, ...(cursor === undefined ? {} : { cursor }) }));
+                collected.push(...arr(answer?.data).flatMap(raw => rec(raw) === undefined ? [] : [rec(raw)]));
+                cursor = str(answer?.nextCursor) ?? undefined;
+            } while (cursor !== undefined && cursor !== '');
+            return collected;
+        })().catch(error => { catalog.rows = undefined; throw error; });
+        rows = await catalog.rows;
+        const options = rows.filter(row => row.hidden !== true).flatMap(row => {
+            const id = str(row.model) ?? str(row.id);
+            return id === undefined ? [] : [{ id, label: str(row.displayName) ?? id, ...(str(row.description) === undefined ? {} : { description: str(row.description) }) }];
+        });
+        for (const mapped of deps.mappedModels?.() ?? [])
+            if (!options.some(option => option.id === mapped.id))
+                options.push(mapped);
+        return options;
+    };
+    const currentRow = () => rows?.find(row => row.model === settings.model || row.id === settings.model);
+    const collaboration = (mode, model = settings.model, effort = settings.effort) => ({ mode, settings: { model, reasoning_effort: effort, developer_instructions: null } });
+    /** An accepted update is sticky server-side, not an override for every turn. */
+    const acknowledge = (applied) => {
+        appliedCollaboration = rec(applied.collaborationMode) ?? appliedCollaboration;
+        for (const [key, value] of Object.entries(applied)) {
+            if (JSON.stringify(pending[key]) === JSON.stringify(value))
+                delete pending[key];
+        }
+    };
+    let sentOverrides;
+    const update = async (change) => {
+        // A deferred mode has higher wire precedence than model/effort. Keep its
+        // embedded settings in sync without touching its developer instructions.
+        const mode = rec(pending.collaborationMode);
+        if (mode !== undefined && change.collaborationMode === undefined && (change.model !== undefined || change.effort !== undefined)) {
+            change = { ...change, collaborationMode: { ...mode, settings: { ...rec(mode.settings),
+                        ...(change.model === undefined ? {} : { model: change.model }),
+                        ...(change.effort === undefined ? {} : { reasoning_effort: change.effort }),
+                    } } };
+        }
+        const before = pending;
+        pending = { ...pending, ...change };
+        if (deps.busy() || !settingsSupported)
+            return;
+        try {
+            await hub.call(CLIENT.threadSettingsUpdate, { threadId: deps.threadId(), ...change });
+            acknowledge(change);
+        }
+        catch (error) {
+            const code = rpcCode(error);
+            if ((code !== RPC_ERROR.methodNotFound && code !== RPC_ERROR.invalidParams) || (code === RPC_ERROR.invalidParams && change.collaborationMode !== undefined)) {
+                for (const [key, value] of Object.entries(change)) {
+                    if (JSON.stringify(pending[key]) !== JSON.stringify(value))
+                        continue;
+                    if (before[key] === undefined)
+                        delete pending[key];
+                    else
+                        pending[key] = before[key];
+                }
+                if (code === RPC_ERROR.invalidParams && change.collaborationMode !== undefined) {
+                    planSupported = false;
+                    delete pending.collaborationMode;
+                    throw new Error(codexText('codex-capability-unavailable', { feature: codexText('codex-mode-plan') }));
+                }
+                throw error;
+            }
+            settingsSupported = false;
+            deps.emit([{ type: 'notice', level: 'warning', key: 'codex-settings-deferred', text: codexText('codex-settings-deferred') }]);
+        }
+    };
+    const effortLevels = (row) => arr(row?.supportedReasoningEfforts).flatMap(raw => {
+        const id = str(rec(raw)?.reasoningEffort);
+        if (id === undefined)
+            return [];
+        const labels = { none: codexText('codex-effort-none'), minimal: codexText('codex-effort-minimal'), low: codexText('codex-effort-low'), medium: codexText('codex-effort-medium'), high: codexText('codex-effort-high'), xhigh: codexText('codex-effort-xhigh'), ultra: codexText('codex-effort-ultra') };
+        return [{ id, label: labels[id] ?? id }];
+    });
+    const capabilities = {
+        models: {
+            list: models,
+            current: () => ({ model: settings.model }),
+            display: () => deps.actualModel?.(settings.model),
+            async set(ref) {
+                await models();
+                const model = deps.actualModel?.(ref.model) ?? ref.model;
+                const nextRow = rows?.find(row => row.model === model || row.id === model);
+                const available = arr(nextRow?.supportedReasoningEfforts).map(raw => str(rec(raw)?.reasoningEffort));
+                const effort = settings.effort !== null && available.length > 0 && !available.includes(settings.effort) ? str(nextRow?.defaultReasoningEffort) ?? null : settings.effort;
+                await update({ model, ...(effort === settings.effort ? {} : { effort }) });
+                const effortChanged = effort !== settings.effort;
+                settings.model = model;
+                settings.effort = effort;
+                ctx.model = model;
+                prefs.write({ model: ref.model, ...(effortChanged ? { effort } : {}) });
+                deps.emit([{ type: 'model.changed', model, source: 'user' }, { type: 'effort.changed', effort }]);
+                return { kind: 'switched' };
+            },
+        },
+        effort: {
+            get levelsAvailable() { return rows !== undefined; },
+            levels: () => effortLevels(currentRow()),
+            forModel: ref => {
+                const model = deps.actualModel?.(ref.model) ?? ref.model;
+                const row = rows?.find(row => row.model === model || row.id === model);
+                return { levels: effortLevels(row), defaultEffort: str(row?.defaultReasoningEffort) };
+            },
+            current: () => settings.effort ?? undefined,
+            async set(id) {
+                if (rows === undefined || rows.length === 0)
+                    await models();
+                if (id !== null && !effortLevels(currentRow()).some(option => option.id === id))
+                    throw new Error(codexText('effort-invalid', { id, ids: effortLevels(currentRow()).map(option => option.id).join(', ') }));
+                const applied = id ?? str(currentRow()?.defaultReasoningEffort) ?? null;
+                await update({ effort: applied });
+                settings.effort = applied;
+                prefs.write({ effort: id });
+                deps.emit([{ type: 'effort.changed', effort: applied }]);
+            },
+        },
+        modes: {
+            list: () => [...permissionOptions(), ...(planSupported ? [planOption()] : [])],
+            cycle: () => {
+                const base = permissionOptions().find(option => option.id === settings.permissionMode) ?? { id: settings.permissionMode ?? 'custom', label: settings.permissionMode ?? 'custom' };
+                return planSupported ? [base, planOption()] : [base];
+            },
+            current: () => settings.modeId,
+            async set(id) {
+                if (id !== 'plan' && !isCodexModeId(id) && id !== settings.permissionMode)
+                    throw new Error(codexText('codex-mode-invalid', { mode: id }));
+                if (id === 'plan' && !planSupported)
+                    throw new Error(codexText('codex-capability-unavailable', { feature: codexText('codex-mode-plan') }));
+                const plan = id === 'plan';
+                const switching = plan !== (settings.modeId === 'plan');
+                const change = planSupported && switching ? { collaborationMode: collaboration(plan ? 'plan' : 'default') } : {};
+                if (!plan && isCodexModeId(id)) {
+                    const params = CODEX_MODE_PARAMS[id];
+                    change.approvalPolicy = params.approvalPolicy;
+                    change.sandboxPolicy = sandboxPolicy(params.sandbox, deps.cwd);
+                }
+                await update(change);
+                if (!plan && isCodexModeId(id)) {
+                    settings.permissionMode = id;
+                    settings.approvalPolicy = change.approvalPolicy;
+                    settings.sandboxPolicy = change.sandboxPolicy;
+                    prefs.write({ mode: id });
+                }
+                settings.collaborationMode = rec(change.collaborationMode) ?? settings.collaborationMode;
+                settings.modeId = plan ? 'plan' : settings.permissionMode ?? id;
+                prefs.write({ plan });
+                deps.emit([{ type: 'mode.changed', modeId: settings.modeId }]);
+            },
+        },
+        compact: {
+            async run() {
+                if (deps.busy())
+                    throw new Error(codexText('codex-command-idle'));
+                ctx.compactRequested = true;
+                try {
+                    await hub.call(CLIENT.threadCompactStart, { threadId: deps.threadId() });
+                }
+                catch (error) {
+                    ctx.compactRequested = false;
+                    throw error;
+                }
+            },
+        },
+        context: { usage: async () => ({ ...context, categories: [] }) },
+        account: {
+            async info() {
+                if (deps.account !== undefined)
+                    return deps.account();
+                const response = rec(await hub.call(CLIENT.accountRead, { refreshToken: false }));
+                const account = rec(response?.account);
+                return { provider: str(account?.type) === 'apiKey' ? 'openai' : str(account?.provider) ?? 'openai', ...(str(account?.planType) === undefined ? {} : { subscription: str(account?.planType) }) };
+            },
+        },
+        mcp: {
+            async status() {
+                const servers = [];
+                let cursor;
+                do {
+                    const answer = rec(await hub.call(CLIENT.mcpServerStatusList, { threadId: deps.threadId(), detail: 'toolsAndAuthOnly', limit: 100, ...(cursor === undefined ? {} : { cursor }) }));
+                    for (const raw of arr(answer?.data)) {
+                        const server = rec(raw);
+                        const name = str(server?.name);
+                        if (name !== undefined)
+                            servers.push({ name, status: str(server?.runtimeStatus) ?? str(server?.authStatus) ?? 'unknown', toolCount: Object.keys(rec(server?.tools) ?? {}).length });
+                    }
+                    cursor = str(answer?.nextCursor);
+                } while (cursor !== undefined && cursor !== '');
+                return servers;
+            },
+            reconnect: async () => { await hub.call(CLIENT.mcpServerReload, {}); await capabilities.mcp.status(); },
+        },
+        rename: {
+            async rename(title) {
+                requestedTitle = title;
+                try {
+                    await hub.call(CLIENT.threadNameSet, { threadId: deps.threadId(), name: title });
+                }
+                catch (error) {
+                    requestedTitle = undefined;
+                    throw error;
+                }
+            },
+        },
+        init: { run: () => deps.submitText(CODEX_INIT_PROMPT) },
+    };
+    return {
+        capabilities,
+        async initialize() {
+            await Promise.all([
+                models().catch(error => deps.debug(`codex: model catalog unavailable (${errorText(error)})`)),
+                hub.call(CLIENT.collaborationModeList, {}).catch(error => {
+                    if (rpcCode(error) === RPC_ERROR.methodNotFound || rpcCode(error) === RPC_ERROR.invalidParams)
+                        planSupported = false;
+                    else
+                        deps.debug(`codex: collaboration modes unavailable (${errorText(error)})`);
+                }),
+            ]);
+        },
+        /** Knobs not yet applied by a turn (or an idle settings update). */
+        turnOverrides() { sentOverrides = { ...pending }; return sentOverrides; },
+        /** A refused turn did not apply its settings. Drop only unsupported Plan. */
+        turnFailed(error, overrides) {
+            sentOverrides = undefined;
+            if (rpcCode(error) !== RPC_ERROR.invalidParams || rec(overrides.collaborationMode) === undefined)
+                return;
+            const warn = planSupported;
+            planSupported = false;
+            delete pending.collaborationMode;
+            settings.collaborationMode = appliedCollaboration;
+            const modeId = appliedCollaboration?.mode === 'plan' ? 'plan' : settings.permissionMode ?? 'custom';
+            if (settings.modeId !== modeId) {
+                settings.modeId = modeId;
+                deps.emit([{ type: 'mode.changed', modeId }]);
+            }
+            prefs.write({ plan: modeId === 'plan' });
+            if (warn)
+                deps.emit([{ type: 'notice', level: 'warning', key: 'codex-plan-unavailable', text: codexText('codex-capability-unavailable', { feature: codexText('codex-mode-plan') }) }]);
+        },
+        note(method, params) {
+            if (method === NOTIFY.modelVerification || method === NOTIFY.accountUpdated) {
+                catalog.rows = undefined;
+            }
+            if (method === NOTIFY.threadSettingsUpdated)
+                acknowledge(rec(params.threadSettings) ?? {});
+            if (method === NOTIFY.turnStarted && sentOverrides !== undefined) {
+                acknowledge(sentOverrides);
+                sentOverrides = undefined;
+            }
+            if (method === NOTIFY.threadTokenUsageUpdated) {
+                const usage = rec(params.tokenUsage);
+                const used = num(rec(usage?.last)?.totalTokens);
+                if (used !== undefined)
+                    context.used = used;
+                context.max = num(usage?.modelContextWindow) ?? context.max;
+            }
+            if (method === NOTIFY.threadNameUpdated) {
+                const title = str(params.threadName);
+                if (title !== undefined)
+                    deps.emit([{ type: 'session.title', title, source: title === requestedTitle ? 'user' : 'auto' }]);
+                requestedTitle = undefined;
+                return true;
+            }
+            return false;
+        },
+        get planSupported() { return planSupported; },
+    };
+}

@@ -1,0 +1,433 @@
+/**
+ * The Windows toast transport (DESIGN D3/D4/D8/D10/D11/D12): the only place the
+ * renderer talks to the Windows shell about task-completion notifications.
+ *
+ * It answers two questions, and a caller should not need anything else:
+ *   - show one                                  {@link notifyWindowsToast}
+ *   - yield when the caller confirms an active external notifier
+ *
+ * Every system side effect sits behind the win32 guard and behind the injected
+ * ports, so a POSIX process that reaches this module anyway neither writes the
+ * registry nor spawns anything (AC-7/D12). Reaching it is the unusual case:
+ * nothing imports it at load time - the host loads it for the first toast - so a
+ * POSIX process does not load it at all.
+ *
+ * Showing is in-box PowerShell 5.1 + WinRT, one process per notification (D3):
+ * the ~3 s cold start of `powershell.exe` is the accepted cost of adding no
+ * resident helper (R1). That process is started without a console of this one's
+ * ({@link toastHostSpawnOptions}), because a PowerShell host renames the console
+ * it runs on. Nothing here waits for the user either: `Show()` hands the
+ * notification to the shell and the process exits.
+ */
+import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { logForDebugging } from '../utils/debug.js';
+import { execFileNoThrow } from '../utils/execFileNoThrow.js';
+import { stringWidth } from './stringWidth.js';
+import { getGraphemeSegmenter } from '../utils/intl.js';
+/** The AppUserModelID the toast is shown under (spike H, 2026-10-16). */
+export const TOAST_AUMID = 'dsh-tui';
+/**
+ * The AUMID key. Writing it is what makes the toast display at all: an
+ * unregistered AUMID answers `Show()` in 15 ms without an error and shows
+ * nothing (E2), which is why "registration succeeded" - not `Show()` - is the
+ * success signal this module reports (D11).
+ */
+export const AUMID_REGISTRY_KEY = `HKCU\\Software\\Classes\\AppUserModelId\\${TOAST_AUMID}`;
+/**
+ * The icon the AUMID registers, and the two depths it can be found at: tsc
+ * emits this module into `lib/types/ink/` (the packaged tree) while the source
+ * sits at `src/ink/` (the repo), so the same pair of relative paths
+ * `components/maidPortrait.tsx` resolves its art with. `assets` is in the
+ * package's `files`, so an installed package really ships it.
+ *
+ * The shell resolves `IconUri` with no working directory of ours, and the UAT
+ * (2026-10-16) found the previous value - in-box `powershell.exe`, an executable
+ * with no icon index - rendering no icon at all. A path that does not exist is
+ * therefore worse than no icon: it leaves nothing to diagnose.
+ */
+const TOAST_ICON_CANDIDATES = [
+    '../../../assets/whale-girl/whale-girl.png',
+    '../../assets/whale-girl/whale-girl.png',
+];
+/**
+ * The image file this package ships for the toast, or undefined when the
+ * install has none (a pruned tree, a layout change) - {@link registerAumid}
+ * then registers no icon rather than a broken one.
+ */
+function shippedToastIcon() {
+    return TOAST_ICON_CANDIDATES
+        .map(relative => fileURLToPath(new URL(relative, import.meta.url)))
+        .find(candidate => existsSync(candidate));
+}
+/** `reg.exe` answers in milliseconds; a write that takes longer is stuck, not slow. */
+const REGISTRY_TIMEOUT_MS = 15_000;
+/** Why nothing can be delivered when `%WINDIR%` is missing; the one wording for both answers. */
+const SYSTEM_ROOT_MISSING_DETAIL = '%WINDIR% is not set, so reg.exe and powershell.exe cannot be located';
+/** PowerShell's cold start measures 3.1-3.4 s and the toast body 0.8-1.1 s (spike C/E1). */
+const TOAST_TIMEOUT_MS = 30_000;
+/**
+ * The toast body, run by in-box PowerShell 5.1 (D3). Two details are load
+ * bearing and were both measured on a real machine:
+ *   - the three WinRT types have to be loaded explicitly. Windows PowerShell
+ *     does not project them on demand, and `New-Object` otherwise fails with
+ *     "Cannot find type [Windows.Data.Xml.Dom.XmlDocument]";
+ *   - the XML arrives on stdin and is decoded as UTF-8 explicitly, because
+ *     `[Console]::In` decodes with the console code page (CP936 on this
+ *     machine), which mangles every non-ASCII summary.
+ */
+const TOAST_SCRIPT = `$ErrorActionPreference='Stop'
+[Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
+[Windows.UI.Notifications.ToastNotification, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
+[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
+$i=[Console]::OpenStandardInput()
+$m=New-Object System.IO.MemoryStream
+$i.CopyTo($m)
+$x=[System.Text.Encoding]::UTF8.GetString($m.ToArray())
+$d=New-Object Windows.Data.Xml.Dom.XmlDocument
+$d.LoadXml($x)
+$t=New-Object Windows.UI.Notifications.ToastNotification $d
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('${TOAST_AUMID}').Show($t)`;
+// --- how the toast host is started (T-FIX-05) ----------------------------------
+/** How much of a host's output is kept; the bound `execFileNoThrow` applies too. */
+const MAX_CAPTURE_BYTES = 64 * 1024;
+/**
+ * How the toast host is started: as a console application with no console.
+ *
+ * Showing a toast means running in-box `powershell.exe` (D3), and a PowerShell
+ * host sets the console title as it starts. A child that inherits this process's
+ * console therefore renames the session's tab - measured 2026-10-16, before and
+ * after one toast: `✦ 🐋 [dsh-tui:42672]` became `Windows PowerShell` (UAT-M4).
+ *
+ * `windowsHide` is what keeps that console away: Windows starts the child with
+ * CREATE_NO_WINDOW, so it has none of its own to retitle, while the pipes below
+ * still carry its XML and its failure text. Both halves were measured on a real
+ * machine (2026-10-16): the host runs - a write to disk and its stdout arrive,
+ * exit 0, 2.1 s for the real toast body whose `Show()` did not throw - and the
+ * console title is left alone, against the same measurement with today's options,
+ * which clobbered it with `Windows PowerShell`.
+ *
+ * `detached: true` (DETACHED_PROCESS) was measured and rejected: the title
+ * survived there too, but the host exited after ~0.4 s without running the script
+ * at all - a silent no-op that would trade a dead click for a toast that never
+ * appears. Do not swap one for the other without repeating that measurement.
+ * @returns The spawn options the toast host is started with.
+ */
+export function toastHostSpawnOptions() {
+    return {
+        windowsHide: true,
+        stdio: ['pipe', 'pipe', 'pipe'],
+    };
+}
+/**
+ * Run the toast host under {@link toastHostSpawnOptions}, with `execFileNoThrow`'s
+ * contract: never throws, bounded output, and a timeout. `code` is 1 when the
+ * host could not be started at all.
+ *
+ * A spawn of its own rather than that helper, because the console has to be kept
+ * from this one child: `reg.exe` shares the caller's console with no
+ * consequence, and `execFileNoThrow` - which it uses - inherits it, with no
+ * option to say otherwise.
+ * @param file - The in-box host to run.
+ * @param args - Its argv.
+ * @param options - The stdin payload and the timeout, as `execFileNoThrow` takes them.
+ * @returns What the host answered.
+ */
+function spawnConsoleLess(file, args, options) {
+    return new Promise(resolve => {
+        let child;
+        try {
+            child = spawn(file, args, { ...toastHostSpawnOptions(), timeout: options?.timeout });
+        }
+        catch {
+            resolve({ code: 1, stdout: '', stderr: '' });
+            return;
+        }
+        const stdoutChunks = [];
+        const stderrChunks = [];
+        const stdoutTotal = { value: 0 };
+        const stderrTotal = { value: 0 };
+        let settled = false;
+        const finish = (code) => {
+            if (settled)
+                return;
+            settled = true;
+            resolve({
+                code,
+                stdout: Buffer.concat(stdoutChunks).toString('utf8'),
+                stderr: Buffer.concat(stderrChunks).toString('utf8'),
+            });
+        };
+        const collect = (chunks, total) => (chunk) => {
+            if (total.value >= MAX_CAPTURE_BYTES)
+                return;
+            const part = chunk.subarray(0, MAX_CAPTURE_BYTES - total.value);
+            chunks.push(part);
+            total.value += part.length;
+        };
+        child.stdout?.on('data', collect(stdoutChunks, stdoutTotal));
+        child.stderr?.on('data', collect(stderrChunks, stderrTotal));
+        child.stdin?.on('error', () => { });
+        child.on('error', () => finish(1));
+        child.on('close', code => finish(code));
+        if (options?.input !== undefined)
+            child.stdin?.write(options.input);
+        child.stdin?.end();
+    });
+}
+// --- the pure layer (D10) ------------------------------------------------------
+/**
+ * Escape the four characters that would otherwise end a text node (AC-8). A
+ * summary is arbitrary model output, so nothing may reach the XML unescaped.
+ * @param text Raw text from the renderer.
+ * @returns The same text, safe inside an XML text node.
+ */
+export function escapeXmlText(text) {
+    // `&` first: escaping it after `&lt;` would double-escape the entities.
+    return text
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+}
+/**
+ * How much summary the toast body may carry, in display columns. Windows clips
+ * the body itself at around four rendered lines and stops mid-sentence with no
+ * ellipsis at all - the UAT screenshot (2026-10-16) ended on "…(和 Claude (" -
+ * so the budget has to be ours. Two of the roughly 43-column lines that
+ * screenshot rendered is ~86 columns; 80 leaves margin for the wider glyphs of
+ * other locales and is measured with {@link stringWidth}, the display width the
+ * terminal side uses, so a CJK summary is not silently given twice the room of
+ * a Latin one.
+ */
+const TOAST_MESSAGE_MAX_WIDTH = 80;
+/**
+ * Clip a summary to {@link TOAST_MESSAGE_MAX_WIDTH}, with an ellipsis that says
+ * the text continues. The ellipsis is one of those columns, so the text keeps
+ * the rest. Cuts between grapheme clusters so combined emoji stay whole.
+ * @param message The single-line summary from the renderer.
+ * @returns The summary, whole or clipped.
+ */
+function clampSummary(message) {
+    if (stringWidth(message) <= TOAST_MESSAGE_MAX_WIDTH)
+        return message;
+    let width = 0;
+    let clipped = '';
+    for (const { segment } of getGraphemeSegmenter().segment(message)) {
+        const segmentWidth = stringWidth(segment);
+        if (width + segmentWidth > TOAST_MESSAGE_MAX_WIDTH - 1)
+            break;
+        clipped += segment;
+        width += segmentWidth;
+    }
+    return `${clipped}…`;
+}
+/**
+ * Build the ToastGeneric document (D10).
+ * @param content Title and summary.
+ * @returns The XML handed to `XmlDocument.LoadXml` on the PowerShell side.
+ */
+export function toastXml(content) {
+    const texts = [`<text>${escapeXmlText(content.title)}</text>`];
+    if (content.message !== undefined && content.message !== '') {
+        texts.push(`<text>${escapeXmlText(clampSummary(content.message))}</text>`);
+    }
+    return `<toast><visual><binding template="ToastGeneric">${texts.join('')}</binding></visual></toast>`;
+}
+/**
+ * Create a transport with its own registration state. Production shares one
+ * instance through {@link notifyWindowsToast}, because "the AUMID is registered"
+ * is a per-process fact (D11).
+ * @param options Ports and paths; every one of them has a production default.
+ * @returns The transport.
+ */
+export function createWindowsToastTransport(options = {}) {
+    const platform = options.platform ?? process.platform;
+    const env = options.env ?? process.env;
+    const run = options.run ?? execFileNoThrow;
+    const toastHost = options.runToastHost ?? spawnConsoleLess;
+    const log = options.log ?? logForDebugging;
+    const now = options.now ?? Date.now;
+    const tools = toolsFor(env);
+    const registry = options.registry ?? regExeRegistry(run, tools);
+    const icon = options.iconPath ?? shippedToastIcon;
+    let settled;
+    let pending;
+    const fail = (reason, detail) => {
+        log('windows toast unavailable', detail === undefined ? { reason } : { reason, detail });
+        return detail === undefined ? { ok: false, reason } : { ok: false, reason, detail };
+    };
+    const unavailable = (reason, detail) => detail === undefined ? { status: 'unavailable', reason } : { status: 'unavailable', reason, detail };
+    function available(query = {}) {
+        if ((query.platform ?? platform) !== 'win32')
+            return { available: false, reason: 'not-win32' };
+        if (query.externalNotifierActive === true) {
+            return { available: false, reason: 'yielded' };
+        }
+        // The same two refusals `register()` makes, in the same order: without an
+        // in-box host to render the toast there is nothing to register.
+        if (tools === null)
+            return { available: false, reason: 'system-root-missing', detail: SYSTEM_ROOT_MISSING_DETAIL };
+        // Once a registration has failed it is final for this process (D11).
+        if (settled !== undefined && !settled.ok) {
+            return settled.detail === undefined
+                ? { available: false, reason: settled.reason }
+                : { available: false, reason: settled.reason, detail: settled.detail };
+        }
+        return { available: true };
+    }
+    function resolve() {
+        // One attempt per process: a policy that refuses the key will refuse it
+        // again, and retrying it per notification would only add a round trip.
+        pending ??= register()
+            .catch((error) => fail('unexpected', describe(error)))
+            .then(result => {
+            settled = result;
+            return result;
+        });
+        return pending;
+    }
+    async function register() {
+        // D12: the platform gate comes before every other check, so a POSIX process
+        // that reached this module still cannot write a key.
+        if (platform !== 'win32')
+            return fail('not-win32');
+        if (tools === null)
+            return fail('system-root-missing', SYSTEM_ROOT_MISSING_DETAIL);
+        const aumidFailure = await registerAumid(registry, icon(), log);
+        if (aumidFailure !== undefined)
+            return fail('aumid-registration-failed', aumidFailure);
+        return { ok: true, tools };
+    }
+    async function show(input, powershell) {
+        const xml = toastXml({ title: input.title, message: input.message });
+        const started = now();
+        const result = await toastHost(powershell, ['-NoProfile', '-Command', TOAST_SCRIPT], { input: xml, timeout: TOAST_TIMEOUT_MS });
+        if (result.code !== 0) {
+            // The caller answers an `unavailable` with the bell, so the cause is the
+            // only thing that explains why both a toast and a bell were needed.
+            const detail = failureCause(result);
+            log('windows toast failed to appear', { detail });
+            return unavailable('toast-failed', detail);
+        }
+        log('windows toast shown', { ms: now() - started });
+        return { status: 'shown' };
+    }
+    return {
+        async notify(input) {
+            try {
+                if (input.canDispatch?.() === false)
+                    return { status: 'suppressed' };
+                const judgement = available({ externalNotifierActive: input.externalNotifierActive });
+                if (!judgement.available) {
+                    if (judgement.reason === 'yielded')
+                        return { status: 'yielded' };
+                    return unavailable(judgement.reason, judgement.detail);
+                }
+                const registration = await resolve();
+                if (!registration.ok)
+                    return unavailable(registration.reason, registration.detail);
+                if (input.canDispatch?.() === false)
+                    return { status: 'suppressed' };
+                return await show(input, registration.tools.powershell);
+            }
+            catch (error) {
+                // The caller's path is fire-and-forget (the renderer cannot await a
+                // notification), so a rejection here would surface as an unhandled one.
+                log('windows toast failed', { detail: describe(error) });
+                return unavailable('unexpected', describe(error));
+            }
+        },
+    };
+}
+/**
+ * The in-box tools under `%WINDIR%`, or null when there is no system root to
+ * find them under. Resolved by absolute path, never through `PATH`.
+ */
+function toolsFor(env) {
+    const windir = env.windir;
+    if (windir === undefined || windir === '')
+        return null;
+    return {
+        reg: join(windir, 'System32', 'reg.exe'),
+        powershell: join(windir, 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe'),
+    };
+}
+/**
+ * Create the AUMID key the shell needs before it will display anything (D11).
+ *
+ * DisplayName goes first because it is the write that creates the key. The
+ * order cannot be repaired afterwards: the shell fixes an AUMID's identity the
+ * first time it sees a notification for it, and never re-reads the key. The
+ * 2026-10-16 UAT still showed the bare AUMID `dsh-tui` above a toast whose key
+ * held `DisplayName` = `dsh-TUI` - and the notification database dates that
+ * first sighting eight hours before this write first existed
+ * (`NotificationHandler`, primary id `dsh-tui`, created 2026-10-15 21:33:04,
+ * never modified). What this can promise is the order: every process writes
+ * both values before its first `Show()`.
+ *
+ * @param registry The HKCU writer.
+ * @param iconUri The image file to register, or undefined to register none.
+ * @param log Where a refusal that costs only the icon is reported.
+ * @returns Why the key could not be registered, or undefined on success.
+ */
+async function registerAumid(registry, iconUri, log) {
+    const display = await registry.setValue(AUMID_REGISTRY_KEY, 'DisplayName', 'dsh-TUI');
+    if (!display.ok)
+        return `DisplayName: ${display.detail}`;
+    if (iconUri === undefined) {
+        // An icon is decoration: the toast renders without one, and a path the
+        // shell cannot read renders nothing either - with nothing left to
+        // diagnose. So a missing file registers no value instead of a bad one.
+        log('windows toast: no icon file to register, the toast shows without one');
+        return undefined;
+    }
+    // IconUri only decorates the entry in Settings > Notifications, so a refusal
+    // there costs the icon, not the toast.
+    const icon = await registry.setValue(AUMID_REGISTRY_KEY, 'IconUri', iconUri);
+    if (!icon.ok)
+        log('windows toast: the AUMID icon was refused, the toast is unaffected', { detail: icon.detail });
+    return undefined;
+}
+/**
+ * The production registry port: one `reg.exe add` per value, always against the
+ * key it is given - which is always one of this module's own HKCU keys.
+ */
+function regExeRegistry(run, tools) {
+    return {
+        async setValue(key, name, value) {
+            if (tools === null)
+                return { ok: false, detail: '%WINDIR% is not set, so reg.exe cannot be located' };
+            const args = ['add', key, ...(name === null ? ['/ve'] : ['/v', name]), '/t', 'REG_SZ', '/d', value, '/f'];
+            const result = await run(tools.reg, args, { timeout: REGISTRY_TIMEOUT_MS });
+            // `reg.exe` is chatty about success too; only a non-zero exit matters.
+            return result.code === 0 ? { ok: true } : { ok: false, detail: failureCause(result) };
+        },
+    };
+}
+/** The first line of a failed command's output, the only clue the caller gets. */
+function failureCause(result) {
+    for (const stream of [result.stderr, result.stdout]) {
+        const line = stream.trim().split(/\r?\n/u)[0];
+        if (line !== '')
+            return line;
+    }
+    return `exited with code ${result.code}`;
+}
+function describe(error) {
+    return error instanceof Error ? error.message : String(error);
+}
+// --- the shared instance ------------------------------------------------------
+let shared;
+/**
+ * Show one task-completion toast: stand down for an external notifier, register
+ * once, then spawn the in-box host. Never rejects, and an unavailable transport
+ * is reported so the caller can ring the bell instead (AC-5).
+ * @param input Title, summary and the profile document for the dedup read.
+ * @returns What happened, in terms the caller can act on.
+ */
+export function notifyWindowsToast(input) {
+    return (shared ??= createWindowsToastTransport()).notify(input);
+}

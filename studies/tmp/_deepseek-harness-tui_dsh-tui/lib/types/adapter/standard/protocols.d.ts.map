@@ -1,0 +1,1 @@
+{"version":3,"file":"protocols.d.ts","sourceRoot":"","sources":["../../../../src/adapter/standard/protocols.ts"],"names":[],"mappings":"AAAA;;;;;;;GAOG;AAEH,OAAO,EAAE,aAAa,EAAE,eAAe,EAAE,MAAM,mBAAmB,CAAA;AAClE,OAAO,EAAE,oBAAoB,EAAE,MAAM,mBAAmB,CAAA;AACxD,OAAO,EACL,mBAAmB,EACnB,oBAAoB,EACpB,gBAAgB,EAChB,iBAAiB,EACjB,gBAAgB,EAChB,iBAAiB,GAClB,MAAM,kBAAkB,CAAA"}

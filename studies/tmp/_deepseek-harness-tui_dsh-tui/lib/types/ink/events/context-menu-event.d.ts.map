@@ -1,0 +1,1 @@
+{"version":3,"file":"context-menu-event.d.ts","sourceRoot":"","sources":["../../../../src/ink/events/context-menu-event.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,KAAK,gBAAgB,EAAE,MAAM,oBAAoB,CAAA;AAExE;;;;;;;;;;;;;GAaG;AACH,qBAAa,gBAAiB,SAAQ,YAAY;gBACpC,GAAG,EAAE,MAAM,EAAE,GAAG,EAAE,MAAM,EAAE,IAAI,CAAC,EAAE,gBAAgB;CAG9D"}

@@ -1,6 +1,6 @@
 {
   "name": "dsh-meme-lookup",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "梗插件：查梗、看懂梗、判断能不能用、接梗、抛梗，附带设置页",
   "type": "module",
   "main": "index.js",
@@ -51,5 +51,11 @@
     "dsh-plugin",
     "meme"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "capabilityRedLines": [
+    "不主动发帖、不评论、不私信（贴吧/B站一律只读）",
+    "不采集、不存储用户名与主页（只留句子）",
+    "不上传任何本地文件到第三方",
+    "不把用户词表写进公开仓库（meme-user-lexicon 只在本机）"
+  ]
 }

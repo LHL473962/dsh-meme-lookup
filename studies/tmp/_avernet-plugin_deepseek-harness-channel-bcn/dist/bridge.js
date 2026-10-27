@@ -1,0 +1,808 @@
+import { installModelSelection, } from '@deepseek-ai/dsh-agent';
+import { createUserMessage } from '@deepseek-ai/dsh-llm';
+import { asNonEmptyString, asRecord, extractMessageText, parseChatInjectParams, parseChatSendParams, } from './protocol.js';
+import { createBcsRouteTool } from './route-tool.js';
+import { dshSessionIdForV2, resolveBcnSessionIdentity } from './session-identity.js';
+import { createBcsAssignTaskTool, createBcsSendTaskMessageTool, createBcsTaskCompleteTool, } from './task-tools.js';
+import { BcnInteractions } from './interactions.js';
+export class BcnBridge {
+    ctx;
+    client;
+    config;
+    log;
+    managedAgents = new Map();
+    ownedAgents = new Set();
+    sessionIdentityBySessionId = new Map();
+    runIdByMessageId = new Map();
+    runIdByTurn = new Map();
+    activeRunBySessionId = new Map();
+    runs = new Map();
+    completedRunIds = [];
+    disposers = [];
+    disposed = false;
+    interactions;
+    constructor(ctx, client, config, log) {
+        this.ctx = ctx;
+        this.client = client;
+        this.config = config;
+        this.log = log;
+        this.interactions = new BcnInteractions(client, agent => {
+            const id = this.activeRunBySessionId.get(String(agent.id));
+            const run = id ? this.runs.get(id) : undefined;
+            return run && !run.terminal ? run : undefined;
+        });
+    }
+    start() {
+        this.disposers.push(this.client.onRequest('chat.send', frame => this.handleChatSend(frame)), this.client.onRequest('chat.inject', frame => this.handleChatInject(frame)), this.client.onRequest('chat.abort', frame => this.handleChatAbort(frame)), this.client.onRequest('interaction.resolve', frame => this.interactions.resolve(frame)));
+    }
+    get busy() {
+        for (const run of this.runs.values())
+            if (!run.terminal)
+                return true;
+        return false;
+    }
+    async dispose() {
+        if (this.disposed)
+            return;
+        this.disposed = true;
+        this.interactions.dispose();
+        for (const dispose of this.disposers.splice(0).reverse())
+            await dispose();
+        for (const run of this.runs.values()) {
+            if (run.terminal)
+                continue;
+            this.sendTerminal(run, 'aborted');
+            const agent = this.ctx.agents.get(run.sessionId);
+            agent?.cancel({ kind: 'disposed' });
+        }
+        const results = await Promise.allSettled([...this.ownedAgents].map(handle => handle.dispose()));
+        this.ownedAgents.clear();
+        this.managedAgents.clear();
+        this.sessionIdentityBySessionId.clear();
+        this.runIdByMessageId.clear();
+        this.runIdByTurn.clear();
+        this.activeRunBySessionId.clear();
+        this.runs.clear();
+        const failures = results.filter((result) => result.status === 'rejected');
+        if (failures.length)
+            throw new AggregateError(failures.map(result => result.reason), 'BCN agent disposal failed');
+    }
+    async captureRoute(agent, selectors, reason, signal) {
+        if (!agent)
+            return { ok: false, error: 'NO_AGENT', message: 'No active DSH agent owns this call.' };
+        const runId = this.activeRunBySessionId.get(String(agent.id));
+        const run = runId ? this.runs.get(runId) : undefined;
+        if (!run || run.terminal) {
+            return { ok: false, error: 'NO_BCN_RUN', message: 'No active BCN run owns this call.' };
+        }
+        if (run.toolProfile !== 'route') {
+            return { ok: false, error: 'TOOL_NOT_ALLOWED', message: 'bcs_route is not available in this BCN session.' };
+        }
+        if (!Array.isArray(selectors) || selectors.length === 0 || selectors.length > 20) {
+            return { ok: false, error: 'INVALID_PARAMS', message: 'to must contain 1-20 selectors.' };
+        }
+        const normalized = [];
+        for (const selector of selectors) {
+            const value = selector.value.trim();
+            if ((selector.type !== 'name' && selector.type !== 'bot') || !value) {
+                return { ok: false, error: 'INVALID_PARAMS', message: 'Each selector needs type name|bot and a value.' };
+            }
+            normalized.push({ type: selector.type, value });
+        }
+        const normalizedReason = reason.trim();
+        if (!normalizedReason)
+            return { ok: false, error: 'INVALID_PARAMS', message: 'reason must not be empty.' };
+        const params = { group_id: run.groupId, selectors: normalized };
+        if (run.bcsSessionId)
+            params.session_id = run.bcsSessionId;
+        const response = await this.client.sendRequest('route.resolve', params, 10_000, signal);
+        if (!response.ok) {
+            return {
+                ok: false,
+                error: response.error?.code ?? 'ROUTE_RESOLVE_FAILED',
+                message: response.error?.message ?? 'BCN could not resolve route targets.',
+            };
+        }
+        const payload = asRecord(response.payload);
+        const resolved = normalizeResolvedRouteTargets(payload?.resolved);
+        if (payload?.ok !== true || resolved.length === 0) {
+            return {
+                ok: false,
+                error: asNonEmptyString(payload?.error) ?? 'ROUTE_TARGET_INVALID',
+                message: asNonEmptyString(payload?.message) ?? 'BCN could not resolve route targets.',
+                ...normalizeRouteCandidates(payload?.candidates),
+            };
+        }
+        const incoming = {
+            responders: resolved,
+            mode: 'required',
+            reason: normalizedReason.slice(0, 500),
+            includeSelf: false,
+        };
+        run.route = mergeRouteIntent(run.route, incoming);
+        return { ok: true, captured: true, display_to_user: false, resolved };
+    }
+    async assignTask(agent, targetBot, message, responseMode, signal) {
+        const run = this.activeRunForTaskTool(agent, 'manager');
+        if (!run)
+            return taskToolUnavailable();
+        const normalizedTarget = targetBot.trim();
+        const normalizedMessage = message.trim();
+        if (!normalizedTarget || !normalizedMessage) {
+            return taskToolInvalid("'target_bot' and 'message' must be non-empty strings.");
+        }
+        if (responseMode !== undefined && responseMode !== 'after-last-tool-call' && responseMode !== 'full') {
+            return taskToolInvalid("'response_mode' must be 'after-last-tool-call' or 'full'.");
+        }
+        const params = {
+            // task.* accepts the session-shaped group_id wire representation.
+            // A bare V3 group id would lose the originating conversation.
+            group_id: run.bcsSessionId,
+            target_bot: normalizedTarget,
+            message: normalizedMessage,
+            ...(responseMode ? { response_mode: responseMode } : {}),
+        };
+        const response = await this.sendTaskRequest('task.dispatch', params, signal);
+        if (!response.ok)
+            return taskRequestFailure(response, 'TASK_DISPATCH_FAILED');
+        const payload = asRecord(response.payload);
+        const taskId = asNonEmptyString(payload?.task_id);
+        if (!taskId)
+            return taskToolInvalidResponse('task.dispatch');
+        return {
+            ok: true,
+            task_id: taskId,
+            status: asNonEmptyString(payload?.status) ?? 'dispatched',
+        };
+    }
+    async sendTaskMessage(agent, message, signal) {
+        const run = this.activeRunForTaskTool(agent, 'worker');
+        if (!run)
+            return taskToolUnavailable();
+        const normalizedMessage = message.trim();
+        if (!normalizedMessage)
+            return taskToolInvalid("'message' must be a non-empty string.");
+        const response = await this.sendTaskRequest('task.message', {
+            group_id: run.bcsSessionId,
+            message: normalizedMessage,
+        }, signal);
+        if (!response.ok)
+            return taskRequestFailure(response, 'TASK_MESSAGE_FAILED');
+        const payload = asRecord(response.payload);
+        return { ok: true, status: asNonEmptyString(payload?.status) ?? 'sent' };
+    }
+    async completeTask(agent, summary, signal) {
+        const run = this.activeRunForTaskTool(agent, 'manager');
+        if (!run)
+            return taskToolUnavailable();
+        const normalizedSummary = summary.trim();
+        if (!normalizedSummary)
+            return taskToolInvalid("'summary' must be a non-empty string.");
+        const response = await this.sendTaskRequest('task.complete', {
+            group_id: run.bcsSessionId,
+            summary: normalizedSummary,
+        }, signal);
+        if (!response.ok)
+            return taskRequestFailure(response, 'TASK_COMPLETE_FAILED');
+        return { ok: true };
+    }
+    async handleChatSend(frame) {
+        let params;
+        try {
+            params = parseChatSendParams(frame.params);
+        }
+        catch (error) {
+            this.client.sendResponse(frame.id, false, undefined, invalidRequest(error));
+            return;
+        }
+        const bcsSessionId = params.bcs_session_id?.trim();
+        if (!bcsSessionId) {
+            this.client.sendResponse(frame.id, false, undefined, invalidRequest('BCN V3 chat.send requires bcs_session_id'));
+            return;
+        }
+        const runId = params.idempotency_key ?? frame.id;
+        const existing = this.runs.get(runId);
+        if (existing) {
+            if (existing.bcsSessionId !== bcsSessionId) {
+                this.client.sendResponse(frame.id, false, undefined, invalidRequest('run_id belongs to another bcs_session_id'));
+                return;
+            }
+            this.client.sendResponse(frame.id, true, { run_id: existing.runId });
+            return;
+        }
+        const sessionIdentity = resolveBcnSessionIdentity({
+            sessionKey: params.session_key,
+            groupId: params.bcs_group_id,
+            bcsSessionId,
+        });
+        const sessionId = dshSessionIdForV2(sessionIdentity);
+        const toolProfile = resolveToolProfile(params.session_context);
+        const run = {
+            runId,
+            sessionId,
+            groupId: params.bcs_group_id,
+            bcsSessionId,
+            text: '',
+            stepText: new Map(),
+            terminal: false,
+            usage: { input: 0, output: 0 },
+            toolNames: new Map(),
+            toolArguments: new Map(),
+            toolStarts: new Set(),
+            toolResults: new Set(),
+            pendingToolResults: new Map(),
+            toolProfile,
+        };
+        this.runs.set(runId, run);
+        this.client.sendResponse(frame.id, true, { run_id: runId });
+        try {
+            const managed = await this.getOrCreateAgent(sessionIdentity, toolProfile);
+            if (this.disposed || run.terminal)
+                return;
+            const message = createUserMessage({
+                content: [{ type: 'text', text: formatInboundMessage(params) }],
+                source: { kind: 'bcn-channel' },
+            });
+            this.runIdByMessageId.set(String(message.id), runId);
+            run.messageId = message.id;
+            managed.agent.followup(message);
+        }
+        catch {
+            this.sendTerminal(run, 'error', 'DELIVERY_FAILED');
+        }
+    }
+    async handleChatInject(frame) {
+        let params;
+        try {
+            params = parseChatInjectParams(frame.params);
+            if (!params.bcs_session_id?.trim())
+                throw new Error('BCN V3 chat.inject requires bcs_session_id');
+        }
+        catch (error) {
+            this.client.sendResponse(frame.id, false, undefined, invalidRequest(error));
+            return;
+        }
+        try {
+            const sessionIdentity = resolveBcnSessionIdentity({
+                sessionKey: params.session_key,
+                groupId: params.bcs_group_id,
+                ...(params.bcs_session_id ? { bcsSessionId: params.bcs_session_id } : {}),
+            });
+            const managed = await this.getOrCreateAgent(sessionIdentity, resolveToolProfile(params.session_context));
+            managed.agent.inject(createUserMessage({
+                content: [{ type: 'text', text: formatInboundMessage(params) }],
+                source: { kind: 'bcn-channel' },
+            }));
+            this.client.sendResponse(frame.id, true, {});
+        }
+        catch {
+            this.client.sendResponse(frame.id, false, undefined, {
+                code: 'DELIVERY_FAILED',
+                message: 'DeepSeek Harness could not inject the BCN message',
+                retryable: true,
+            });
+        }
+    }
+    async handleChatAbort(frame) {
+        const params = asRecord(frame.params);
+        const sessionId = asNonEmptyString(params?.session_key);
+        const runId = asNonEmptyString(params?.run_id);
+        if (!sessionId || !runId) {
+            this.client.sendResponse(frame.id, false, undefined, invalidRequest('chat.abort requires session_key and run_id'));
+            return;
+        }
+        const run = this.runs.get(runId);
+        if (!run || run.bcsSessionId !== sessionId) {
+            this.client.sendResponse(frame.id, false, undefined, {
+                code: run ? 'SCOPE_MISMATCH' : 'RUN_NOT_FOUND',
+                message: run ? 'run_id does not belong to session_key' : 'Unknown run_id',
+                retryable: false,
+            });
+            return;
+        }
+        if (run.terminal) {
+            this.client.sendResponse(frame.id, true, { aborted: false, aborted_run_ids: [] });
+            return;
+        }
+        // Mark terminal before awaiting anything, including agent creation.
+        // An acknowledged but not yet delivered run must never start afterwards.
+        this.sendTerminal(run, 'aborted');
+        const agent = this.ctx.agents.get(run.sessionId);
+        if (run.turn !== undefined)
+            agent?.cancel({ kind: 'user' }, { keepInbox: true });
+        else if (run.messageId)
+            agent?.inbox.remove(run.messageId);
+        this.client.sendResponse(frame.id, true, { aborted: true, aborted_run_ids: [runId] });
+    }
+    handleInboxClaimed(payload) {
+        const runId = this.runIdByMessageId.get(String(payload.message.id));
+        if (!runId)
+            return;
+        const run = this.runs.get(runId);
+        if (!run || run.terminal || run.sessionId !== payload.agent.id)
+            return;
+        this.runIdByMessageId.delete(String(payload.message.id));
+        run.turn = payload.turn;
+        this.runIdByTurn.set(turnKey(payload.agent.id, payload.turn), runId);
+        this.activeRunBySessionId.set(String(payload.agent.id), runId);
+    }
+    handleInboxDiscarded(payload) {
+        const messageId = String(payload.message.id);
+        const runId = this.runIdByMessageId.get(messageId);
+        if (!runId)
+            return;
+        this.runIdByMessageId.delete(messageId);
+        const run = this.runs.get(runId);
+        if (run)
+            this.sendTerminal(run, 'aborted');
+    }
+    handleSessionEvent(session, event) {
+        if (this.disposed || !this.sessionIdentityBySessionId.has(String(session.id)))
+            return;
+        const eventData = asRecord(event.data);
+        const turn = typeof eventData?.turn === 'number' ? eventData.turn : undefined;
+        if (turn === undefined)
+            return;
+        const runId = this.runIdByTurn.get(turnKey(session.id, turn));
+        const run = runId ? this.runs.get(runId) : undefined;
+        if (!run || run.terminal)
+            return;
+        if (event.type === 'assistant/message') {
+            this.captureAssistantMessage(run, event.data.step, event.data.message.content, event.data.usage);
+            if (run.liveAttempt?.step === event.data.step)
+                delete run.liveAttempt;
+            return;
+        }
+        if (event.type === 'tool/call') {
+            this.captureToolCall(run, String(event.data.callId), event.data.name, event.data.arguments);
+            return;
+        }
+        if (event.type === 'tool/result') {
+            this.captureToolResult(run, {
+                callId: String(event.data.message.toolCallId),
+                content: event.data.message.content,
+                isError: event.data.message.isError === true || event.data.error !== undefined,
+            });
+            return;
+        }
+        if (event.type === 'turn/end') {
+            if (event.data.reason.kind === 'aborted')
+                this.sendTerminal(run, 'aborted');
+            else if (event.data.reason.kind === 'error' || event.data.reason.kind === 'interrupted') {
+                const code = event.data.reason.kind === 'error'
+                    ? safeErrorCode(event.data.reason.error.code)
+                    : 'INTERRUPTED';
+                this.sendTerminal(run, 'error', code);
+            }
+            else {
+                this.sendTerminal(run, 'final', undefined, event.data.reason.kind);
+            }
+        }
+    }
+    handleAssistantStream(agent, frame) {
+        const runId = frame.type === 'start'
+            ? this.runIdByTurn.get(turnKey(agent.id, frame.turn))
+            : this.activeRunBySessionId.get(String(agent.id));
+        const run = runId ? this.runs.get(runId) : undefined;
+        if (!run || run.terminal)
+            return;
+        if (frame.type === 'start') {
+            run.liveAttempt = { attemptId: String(frame.attemptId), revision: frame.revision, step: frame.step, text: '' };
+        }
+        else {
+            const attempt = run.liveAttempt;
+            if (!attempt || attempt.attemptId !== String(frame.attemptId) || attempt.revision !== frame.revision)
+                return;
+            if (frame.type === 'chunk' && frame.chunk.type === 'text-delta')
+                attempt.text += frame.chunk.text;
+            else if (frame.type === 'end')
+                delete run.liveAttempt;
+        }
+    }
+    appendDelta(run, step, text) {
+        run.text += text;
+        run.stepText.set(step, `${run.stepText.get(step) ?? ''}${text}`);
+        this.client.sendEvent('chat', {
+            runId: run.runId,
+            sessionId: run.bcsSessionId,
+            ts: Date.now(),
+            state: 'delta',
+            content: text,
+        });
+    }
+    captureAssistantMessage(run, step, content, usage) {
+        if (usage) {
+            run.usage.input += usage.inputTokens + (usage.cacheReadTokens ?? 0) + (usage.cacheWriteTokens ?? 0);
+            run.usage.output += usage.outputTokens;
+        }
+        const assembled = visibleText(content);
+        const streamed = run.stepText.get(step) ?? '';
+        if (!assembled || assembled === streamed)
+            return;
+        if (assembled.startsWith(streamed)) {
+            this.appendDelta(run, step, assembled.slice(streamed.length));
+        }
+        else if (!streamed) {
+            this.appendDelta(run, step, assembled);
+        }
+    }
+    captureToolCall(run, callId, name, rawArguments) {
+        if (run.toolStarts.has(callId))
+            return;
+        run.toolNames.set(callId, name);
+        let args = rawArguments;
+        try {
+            args = JSON.parse(rawArguments);
+        }
+        catch {
+            // Preserve the provider's raw argument string when it is not complete JSON.
+        }
+        run.toolArguments.set(callId, args);
+        this.client.sendEvent('agent', {
+            runId: run.runId,
+            sessionId: run.bcsSessionId,
+            stream: 'tool',
+            ts: Date.now(),
+            phase: 'start',
+            toolCallId: callId,
+            name,
+            args,
+        });
+        run.toolStarts.add(callId);
+        const pending = run.pendingToolResults.get(callId);
+        if (pending) {
+            this.sendToolResult(run, pending);
+            run.pendingToolResults.delete(callId);
+        }
+    }
+    captureToolResult(run, result) {
+        if (run.toolResults.has(result.callId))
+            return;
+        if (!run.toolNames.has(result.callId)) {
+            run.pendingToolResults.set(result.callId, result);
+            return;
+        }
+        this.sendToolResult(run, result);
+    }
+    sendToolResult(run, result) {
+        if (run.toolResults.has(result.callId))
+            return;
+        const name = run.toolNames.get(result.callId);
+        if (!name)
+            return;
+        this.client.sendEvent('agent', {
+            runId: run.runId,
+            sessionId: run.bcsSessionId,
+            stream: 'tool',
+            ts: Date.now(),
+            phase: 'result',
+            toolCallId: result.callId,
+            name,
+            result: { content: result.content },
+            isError: result.isError,
+        });
+        run.toolResults.add(result.callId);
+    }
+    sendTerminal(run, state, errorCode, stopReason) {
+        if (run.terminal)
+            return;
+        this.interactions.cancelRun(run.runId);
+        if (state === 'aborted' && run.liveAttempt?.text) {
+            this.captureAssistantMessage(run, run.liveAttempt.step, [{ type: 'text', text: run.liveAttempt.text }], undefined);
+        }
+        delete run.liveAttempt;
+        if (run.pendingToolResults.size)
+            this.log?.warn('BCN run ended with unmatched tool results; no fabricated tool identity was emitted');
+        run.pendingToolResults.clear();
+        const payload = {
+            runId: run.runId,
+            sessionId: run.bcsSessionId,
+            ts: Date.now(),
+            state,
+        };
+        if (run.text)
+            payload.content = run.text;
+        if (state === 'final') {
+            if (run.text)
+                payload.content = run.text;
+            if (run.usage.input || run.usage.output)
+                payload.usage = run.usage;
+            if (stopReason)
+                payload.stopReason = stopReason;
+            if (run.route)
+                payload.routing = routeWire(run.route);
+        }
+        else if (state === 'error') {
+            payload.errorMessage = 'DeepSeek Harness run failed';
+            payload.errorKind = 'dsh_turn';
+            payload.errorCode = errorCode ?? 'UNKNOWN';
+        }
+        else {
+            payload.stopReason = 'aborted';
+        }
+        this.client.sendEvent('chat', payload);
+        run.terminal = true;
+        if (this.activeRunBySessionId.get(String(run.sessionId)) === run.runId) {
+            this.activeRunBySessionId.delete(String(run.sessionId));
+        }
+        if (run.messageId)
+            this.runIdByMessageId.delete(String(run.messageId));
+        if (run.turn !== undefined)
+            this.runIdByTurn.delete(turnKey(run.sessionId, run.turn));
+        run.text = '';
+        run.stepText.clear();
+        run.toolArguments.clear();
+        run.toolNames.clear();
+        run.toolStarts.clear();
+        run.toolResults.clear();
+        delete run.route;
+        this.completedRunIds.push(run.runId);
+        while (this.completedRunIds.length > 2_000) {
+            const oldest = this.completedRunIds.shift();
+            if (oldest)
+                this.runs.delete(oldest);
+        }
+    }
+    async getOrCreateAgent(sessionIdentity, toolProfile) {
+        const existing = this.managedAgents.get(sessionIdentity);
+        if (existing) {
+            const managed = await existing;
+            if (managed.toolProfile !== toolProfile) {
+                throw new Error('BCN session coordination role changed after its DSH agent was created');
+            }
+            return managed;
+        }
+        const pending = this.createAgent(sessionIdentity, toolProfile).catch(error => {
+            this.managedAgents.delete(sessionIdentity);
+            throw error;
+        });
+        this.managedAgents.set(sessionIdentity, pending);
+        return pending;
+    }
+    async createAgent(sessionIdentity, toolProfile) {
+        const sessionId = dshSessionIdForV2(sessionIdentity);
+        if (this.ctx.agents.get(sessionId)) {
+            throw new Error('A non-BCN DSH agent already owns the derived BCN session id');
+        }
+        const persistedHeader = await this.ctx.sessionPersistence.stat(sessionId);
+        const cwd = process.cwd();
+        const bcnCtx = this.ctx;
+        const defaultSelection = bcnCtx.agentDefaultModel.currentSelection();
+        let recordedPreset;
+        if (persistedHeader) {
+            const reader = await this.ctx.sessionPersistence.open(sessionId, 'read');
+            try {
+                recordedPreset = presetForInspection({ meta: reader.header, events: (await reader.read()).events });
+            }
+            finally {
+                await reader.close();
+            }
+        }
+        const presetId = (await bcnCtx.agentPresets.resolve(recordedPreset)).id;
+        const setup = async (agentCtx, agent) => {
+            agentCtx.on('agent/inbox/claimed', payload => this.handleInboxClaimed(payload));
+            agentCtx.on('agent/inbox/discarded', payload => this.handleInboxDiscarded(payload));
+            agentCtx.on('session/event', (session, event) => this.handleSessionEvent(session, event));
+            agentCtx.on('agent/assistant-stream', ({ agent: owner, frame }) => this.handleAssistantStream(owner, frame));
+            installModelSelection(agentCtx, {
+                current: selectionForSession(agent, defaultSelection),
+                assembled: undefined,
+            });
+            agentCtx.systemPrompt.variable('cwd', () => agent.session.header.cwd ?? cwd);
+            await bcnCtx.agentPresets.mount(agentCtx, presetId);
+            this.interactions.mount(agentCtx, agent);
+            if (toolProfile === 'route') {
+                agentCtx.tools.register(createBcsRouteTool(this));
+            }
+            else if (toolProfile === 'manager') {
+                agentCtx.tools.register(createBcsAssignTaskTool(this));
+                agentCtx.tools.register(createBcsTaskCompleteTool(this));
+            }
+            else if (toolProfile === 'worker') {
+                agentCtx.tools.register(createBcsSendTaskMessageTool(this));
+            }
+        };
+        const agentOptions = {
+            provider: defaultSelection.provider,
+            model: defaultSelection.model,
+            ...(defaultSelection.reasoningEffort ? { reasoningEffort: defaultSelection.reasoningEffort } : {}),
+        };
+        const handle = persistedHeader
+            ? await this.ctx.agents.resume({ resumeSessionId: sessionId, agentOptions, setup })
+            : await this.ctx.agents.create({
+                sessionId,
+                meta: { cwd, agentPreset: presetId },
+                agentOptions,
+                setup,
+            });
+        const managed = { sessionIdentity, sessionId, agent: handle.agent, handle, toolProfile };
+        if (this.disposed) {
+            await handle.dispose();
+            throw new Error('BCN plugin was disposed during agent creation');
+        }
+        this.ownedAgents.add(handle);
+        this.sessionIdentityBySessionId.set(String(sessionId), sessionIdentity);
+        return managed;
+    }
+    activeRunForTaskTool(agent, requiredProfile) {
+        if (!agent)
+            return undefined;
+        const runId = this.activeRunBySessionId.get(String(agent.id));
+        const run = runId ? this.runs.get(runId) : undefined;
+        return run && !run.terminal && run.toolProfile === requiredProfile ? run : undefined;
+    }
+    async sendTaskRequest(method, params, signal) {
+        if (!this.client.connected) {
+            return {
+                type: 'res',
+                id: 'local-not-connected',
+                ok: false,
+                error: {
+                    code: 'BCN_NOT_CONNECTED',
+                    message: 'BCN WebSocket is not connected.',
+                    retryable: true,
+                },
+            };
+        }
+        try {
+            return await this.client.sendRequest(method, params, 30_000, signal);
+        }
+        catch {
+            return {
+                type: 'res',
+                id: 'local-request-failed',
+                ok: false,
+                error: {
+                    code: 'BCN_REQUEST_FAILED',
+                    message: 'BCN task request failed.',
+                    retryable: true,
+                },
+            };
+        }
+    }
+}
+function presetForInspection(inspection) {
+    for (let index = inspection.events.length - 1; index >= 0; index -= 1) {
+        const event = asRecord(inspection.events[index]);
+        if (event?.type !== 'agent-preset/selected')
+            continue;
+        const selected = asNonEmptyString(asRecord(event.data)?.agentPreset);
+        if (selected)
+            return selected;
+    }
+    return inspection.meta.agentPreset;
+}
+function selectionForSession(agent, fallback) {
+    const recorded = agent?.session.requestHeader()?.config;
+    if (!recorded)
+        return fallback;
+    return {
+        provider: recorded.provider,
+        model: recorded.model,
+        ...(recorded.reasoningEffort ? { reasoningEffort: recorded.reasoningEffort } : {}),
+    };
+}
+function resolveToolProfile(sessionContext) {
+    const groupType = asNonEmptyString(sessionContext.group_type);
+    if (groupType === 'manager_worker') {
+        // COSEC: task-tool authority comes only from the authenticated BCN
+        // downlink context. Missing or unknown roles fail closed.
+        const recipientRole = asNonEmptyString(sessionContext.recipient_role);
+        if (recipientRole === 'manager')
+            return 'manager';
+        if (recipientRole === 'worker')
+            return 'worker';
+        return 'none';
+    }
+    return asNonEmptyString(sessionContext.routing_mode) === 'mention' ? 'none' : 'route';
+}
+function formatInboundMessage(params) {
+    const text = extractMessageText(params.message);
+    const metadata = {
+        protocol_version: 3,
+        bcs_group_id: params.bcs_group_id,
+        ...(params.bcs_session_id ? { bcs_session_id: params.bcs_session_id } : {}),
+        channel: params.channel,
+        group_context: params.session_context,
+        ...(params.tags?.length ? { tags: params.tags } : {}),
+        ...(params.attachments?.length ? { attachments: params.attachments } : {}),
+    };
+    return `<bcn_context>\n${JSON.stringify(metadata)}\n</bcn_context>\n\n${text}`;
+}
+function visibleText(content) {
+    return content.flatMap(block => block.type === 'text' ? [block.text] : []).join('');
+}
+function turnKey(sessionId, turn) {
+    return `${String(sessionId)}:${turn}`;
+}
+function invalidRequest(error) {
+    return {
+        code: 'INVALID_REQUEST',
+        message: error instanceof Error ? error.message : 'Invalid BCN request',
+        retryable: false,
+    };
+}
+function safeErrorCode(value) {
+    const code = asNonEmptyString(value);
+    return code && /^[A-Za-z0-9_.-]{1,80}$/.test(code) ? code : 'UNKNOWN';
+}
+function taskToolUnavailable() {
+    return {
+        ok: false,
+        error: 'TOOL_NOT_ALLOWED',
+        message: 'This BCN task tool is not available for the active session role.',
+    };
+}
+function taskToolInvalid(message) {
+    return { ok: false, error: 'INVALID_PARAMS', message };
+}
+function taskToolInvalidResponse(method) {
+    return {
+        ok: false,
+        error: 'INVALID_RESPONSE',
+        message: `BCN returned an invalid ${method} response.`,
+    };
+}
+function taskRequestFailure(response, fallbackCode) {
+    return {
+        ok: false,
+        error: response.error?.code ?? fallbackCode,
+        message: response.error?.message ?? 'BCN rejected the task request.',
+    };
+}
+function normalizeResolvedRouteTargets(value) {
+    if (!Array.isArray(value))
+        return [];
+    const targets = [];
+    for (const item of value) {
+        const record = asRecord(item);
+        const target = asNonEmptyString(record?.value);
+        if (record?.type === 'bot' && target)
+            targets.push({ type: 'bot', value: target });
+    }
+    return targets;
+}
+function normalizeRouteCandidates(value) {
+    if (!Array.isArray(value))
+        return {};
+    const candidates = [];
+    for (const item of value) {
+        const record = asRecord(item);
+        const botUuid = asNonEmptyString(record?.bot_uuid);
+        if (!botUuid)
+            continue;
+        const botName = asNonEmptyString(record?.bot_name);
+        const role = asNonEmptyString(record?.role);
+        candidates.push({
+            bot_uuid: botUuid,
+            ...(botName ? { bot_name: botName } : {}),
+            ...(role ? { role } : {}),
+        });
+    }
+    return candidates.length ? { candidates } : {};
+}
+function mergeRouteIntent(existing, incoming) {
+    if (!existing)
+        return incoming;
+    const keys = new Set(existing.responders.map(item => `${item.type}:${item.value ?? ''}`));
+    for (const responder of incoming.responders) {
+        if (existing.responders.length >= 20)
+            break;
+        const key = `${responder.type}:${responder.value ?? ''}`;
+        if (!keys.has(key))
+            existing.responders.push(responder);
+        keys.add(key);
+    }
+    existing.reason = `${existing.reason}; ${incoming.reason}`.slice(0, 500);
+    return existing;
+}
+function routeWire(intent) {
+    return {
+        responders: intent.responders,
+        mode: intent.mode,
+        reason: intent.reason,
+        include_self: intent.includeSelf,
+        ...(intent.dedupeKey ? { dedupe_key: intent.dedupeKey } : {}),
+    };
+}
+//# sourceMappingURL=bridge.js.map

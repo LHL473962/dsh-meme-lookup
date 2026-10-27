@@ -1,0 +1,1 @@
+{"version":3,"file":"session-activity.d.ts","sourceRoot":"","sources":["../../../../src/dsh-adapter/channel/session-activity.ts"],"names":[],"mappings":"AAgBA,OAAO,KAAK,EAAE,WAAW,EAAE,MAAM,mBAAmB,CAAA;AACpD,OAAO,KAAK,EAAE,oBAAoB,EAAE,MAAM,YAAY,CAAA;AAEtD;;;;GAIG;AACH,wBAAgB,4BAA4B,CAC1C,IAAI,EAAE,WAAW,EACjB,OAAO,EAAE,IAAI,CAAC,oBAAoB,EAAE,iBAAiB,GAAG,eAAe,CAAC,GACvE,IAAI,CAkBN"}

@@ -1,0 +1,34 @@
+/**
+ * P1 incremental bridge from the legacy adapter services to the new
+ * HostFacade.
+ *
+ * This bridge exposes only the read-only Host Descriptor snapshot; it is not
+ * a full kernel runtime. It does NOT
+ * expose admission, grants, or ledger writes: those are sensitive Kernel /
+ * Standard internal services and must not be callable through the Host Port /
+ * HostFacade surface (especially in passive shadow).
+ *
+ * `facadeFromLegacy` is a retained long-term compatibility fallback for
+ * bare/test compositions and is explicitly outside the P6 removal scope.
+ * OWNER: dsh-tui adapter. UNTIL: no scheduled removal.
+ */
+import { createHostFacade } from './host-facade.js';
+export function facadeFromLegacy(services) {
+    const descriptor = Object.freeze({
+        get generationId() {
+            return services.generationId;
+        },
+        snapshot() {
+            const build = services.describe();
+            return Object.freeze({
+                hostId: build.descriptor.hostId,
+                hostVersion: build.descriptor.hostVersion,
+                generationId: build.descriptor.runtime.generationId,
+                contracts: Object.freeze(build.descriptor.contracts.map(contract => `${contract.apiVersion}#${contract.kind}`)),
+                dropped: Object.freeze([...build.dropped]),
+                warnings: Object.freeze([...build.warnings]),
+            });
+        },
+    });
+    return createHostFacade({ descriptor });
+}

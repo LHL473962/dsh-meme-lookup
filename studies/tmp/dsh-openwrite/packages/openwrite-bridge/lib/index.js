@@ -1,0 +1,91 @@
+/**
+ * `@dsh-novel/openwrite-bridge`: a dsh plugin registering `novel_*` tools that
+ * call the local OpenWrite Studio HTTP action surface. dsh owns agent
+ * orchestration; OpenWrite owns the novel domain logic; this package is a thin
+ * bridge over the HTTP contract only.
+ */
+import { tmpdir, homedir } from 'node:os';
+import { fileURLToPath } from 'node:url';
+import { ManagedRuntime } from './managed-runtime.js';
+import { join } from 'node:path';
+import Schema from '@deepseek-ai/schemastery';
+import { NovelDomainService } from './domain.js';
+export const name = '@dsh-novel/openwrite-bridge';
+export const inject = [];
+export const Config = Schema.object({
+    mode: Schema.union(['managed', 'external']),
+    runtimeRoot: Schema.string(),
+    artifacts: Schema.string(),
+    baseUrl: Schema.string().default('http://127.0.0.1:4567'),
+    authToken: Schema.string().role('secret'),
+    timeoutMs: Schema.number().default(600000),
+    outputDir: Schema.string().default(join(tmpdir(), 'openwrite-exports')),
+});
+export function apply(ctx, config) {
+    // The web host process mounts ctx.workspaceRegistry. Resolve it lazily on
+    // every call: plugin start order must not strand the lookup, an absent
+    // registry (null) fails closed in the domain, and ctx.inject(['webServer',
+    // ...]) would silently never fire if we inject-required a second service.
+    const resolveWorkspace = (workspaceId) => {
+        const registry = ctx.get('workspaceRegistry');
+        if (registry === undefined)
+            return null;
+        return registry.get(workspaceId)?.path;
+    };
+    // A supplied legacy baseUrl remains external; the standard bundle selects managed explicitly.
+    const runtime = config.mode === 'managed' ? new ManagedRuntime(config.runtimeRoot ?? join(process.env['DSH_HOME']?.trim() || join(homedir(), '.dsh'), 'openwrite'), config.artifacts ?? fileURLToPath(new URL('../../../release/', import.meta.url))) : undefined;
+    const authorizeRequest = (headers) => {
+        const connection = ctx.get('connection');
+        return connection ? connection.requestRejection({ headers }) : 503;
+    };
+    const domain = new NovelDomainService(ctx, { authorizeRequest, baseUrl: config.baseUrl, timeoutMs: config.timeoutMs, outputDir: config.outputDir, resolveWorkspace,
+        ...(runtime ? { connect: () => runtime.ensure() }
+            : config.authToken ? { connect: async () => ({ baseUrl: config.baseUrl, token: config.authToken }) } : {}),
+    });
+    ctx.effect(() => () => runtime?.dispose(), 'openwrite: owned runtime cleanup');
+    ctx.inject(['webServer'], webCtx => webCtx.effect(() => webCtx.webServer.register({
+        kind: 'exact', path: '/studio-panel/runtime', handler: async (req, res) => {
+            const respond = (code, data) => { res.writeHead(code, { 'content-type': 'application/json', 'cache-control': 'no-store' }); res.end(JSON.stringify(data)); };
+            const rejection = authorizeRequest(req.headers);
+            if (rejection !== undefined) {
+                respond(rejection, { error: 'dsh browser authentication required', message: 'dsh browser authentication required', code: 'AUTHENTICATION_REQUIRED' });
+                return;
+            }
+            if (req.method === 'GET') {
+                respond(200, runtime?.status() ?? { phase: 'ready', message: 'Using an external writing environment' });
+                return;
+            }
+            if (req.method !== 'POST' || req.headers['x-openwrite-studio'] !== '1') {
+                respond(405, { error: 'Method not allowed', message: 'Method not allowed', code: 'METHOD_NOT_ALLOWED' });
+                return;
+            }
+            const chunks = [];
+            let size = 0;
+            for await (const chunk of req) {
+                size += chunk.length;
+                if (size > 1024) {
+                    respond(413, { error: 'Request too large', message: 'Request too large', code: 'REQUEST_TOO_LARGE' });
+                    return;
+                }
+                ;
+                chunks.push(Buffer.from(chunk));
+            }
+            try {
+                const action = JSON.parse(Buffer.concat(chunks).toString()).action;
+                if (action === 'cancel')
+                    await runtime?.cancel();
+                else if (action === 'prepare' || action === 'retry')
+                    void runtime?.ensure().catch(() => { });
+                else {
+                    respond(400, { error: 'Unknown action', message: 'Unknown action', code: 'INVALID_ACTION' });
+                    return;
+                }
+                respond(202, runtime?.status() ?? { phase: 'ready' });
+            }
+            catch {
+                respond(400, { error: 'Invalid request', message: 'Invalid request', code: 'INVALID_INPUT' });
+            }
+        },
+    }), 'openwrite: runtime controls'));
+    ctx.inject(['webServer'], webCtx => domain.registerWebRoutes(webCtx));
+}

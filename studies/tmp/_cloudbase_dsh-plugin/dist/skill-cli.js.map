@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/server/skill-cli.ts"],
+  "sourcesContent": ["const message = [\n  \"cloudbase-skills \u2014 the CloudBase skill is registered by @cloudbase/dsh-plugin.\",\n  \"It is read from the package and is not copied into ~/.dsh/skills/.\",\n  \"\",\n].join(\"\\n\");\n\nprocess.stdout.write(`${message}\\n`);\n"],
+  "mappings": ";;;AAAA,IAAM,UAAU;AAAA,EACd;AAAA,EACA;AAAA,EACA;AACF,EAAE,KAAK,IAAI;AAEX,QAAQ,OAAO,MAAM,GAAG,OAAO;AAAA,CAAI;",
+  "names": []
+}

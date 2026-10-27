@@ -1,0 +1,1 @@
+{"version":3,"file":"urlGuard.d.ts","sourceRoot":"","sources":["../../../src/utils/urlGuard.ts"],"names":[],"mappings":"AAEA;;;;;;;;;GASG;AACH,MAAM,MAAM,wBAAwB,GAChC;IAAE,IAAI,EAAE,cAAc,CAAC;IAAC,IAAI,EAAE,MAAM,CAAA;CAAE,GACtC;IAAE,IAAI,EAAE,UAAU,CAAA;CAAE,GACpB;IAAE,IAAI,EAAE,UAAU,CAAA;CAAE,CAAA;AAIxB;;;;;;;GAOG;AACH,wBAAgB,kBAAkB,CAAC,GAAG,EAAE,MAAM,GAAG,wBAAwB,CAOxE"}

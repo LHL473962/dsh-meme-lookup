@@ -1,0 +1,153 @@
+import { setMinimalUiMode } from '../../minimalUiMode.js';
+import { normalizeSplashFont } from '../../components/splashFonts.js';
+import { normalizeBrandSetting } from '../../branding.js';
+import { normalizeJobGroupFold, normalizePageMargin, normalizeScrollGutter, normalizeStatusBar, normalizeToolBackground } from '../../tuiDisplayPrefs.js';
+/** The single minimal-UI write path: module store + channel field + one
+ *  revision. `setMinimalUi` and its deprecated `setMinimal` alias share it. */
+function applyMinimalUi(getState, enabled) {
+    const state = getState();
+    setMinimalUiMode(enabled);
+    if (enabled === state.minimalUi)
+        return;
+    state.minimalUi = enabled;
+    state.emit();
+}
+export function createPreferences(getState) {
+    return {
+        setDiffLayout(layout) {
+            const state = getState();
+            if (layout === state.diffLayout)
+                return;
+            state.diffLayout = layout;
+            state.emit();
+        },
+        setThinkingFold(mode) {
+            const state = getState();
+            if (mode === state.thinkingFold)
+                return;
+            state.thinkingFold = mode;
+            state.emit();
+        },
+        setJobGroupFold(mode) {
+            const state = getState();
+            const normalized = normalizeJobGroupFold(mode);
+            if (normalized === state.jobGroupFold)
+                return;
+            state.jobGroupFold = normalized;
+            state.emit();
+        },
+        setToolBackground(background) {
+            const state = getState();
+            const normalized = normalizeToolBackground(background);
+            if (normalized === state.toolBackground)
+                return;
+            state.toolBackground = normalized;
+            state.emit();
+        },
+        setScrollGutter(mode) {
+            const state = getState();
+            const normalized = normalizeScrollGutter(mode);
+            if (normalized === state.scrollGutter)
+                return;
+            state.scrollGutter = normalized;
+            state.emit();
+        },
+        setPageMargin(setting) {
+            const state = getState();
+            const normalized = normalizePageMargin(setting);
+            if (normalized === state.pageMargin)
+                return;
+            state.pageMargin = normalized;
+            state.emit();
+        },
+        setFoldTerminalCommand(enabled) {
+            const state = getState();
+            if (enabled === state.foldTerminalCommand)
+                return;
+            state.foldTerminalCommand = enabled;
+            state.emit();
+        },
+        setTurnUsageRow(enabled) {
+            const state = getState();
+            if (enabled === state.turnUsageRow)
+                return;
+            state.turnUsageRow = enabled;
+            state.emit();
+        },
+        setPromptSessionLabel(enabled) {
+            const state = getState();
+            if (enabled === state.promptSessionLabel)
+                return;
+            state.promptSessionLabel = enabled;
+            state.emit();
+        },
+        setExpandEditor(enabled) {
+            const state = getState();
+            if (enabled === state.expandEditor)
+                return;
+            state.expandEditor = enabled;
+            state.emit();
+        },
+        setSmoothStreaming(enabled) {
+            const state = getState();
+            if (enabled === state.smoothStreaming)
+                return;
+            state.smoothStreaming = enabled;
+            state.emit();
+        },
+        setStatusBar(config) {
+            const state = getState();
+            const next = normalizeStatusBar({ ...state.statusBar, ...config });
+            const changed = Object.keys(next).some(key => next[key] !== state.statusBar[key]);
+            if (!changed)
+                return;
+            state.statusBar = next;
+            state.emit();
+        },
+        setWhale(visible) {
+            const state = getState();
+            if (visible === state.whale)
+                return;
+            state.whale = visible;
+            state.emit();
+        },
+        setWhaleIdle(enabled) {
+            const state = getState();
+            if (enabled === state.whaleIdle)
+                return;
+            state.whaleIdle = enabled;
+            state.emit();
+        },
+        setSplashFont(setting) {
+            const state = getState();
+            const normalized = normalizeSplashFont(setting);
+            if (normalized === state.splashFont)
+                return;
+            state.splashFont = normalized;
+            state.emit();
+        },
+        setBrand(setting) {
+            const state = getState();
+            const normalized = normalizeBrandSetting(setting);
+            if (normalized === state.brand)
+                return;
+            state.brand = normalized;
+            state.emit();
+        },
+        setWhaleGirl(enabled) {
+            const state = getState();
+            if (enabled === state.whaleGirl)
+                return;
+            state.whaleGirl = enabled;
+            state.emit();
+        },
+        setMinimalUi(enabled) {
+            applyMinimalUi(getState, enabled);
+        },
+        /** @deprecated Pre-rename alias of setMinimalUi (kept for plugin scenes
+         *  and older embedders that call `channel.setMinimal()`). */
+        setMinimal(enabled) {
+            applyMinimalUi(getState, enabled);
+        }
+    };
+}

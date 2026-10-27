@@ -1,0 +1,1 @@
+{"version":3,"file":"plugins.d.ts","sourceRoot":"","sources":["../../../../src/adapter/channel/plugins.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;GAWG;AAEH,OAAO,KAAK,EAAE,OAAO,EAAE,MAAM,8BAA8B,CAAA;AAE3D,OAAO,KAAK,EACV,sBAAsB,EAEvB,MAAM,qBAAqB,CAAA;AA+B5B,2EAA2E;AAC3E,wBAAgB,oBAAoB,CAAC,OAAO,EAAE,OAAO,EAAE,KAAK,EAAE,MAAM,GAAG,sBAAsB,CAa5F"}

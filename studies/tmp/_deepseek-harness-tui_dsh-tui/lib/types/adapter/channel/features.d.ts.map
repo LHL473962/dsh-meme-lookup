@@ -1,0 +1,1 @@
+{"version":3,"file":"features.d.ts","sourceRoot":"","sources":["../../../../src/adapter/channel/features.ts"],"names":[],"mappings":"AAAA;;;;;;;GAOG;AAEH,eAAO,MAAM,gCAAgC,EAAE,QAAQ,CAAC,MAAM,CAAC,MAAM,EAAE,QAAQ,CAAC,MAAM,CAAC,MAAM,EAAE,MAAM,CAAC,CAAC,CAAC,CA6BtG,CAAA;AAEF,eAAO,MAAM,gBAAgB,EAAE,SAAS,MAAM,EAK7C,CAAA;AAED,eAAO,MAAM,6BAA6B,EAAE,SAAS,MAAM,EAAqB,CAAA"}

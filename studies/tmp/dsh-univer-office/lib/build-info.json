@@ -1,0 +1,5 @@
+{
+  "commit": "8f85ce4074fdbe51416b6c337468bb916a302c2a",
+  "telemetryEndpoint": "https://univer.ai/api/telemetry/cli",
+  "version": "0.3.7"
+}

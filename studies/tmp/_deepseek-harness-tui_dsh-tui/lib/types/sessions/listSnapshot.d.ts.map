@@ -1,0 +1,1 @@
+{"version":3,"file":"listSnapshot.d.ts","sourceRoot":"","sources":["../../../src/sessions/listSnapshot.ts"],"names":[],"mappings":"AAKA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,qCAAqC,CAAA;AAiCzE,6EAA6E;AAC7E,wBAAgB,mBAAmB,CAAC,GAAG,EAAE,MAAM,GAAG,SAAS,cAAc,EAAE,GAAG,SAAS,CAEtF;AAED,qFAAqF;AACrF,wBAAgB,oBAAoB,CAAC,GAAG,EAAE,MAAM,GAAG,CAAC,IAAI,EAAE,SAAS,cAAc,EAAE,KAAK,IAAI,CAe3F"}

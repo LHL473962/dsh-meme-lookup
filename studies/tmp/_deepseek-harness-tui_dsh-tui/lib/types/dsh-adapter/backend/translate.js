@@ -1,0 +1,540 @@
+import { NO_EVENTS } from '../../agent/events.js';
+import { isPeakHour } from '../../deepseekPricing.js';
+import { BACKGROUND_START_ACK, isSubagentToolName, parseJobOutputId, todoPanelItems, toolCommandOf } from '../channel/projection-helpers.js';
+import { harnessToolResultView, prepareReplayEvents, toolErrorText } from '../channel/transcript.js';
+import { isCompactionCheckpointSource, toolResultPayload } from '../compat/messages.js';
+import { transcriptImagesOf } from '../transcript-images.js';
+import { isTeamToolName, TEAM_SPAWN_TOOL, teamMessageOf, teamToolCallView, teamToolResultView } from '../team-tools.js';
+import { refineSessionSearchTitle } from '../session-tools.js';
+import { teamMailboxAsRelay, withoutTeammateReminder } from '../compat/agent-team-0.2.0.js';
+/**
+ * DeepSeek's rate windows, injected into the shared projector as its
+ * `pricingWindow`: each usage buckets by the time its request ran.
+ */
+export function dshPricingWindow(time) {
+    return isPeakHour(new Date(time)) ? 'peak' : 'idle';
+}
+/**
+ * The DSH backend's decision for every Agent Domain event type: whether this
+ * translator (or its session, for the bus-derived `session.status`,
+ * `pending.changed` and `compaction.progress`) ever emits it. The exhaustive
+ * switch is the point: a new `AgentEvent` variant fails `tsc` here until the
+ * DSH side decides, and `verify:agent-domain` checks every translated fixture
+ * event against it.
+ */
+export function dshEmits(type) {
+    switch (type) {
+        case 'session.title':
+        case 'session.color':
+        case 'session.cwd':
+        case 'session.status':
+        case 'turn.start':
+        case 'turn.end':
+        case 'step.start':
+        case 'step.end':
+        case 'user.message':
+        case 'pending.changed':
+        case 'assistant.attempt.start':
+        case 'assistant.delta':
+        case 'assistant.attempt.end':
+        case 'assistant.message':
+        case 'tool.call':
+        case 'tool.result':
+        case 'task.start':
+        case 'task.output':
+        case 'compaction.start':
+        case 'compaction.progress':
+        case 'compaction.end':
+        case 'context.capacity':
+        case 'goal.change':
+        case 'todo.write':
+        case 'preset.selected':
+        case 'system.prompt':
+        case 'request.header':
+        case 'custom':
+            return true;
+        // Owned elsewhere on DSH (subagent/job extensions, approval and question
+        // stores, model/mode actions) or not a DSH concept. Agent-to-agent relay
+        // messages are folded by the adapter's subagent projection straight from
+        // the durable session events, so the translator emits none.
+        case 'agent.message':
+        case 'session.ready':
+        case 'session.reset':
+        case 'tool.progress':
+        // Optional, unused: DSH tool output reaches the card through the
+        // settled result (and background jobs through task.output).
+        case 'tool.output':
+        case 'permission.request':
+        case 'permission.settled':
+        case 'question.request':
+        case 'question.settled':
+        case 'subagent.start':
+        case 'subagent.progress':
+        case 'subagent.end':
+        case 'task.update':
+        case 'task.end':
+        case 'tasks.snapshot':
+        case 'usage':
+        case 'context.usage':
+        case 'model.changed':
+        case 'effort.changed':
+        case 'mode.changed':
+        case 'commands.changed':
+        case 'notice':
+        case 'rate-limit':
+            return false;
+        default: {
+            // Exhaustiveness: a new AgentEvent variant must be classified above.
+            const unhandled = type;
+            return unhandled;
+        }
+    }
+}
+/** Official presets recorded under a former name (blank-session preset
+ *  markers show the user's current spelling, issue #8). A Map, not an object
+ *  literal: the key is untrusted log data, and a plain-object lookup would
+ *  resolve `constructor`/`toString`/… through `Object.prototype`. */
+const PRESET_ALIASES = new Map([
+    ['code', ['ptc']],
+    ['ptc', ['code']],
+]);
+const QUESTION = { card: 'question' };
+const SUBAGENT = { card: 'subagent' };
+const OTHER_DELTA = { kind: 'other' };
+// ContentBlockMap is merge-extensible: plugin-added block types are silently
+// skipped (v1 renders text blocks only) — never crashes.
+const textOf = (content) => (content ?? []).map(block => (block.type === 'text' ? block.text : '')).join('').trim();
+/**
+ * Transcript-facing text of a user message: the first text block only.
+ * `@`-mention attachments (issue #15) travel as later, model-facing blocks,
+ * so joining every block would dump file contents into the bubble, the
+ * sticky header and session titles.
+ */
+const firstTextOf = (content) => (content ?? []).find(block => block.type === 'text')?.text.trim() ?? '';
+const goalChange = (change) => ({
+    type: 'goal.change',
+    operation: change.operation,
+    goal: change.goal,
+    roundsStarted: change.roundsStarted,
+});
+const usageDelta = (usage) => usage === undefined
+    ? undefined
+    : { input: usage.inputTokens, output: usage.outputTokens, cacheRead: usage.cacheReadTokens, cacheWrite: usage.cacheWriteTokens };
+/** DSH turn-close reasons; the ones without a shared name keep their label. */
+const turnEndReason = (reason) => {
+    switch (reason.kind) {
+        case 'completed':
+        case 'aborted':
+        case 'interrupted':
+        case 'blocked':
+            return { kind: reason.kind };
+        case 'error':
+            return { kind: 'error', message: reason.error.message };
+        default:
+            return { kind: 'other', label: reason.kind };
+    }
+};
+/** One stream chunk as a domain delta; non-content records stay `other`. */
+const deltaOf = (chunk) => {
+    switch (chunk.type) {
+        case 'text-delta':
+            return { kind: 'text', text: chunk.text };
+        case 'reasoning-delta':
+            return { kind: 'reasoning', text: chunk.text };
+        case 'tool-call-delta':
+            return { kind: 'tool-args', callId: chunk.id, partialJson: chunk.argumentsDelta, name: chunk.name };
+        default:
+            return OTHER_DELTA;
+    }
+};
+/** Create one translator; it serves exactly one session's event stream. */
+export function createDshTranslator(deps) {
+    /** Frame revisions are monotone within one attached Agent lifecycle; a
+     *  re-delivered or out-of-order frame is dropped here. */
+    let lastStreamRevision = -1;
+    /** Whether this session's first human prompt has been translated. */
+    let promptSeen = false;
+    /**
+     * Open calls by callId until their result: what the result's presenter,
+     * images and task feeds need. `card: false` = question-presented (the
+     * projector projects the record from the result text). Subagent calls are
+     * not tracked: nothing about their result is projected. Bounded like the
+     * projector's own card index: deleted on result, cleared on reset.
+     */
+    const openCalls = new Map();
+    /**
+     * `spawn_teammate` calls that have not written their member yet. The team
+     * refuses a teammate (name taken or invalid, member limit, not the Lead,
+     * service disposing, cancelled) before it appends `team/member`: no roster
+     * row carries that error, so a failed result brings back the plain card.
+     * Once the member is written its failure shows on the roster, and the call
+     * leaves this map. Bounded like `openCalls`.
+     */
+    const unwrittenSpawns = new Map();
+    /** A `team/member` write settles the pending spawn of that name. Two
+     *  parallel spawns of one name cannot be told apart; the first one goes. */
+    const onTeamMember = (data) => {
+        const name = data?.member?.name;
+        if (typeof name !== 'string')
+            return;
+        for (const [callId, call] of unwrittenSpawns) {
+            let args;
+            try {
+                args = JSON.parse(call.argsJson);
+            }
+            catch {
+                continue;
+            }
+            if (args?.name === name) {
+                unwrittenSpawns.delete(callId);
+                return;
+            }
+        }
+    };
+    /** Ask the producing tool how its call should render (diff/terminal/…).
+     *  Unknown tool, unparseable args, or a throwing presenter all degrade to
+     *  the plain text card. */
+    const presentCallView = (name, rawArgs) => {
+        try {
+            const tool = deps.tools()?.get(name, deps.scope());
+            if (tool?.presentCall === undefined)
+                return teamToolCallView(name, rawArgs);
+            // The session-search calls carry a static sentence the card header would
+            // repeat verbatim; put the query back in the header (session-tools.ts).
+            return refineSessionSearchTitle(name, tool.presentCall(JSON.parse(rawArgs)), rawArgs);
+        }
+        catch {
+            return undefined;
+        }
+    };
+    /** Same for the settled result; `meta` is the tool-private presentation
+     *  payload the tool attached to its tool/result event (dsh-tool-fs reads
+     *  its result-time contextual diff back from here). */
+    const presentResultView = (name, rawArgs, data) => {
+        try {
+            // Harness goal/todo tools first: their raw JSON is noise in the
+            // transcript, so known shapes fold into a summary card before the
+            // registry is asked (it may not know these tools).
+            const local = harnessToolResultView(name, data);
+            if (local !== undefined)
+                return local;
+            const tool = deps.tools()?.get(name, deps.scope());
+            if (tool?.presentResult === undefined) {
+                // Only the team tools read the text: skip joining every other result.
+                if (!isTeamToolName(name))
+                    return undefined;
+                const text = toolResultPayload(data.message).content.map(item => (item.type === 'text' ? item.text : '')).join('').trim();
+                return teamToolResultView(name, rawArgs, text);
+            }
+            return tool.presentResult(JSON.parse(rawArgs), {
+                ...toolResultPayload(data.message),
+                ...(data.meta !== undefined ? { meta: data.meta } : {}),
+            });
+        }
+        catch {
+            return undefined;
+        }
+    };
+    const translateUserMessage = (event) => {
+        // compat(dsh 0.2.0, log): a 0.2.0 mailbox delivery reads as the relay it became.
+        const data = teamMailboxAsRelay(event.data);
+        const base = { id: data.id, anchor: String(event.seq), seq: event.seq, time: event.time, blocks: data.content };
+        // Both legacy and V4 checkpoints render as a folded summary rather than
+        // disappearing with the other injected context.
+        if (isCompactionCheckpointSource(data.source)) {
+            return [{ type: 'user.message', ...base, source: 'compaction', text: textOf(data.content) }];
+        }
+        // Same-session goal domain: goal-sourced messages are the round driver's
+        // continuation prompts (positive rounds advance the counter); some hosts
+        // also inline the durable snapshot in a round-zero source. They are not
+        // transcript bubbles — they drive the goal panel's projection (replayed on
+        // resume/rewind like every other event; the snapshot itself arrives as
+        // the top-level `goal/change` event).
+        if (data.source.kind === 'goal') {
+            const source = data.source;
+            if (source.round > 0)
+                return [{ type: 'goal.change', operation: 'round', round: source.round }];
+            const change = source.change;
+            // oxlint-disable-next-line typescript/no-unnecessary-condition -- durable replay data may not match the static type
+            if (change === undefined || change.kind !== 'goal/change')
+                return NO_EVENTS;
+            return [goalChange(change)];
+        }
+        if (data.source.kind === 'model-selection') {
+            return [{ type: 'notice', level: 'info', text: textOf(data.content) }];
+        }
+        // An Agent Teams peer message: a bubble labelled with its sender.
+        const team = teamMessageOf(data.source, data.content);
+        if (team !== undefined) {
+            return [{ type: 'user.message', ...base, blocks: team.blocks, source: 'team-message', sender: team.sender, text: team.text }];
+        }
+        // Injected context (plugin/skill source) is model-facing only; it has no
+        // transcript-facing text.
+        if (data.source.kind !== 'user')
+            return [{ type: 'user.message', ...base, source: 'injected', text: '' }];
+        // compat(dsh 0.2.0, log): a 0.2.0 teammate's first prompt drops its identity block.
+        const content = promptSeen ? data.content : withoutTeammateReminder(data).content;
+        promptSeen = true;
+        return [{
+                type: 'user.message',
+                ...base,
+                blocks: content,
+                source: 'user',
+                text: firstTextOf(content),
+                images: transcriptImagesOf(content, deps.attachments),
+            }];
+    };
+    const translateToolResult = (event) => {
+        const data = event.data;
+        const callId = data.message.source.callId;
+        const call = openCalls.get(callId);
+        openCalls.delete(callId);
+        const spawn = unwrittenSpawns.get(callId);
+        unwrittenSpawns.delete(callId);
+        const payload = toolResultPayload(data.message);
+        const isError = data.error !== undefined || payload.isError;
+        // Text/presentation/images are derived only for results something
+        // projects (a card or a question record).
+        const text = call === undefined || isError ? '' : textOf(payload.content);
+        const card = call?.card === true ? call : undefined;
+        const result = {
+            type: 'tool.result',
+            seq: event.seq,
+            turn: data.turn,
+            step: data.step,
+            callId,
+            isError,
+            time: event.time,
+            content: payload.content,
+            text,
+            ...(isError && (call !== undefined || spawn !== undefined) ? { errorText: toolErrorText(event) } : {}),
+            ...(card === undefined ? {} : { images: transcriptImagesOf(data.message.content, deps.attachments) }),
+            ...(data.meta === undefined ? {} : { meta: data.meta }),
+            ...(card === undefined || isError ? {} : { presentation: presentResultView(card.name, card.args, data) }),
+        };
+        if (spawn !== undefined && isError)
+            return [{ ...spawn, presentation: presentCallView(spawn.name, spawn.argsJson) }, result];
+        if (card === undefined || isError)
+            return [result];
+        const events = [result];
+        // A job_output read doubles as the job card's output feed (the
+        // registry's read is consuming and reserved for the owning agent).
+        if (card.name === 'job_output' && text !== '') {
+            const id = parseJobOutputId(card.args);
+            if (id !== undefined)
+                events.push({ type: 'task.output', taskId: id, text, time: event.time, callId });
+        }
+        // A `started background job <id>` ack pairs the job with its tool call.
+        // Take the full command from the args; the registry label is only the
+        // friendly description.
+        const startAck = BACKGROUND_START_ACK.exec(text);
+        if (startAck !== null) {
+            const command = toolCommandOf(card.args);
+            if (command !== undefined) {
+                events.push({ type: 'task.start', taskId: startAck[1], kind: 'shell', description: '', command, callId, background: true, time: event.time });
+            }
+        }
+        return events;
+    };
+    /** Translate one durable session event (live or as part of a replay). */
+    const translateEvent = (event) => {
+        const type = event.type;
+        // Top-level `goal/change` events are how the goal service records durable
+        // goal mutations (create/edit/pause/resume/complete/block/clear) —
+        // confirmed in production logs. The pinned peer's SessionEvent union
+        // predates the type, so admit it structurally.
+        if (type === 'goal/change')
+            return [goalChange(event.data)];
+        switch (event.type) {
+            case 'user/message':
+                return translateUserMessage(event);
+            case 'step/start':
+                return [{ type: 'step.start', turn: event.data.turn, step: event.data.step }];
+            case 'assistant/attempt':
+                // A durable failed attempt, located by position (it has no stream id).
+                return [{ type: 'assistant.attempt.end', attemptId: `seq:${event.seq}`, outcome: 'abandoned', turn: event.data.turn, step: event.data.step }];
+            case 'assistant/message': {
+                const data = event.data;
+                const content = data.message.content;
+                return [{
+                        type: 'assistant.message',
+                        seq: event.seq,
+                        anchor: String(event.seq),
+                        turn: data.turn,
+                        step: data.step,
+                        attemptId: `seq:${event.seq}`,
+                        time: event.time,
+                        blocks: content,
+                        images: transcriptImagesOf(content, deps.attachments),
+                        usage: usageDelta(data.usage),
+                        ...(data.interrupted === true ? { interrupted: true } : {}),
+                        // V3 embeds its complete attempt stream; older settlements may omit
+                        // reasoning that is still durably recorded in assistant/chunk events.
+                        canonical: Array.isArray(data.stream),
+                    }];
+            }
+            case 'tool/call': {
+                const data = event.data;
+                const callId = data.callId;
+                const base = { type: 'tool.call', seq: event.seq, anchor: String(event.seq), turn: data.turn, step: data.step, callId, name: data.name, argsJson: data.arguments, time: event.time };
+                // ask_user_question renders as the interactive questionnaire panel
+                // (DSH user-interaction seam), not as a tool card.
+                if (data.name === 'ask_user_question') {
+                    openCalls.set(callId, { name: data.name, args: data.arguments, card: false });
+                    return [{ ...base, presentation: QUESTION }];
+                }
+                // The delegation tools render as the live subagent card.
+                if (isSubagentToolName(data.name)) {
+                    if (data.name === TEAM_SPAWN_TOOL)
+                        unwrittenSpawns.set(callId, base);
+                    return [{ ...base, presentation: SUBAGENT }];
+                }
+                openCalls.set(callId, { name: data.name, args: data.arguments, card: true });
+                return [{ ...base, presentation: presentCallView(data.name, data.arguments) }];
+            }
+            case 'tool/result':
+                return translateToolResult(event);
+            case 'step/end':
+                return [{ type: 'step.end', turn: event.data.turn, step: event.data.step }];
+            case 'turn/start':
+                return [{ type: 'turn.start', turn: event.data.turn, origin: 'user', time: event.time }];
+            case 'turn/end':
+                return [{ type: 'turn.end', turn: event.data.turn, reason: turnEndReason(event.data.reason), time: event.time }];
+            case 'request/context':
+                // Adapter-advertised context capacity, when the route reports one.
+                return event.data.contextWindow === undefined ? NO_EVENTS : [{ type: 'context.capacity', contextWindow: event.data.contextWindow }];
+            case 'system/message':
+                // V3 system prompts are surface nodes, not header fields: the latest
+                // node holds the active instructions (an empty render clears them).
+                return [{ type: 'system.prompt', text: textOf(event.data.message.content) }];
+            case 'request/header': {
+                // The header carries the conversation's call config
+                // (provider/model/effort/sampling). The system prompt moved out of
+                // the header at V3 (see system/message); pre-V3 logs still carry it,
+                // admitted structurally below.
+                // oxlint-disable-next-line typescript/no-unnecessary-condition -- durable session data may lack header config
+                const effort = event.data.header.config?.reasoningEffort;
+                const headerModel = event.data.header.config?.model;
+                const header = {
+                    type: 'request.header',
+                    // A missing/empty model must clear the previous header's value, or
+                    // later usage would keep billing the old model.
+                    model: typeof headerModel === 'string' && headerModel !== '' ? headerModel : undefined,
+                    effort: typeof effort === 'string' ? effort : undefined,
+                };
+                const legacySystem = event.data.header.system;
+                return typeof legacySystem === 'string' ? [header, { type: 'system.prompt', text: legacySystem }] : [header];
+            }
+            case 'session/title': {
+                const source = event.data.source;
+                return [{ type: 'session.title', title: event.data.title, source: source?.kind === 'user' ? 'user' : 'auto' }];
+            }
+            default:
+                break;
+        }
+        const data = event.data;
+        if (type === 'team/member')
+            onTeamMember(data);
+        switch (type) {
+            case 'assistant/chunk': {
+                // Pre-0.1.5 live streams and raw pre-V3 logs carry per-token chunks
+                // as durable session events (0.1.5 moved live chunks to transient
+                // frames and compacts the durable record into
+                // `assistant/message.stream`). Matched by name so the current union
+                // (which no longer lists the type) stays compile-clean.
+                const chunk = data;
+                return [{
+                        type: 'assistant.delta',
+                        attemptId: `seq:${event.seq}`,
+                        index: chunk.chunk.index ?? 0,
+                        time: event.time,
+                        turn: chunk.turn,
+                        step: chunk.step,
+                        seq: event.seq,
+                        delta: deltaOf(chunk.chunk),
+                    }];
+            }
+            case 'todo/write': {
+                // dsh-tool-todo owns this optional module augmentation; matched by
+                // name so the TUI remains loadable without that plugin.
+                const todos = todoPanelItems(data);
+                return todos === undefined ? NO_EVENTS : [{ type: 'todo.write', items: todos }];
+            }
+            case 'agent-preset/selected': {
+                // Logged preset switch (blank sessions only, issue #8). Not in
+                // dsh-session's typed union — matched by name.
+                const recorded = data.agentPreset;
+                const preset = typeof recorded === 'string' ? recorded : 'unknown';
+                const aliases = PRESET_ALIASES.get(preset);
+                return [{ type: 'preset.selected', preset, ...(aliases === undefined ? {} : { aliases }) }];
+            }
+            case 'working-directory/change': {
+                // DSH 0.2.1+ (`dsh-working-directory`, not in dsh-session's typed
+                // union — matched by name). The header keeps the original project.
+                const cwd = data.cwd;
+                return typeof cwd === 'string' && cwd !== '' ? [{ type: 'session.cwd', cwd }] : NO_EVENTS;
+            }
+            case 'session/color': {
+                // `/color` accent (dsh-tui plugin event): '' clears to the default.
+                const color = data.color;
+                return [{ type: 'session.color', color: typeof color === 'string' ? color : '' }];
+            }
+            // The compaction bracket is a plugin-appended event pair (not part of
+            // dsh-session's typed map): the host writes `compaction/start` before
+            // the summarizer runs and `compaction/end` once the checkpoint is
+            // committed or abandoned. The checkpoint `user/message` tells which,
+            // so the close itself carries no outcome.
+            case 'compaction/start':
+                return [{ type: 'compaction.start', trigger: 'auto', cancellable: false, time: event.time }];
+            case 'compaction/end':
+                return [{ type: 'compaction.end', ok: true, time: event.time }];
+            default:
+                // Custom plugin events: the tuiRenderers seam decides whether they
+                // render at all.
+                return [{ type: 'custom', nativeType: type, data }];
+        }
+    };
+    /**
+     * Translate one live assistant stream frame (0.1.5+): the transient
+     * per-token counterpart of the durable `assistant/message` /
+     * `assistant/attempt` settlement.
+     */
+    const translateFrame = (frame) => {
+        if (frame.revision <= lastStreamRevision)
+            return NO_EVENTS;
+        lastStreamRevision = frame.revision;
+        const attemptId = frame.attemptId;
+        if (frame.type === 'start')
+            return [{ type: 'assistant.attempt.start', attemptId, turn: frame.turn, step: frame.step }];
+        if (frame.type === 'end') {
+            // A settlement recorded as `assistant/attempt` is a failed attempt: its
+            // provisional rows go, exactly like a live abandonment.
+            const discarded = frame.outcome.kind === 'abandoned' || frame.outcome.eventType === 'assistant/attempt';
+            return [{ type: 'assistant.attempt.end', attemptId, outcome: discarded ? 'abandoned' : 'committed' }];
+        }
+        return [{ type: 'assistant.delta', attemptId, index: frame.index, time: frame.time, delta: deltaOf(frame.chunk) }];
+    };
+    /**
+     * Translate a durable replay seed (resume / rewind / model-switch fork).
+     * Settled `assistant/chunk` runs are dropped first (`prepareReplayEvents`);
+     * the frame fence restarts with the replacement session.
+     */
+    const translateReplay = (events) => {
+        lastStreamRevision = -1;
+        promptSeen = false;
+        const out = [];
+        for (const event of prepareReplayEvents(events)) {
+            for (const translated of translateEvent(event))
+                out.push(translated);
+        }
+        return out;
+    };
+    /** Forget the frame fence and every open call (paired with a projector reset). */
+    const reset = () => {
+        lastStreamRevision = -1;
+        promptSeen = false;
+        openCalls.clear();
+        unwrittenSpawns.clear();
+    };
+    return { translateEvent, translateFrame, translateReplay, reset, presentCallView, presentResultView };
+}

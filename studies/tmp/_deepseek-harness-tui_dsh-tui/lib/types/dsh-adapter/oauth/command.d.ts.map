@@ -1,0 +1,1 @@
+{"version":3,"file":"command.d.ts","sourceRoot":"","sources":["../../../../src/dsh-adapter/oauth/command.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AAEH,OAAO,KAAK,EAAE,iBAAiB,EAAE,aAAa,EAAE,MAAM,2BAA2B,CAAA;AACjF,OAAO,KAAK,EAAE,UAAU,EAAuB,MAAM,cAAc,CAAA;AA0BnE;;;;GAIG;AACH,wBAAgB,wBAAwB,CAAC,GAAG,EAAE,UAAU,GAAG,CAAC,UAAU,EAAE,iBAAiB,KAAK,OAAO,CAAC,aAAa,CAAC,CAiCnH"}

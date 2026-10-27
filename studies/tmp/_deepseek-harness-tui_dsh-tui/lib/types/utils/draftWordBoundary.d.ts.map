@@ -1,0 +1,1 @@
+{"version":3,"file":"draftWordBoundary.d.ts","sourceRoot":"","sources":["../../../src/utils/draftWordBoundary.ts"],"names":[],"mappings":"AA4GA;;;;GAIG;AACH,wBAAgB,mBAAmB,CAAC,IAAI,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,GAAG,OAAO,CAWzE;AAED;;;;;;;;;;;GAWG;AACH,wBAAgB,gBAAgB,CAAC,IAAI,EAAE,MAAM,EAAE,KAAK,EAAE,MAAM,GAAG;IAAE,KAAK,EAAE,MAAM,CAAC;IAAC,GAAG,EAAE,MAAM,CAAA;CAAE,CAoB5F"}

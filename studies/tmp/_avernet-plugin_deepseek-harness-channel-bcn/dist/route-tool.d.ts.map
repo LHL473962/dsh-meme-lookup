@@ -1,0 +1,1 @@
+{"version":3,"file":"route-tool.d.ts","sourceRoot":"","sources":["../src/route-tool.ts"],"names":[],"mappings":"AAAA,OAAO,EAAc,KAAK,cAAc,EAAE,MAAM,wBAAwB,CAAC;AACzE,OAAO,KAAK,EAAE,SAAS,EAAE,MAAM,aAAa,CAAC;AAE7C,eAAO,MAAM,mBAAmB,cAAc,CAAC;AAE/C,wBAAgB,kBAAkB,CAAC,MAAM,EAAE,SAAS,GAAG,cAAc,CAmCpE"}

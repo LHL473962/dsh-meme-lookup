@@ -1,0 +1,103 @@
+import type { ConfigForm } from "@deepseek-ai/dsh-client-ui-settings/client";
+import { type StatusRpc, type StatusTranslator } from "./status-page.js";
+declare const NS = "reme.settings";
+declare const STATUS_NS = "reme.status";
+type Translator = (key: keyof typeof en) => string;
+interface ClientContext {
+    get(name: string): {
+        rpc: StatusRpc;
+    };
+    effect(factory: () => (() => void) | void, label: string): void;
+    locale: {
+        bind(namespace: typeof NS): Translator;
+        bind(namespace: typeof STATUS_NS): StatusTranslator;
+        register(namespace: string, dictionaries: {
+            en: Record<string, string>;
+            zh: Record<string, string>;
+        }): () => void;
+    };
+    configForms: {
+        get<T>(namespace: string): ConfigForm<T>;
+        whileServed(namespaces: string[], register: () => () => void): () => void;
+    };
+    slots: {
+        inject(name: string, factory: () => unknown): () => void;
+        register<Props>(options: Record<string, unknown>, component: (props: Props) => JSX.Element | null): () => void;
+    };
+}
+declare const en: {
+    title: string;
+    description: string;
+    loading: string;
+    unavailable: string;
+    connected: string;
+    disconnected: string;
+    unchecked: string;
+    refresh: string;
+    website: string;
+    open: string;
+    runDream: string;
+    connection: string;
+    endpoint: string;
+    endpointHint: string;
+    language: string;
+    searchLimit: string;
+    requestTimeout: string;
+    autoMemory: string;
+    autoMemoryEnabled: string;
+    autoMemoryInterval: string;
+    rootOnly: string;
+    timezone: string;
+    autoDream: string;
+    autoDreamEnabled: string;
+    dreamTime: string;
+    dreamHint: string;
+    advanced: string;
+    backgroundTimeout: string;
+    shutdownTimeout: string;
+    diagnostics: string;
+    processMemory: string;
+    componentMemory: string;
+    components: string;
+    componentInstances: string;
+    noInstances: string;
+    started: string;
+    notStarted: string;
+    instance: string;
+    fileGraph: string;
+    fileStore: string;
+    keywordIndex: string;
+    embeddingStore: string;
+    modelName: string;
+    dimensions: string;
+    cacheSize: string;
+    nodes: string;
+    edges: string;
+    virtualNodes: string;
+    pendingNodes: string;
+    chunks: string;
+    embeddedChunks: string;
+    documents: string;
+    vocabulary: string;
+    memoryUsage: string;
+    serverConfig: string;
+    loadConfig: string;
+    save: string;
+    saving: string;
+    discard: string;
+    reset: string;
+    unsaved: string;
+    invalid: string;
+    saveFailed: string;
+    saved: string;
+    dreamComplete: string;
+    dreamFailed: string;
+    readOnly: string;
+    version: string;
+    healthy: string;
+    unhealthy: string;
+};
+export declare const inject: string[];
+export declare function apply(ctx: ClientContext): void;
+export {};
+//# sourceMappingURL=index.d.ts.map
