@@ -1492,6 +1492,26 @@ try {
   }
 } catch {}
 
+// 学自 dsh-remote 的 method-policy：字段类型逐个收紧，脏数据不进内存
+function normalizeUserEntry(e) {
+  const str = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n) : '')
+  const arr = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string').map((x) => x.slice(0, 40)).slice(0, 12) : [])
+  return {
+    ...e,
+    title: str(e.title, 40),
+    meaning: str(e.meaning, 500),
+    usage: str(e.usage, 300),
+    avoid: str(e.avoid, 200),
+    example: str(e.example, 200),
+    source: str(e.source, 300),
+    sourceType: ['自创', '出处不详', '有 BV'].includes(e.sourceType) ? e.sourceType : '出处不详',
+    tone: arr(e.tone),
+    variants: arr(e.variants),
+    visibility: e.visibility === 'public' ? 'public' : 'private',
+    kind: e.kind === 'phrase' ? 'phrase' : 'meme',
+  }
+}
+
 // 用户自己录的条目（2026-10-27）：kind=meme 当梗，kind=phrase 当私人口癖
 function loadUserLexicon() {
   let rows = []
@@ -1503,6 +1523,7 @@ function loadUserLexicon() {
     return true
   })
   _userLexBad = bad.length
+  rows = rows.map(normalizeUserEntry)
   const have = new Set(AUTO_LEX.map((e) => e.title))
   let added = 0
   for (const e of rows) {
