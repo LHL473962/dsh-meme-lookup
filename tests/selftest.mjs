@@ -94,6 +94,19 @@ await safe('面板服务', async () => {
   }
 })
 
+// 学自 dsh-ops 的 verify-body-caps：不变量要有测试盯着
+await safe('请求体上限覆盖', async () => {
+  const { readFileSync: rf } = await import('node:fs')
+  const { join } = await import('node:path')
+  const { fileURLToPath } = await import('node:url')
+  const here = fileURLToPath(new URL('..', import.meta.url))
+  const src = rf(join(here, 'index.js'), 'utf8')
+  const sites = [...src.matchAll(/for await \(const c of req\)/g)].map((m) => m.index)
+  const bad = sites.filter((i) => !/32 \* 1024|MAX_BODY/.test(src.slice(i, i + 260)))
+  if (bad.length) throw new Error(`${bad.length} 处读请求体没有字节上限` )
+  return `${sites.length} 处都有上限`
+})
+
 const pass = results.filter((r) => r.ok).length
 const fail = results.length - pass
 const report = ['# 自检报告', '', '时间：' + new Date().toISOString(), '', '通过 ' + pass + ' / 失败 ' + fail, '', '| 检查 | 结果 | 说明 |', '|---|---|---|']
