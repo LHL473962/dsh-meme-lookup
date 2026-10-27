@@ -9,6 +9,19 @@ const LEX = join(HOME, 'meme-user-lexicon.json')
 const PORT = Number(process.env.MEME_PANEL_PORT || 8797)
 const readJson = (p, d) => { try { return JSON.parse(readFileSync(p, 'utf8')) } catch { return d } }
 const writeJson = (p, v) => writeFileSync(p, JSON.stringify(v, null, 2))
+function normalizeEntry(e) {
+  const source = String(e.source || '')
+  let sourceType = e.sourceType
+  if (!sourceType) {
+    if (/BV|av\d|https?:/i.test(source)) sourceType = '有 BV'
+    else if (/自创|自己编/.test(source)) sourceType = '自创'
+    else sourceType = '出处不详'
+  }
+  const variants = Array.isArray(e.variants) ? e.variants : String(e.variants || '').split(',').map((x) => x.trim()).filter(Boolean)
+  const tone = Array.isArray(e.tone) ? e.tone : (e.tone ? [String(e.tone)] : [])
+  return { ...e, sourceType, variants, tone }
+}
+
 const DEFAULT = { tendency: 1, density: 1, allowRisky: false, autoUpdate: true }
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
 
@@ -129,7 +142,7 @@ createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x')
   if (req.method === 'GET' && url.pathname === '/') {
     const s = { ...DEFAULT, ...readJson(CFG, {}) }
-    const lex = readJson(LEX, [])
+    const lex = readJson(LEX, []).map(normalizeEntry)
     const html = render(s, lex).replace('</script></body>', 'window.__LEX=' + JSON.stringify(lex).replace(/</g, '\\u003c') + ';</script></body>')
     res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
     return res.end(html)
@@ -141,7 +154,7 @@ createServer(async (req, res) => {
   }
   if (url.pathname === '/api/userlex' && req.method === 'DELETE') {
     const i = Number(url.searchParams.get('id'))
-    const list = readJson(LEX, [])
+    const list = readJson(LEX, []).map(normalizeEntry)
     const rm = list.splice(i, 1)
     writeJson(LEX, list)
     res.writeHead(200, {'content-type':'application/json'}); return res.end(JSON.stringify({ ok: true, removed: rm[0] && rm[0].title }))
@@ -149,7 +162,7 @@ createServer(async (req, res) => {
   if (url.pathname === '/api/userlex' && req.method === 'POST') {
     let body=''; for await (const c of req) body += c
     const e = JSON.parse(body || '{}')
-    const list = readJson(LEX, [])
+    const list = readJson(LEX, []).map(normalizeEntry)
     const idx = list.findIndex((x) => x.title === e.title)
     const vs = Array.isArray(e.variants) ? e.variants : String(e.variants || '').split(',').map((x) => x.trim()).filter(Boolean)
     const row = { ...e, variants: vs, addedAt: new Date().toISOString(), review: e.visibility === 'public' ? 'pending' : 'private' }
