@@ -996,6 +996,7 @@ if (!AUTO_LEX.some((x) => x.title === title)) {
 // ============ 梗理解：抽帧 + OCR + 检索 ============
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
+import { realpathSync } from 'node:fs'
 import { openSync, closeSync, statSync as statSync2 } from 'node:fs'
 import { renameSync } from 'node:fs'
 import { statSync } from 'node:fs'
@@ -1005,7 +1006,10 @@ import { fileURLToPath } from 'node:url'
 import { copyFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 
-const _pkgDir = fileURLToPath(new URL('.', import.meta.url))
+// 学自 dsh-im：profile 可能用符号链接/junction 装载插件，走 realpath 才能找到真实目录
+const _pkgDir = (() => {
+  try { return realpathSync(fileURLToPath(new URL('.', import.meta.url))) } catch { return fileURLToPath(new URL('.', import.meta.url)) }
+})()
 // 选一个能用的 Python：环境变量 > 本机已知 venv > PATH 上的 python
 function resolvePython() {
   const env = process.env.DSH_PY || process.env.DSH_FRAMES_PY || process.env.DSH_OCR_PYEXE
