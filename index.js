@@ -1479,11 +1479,18 @@ try {
 // 用户自己录的条目（2026-10-27）：kind=meme 当梗，kind=phrase 当私人口癖
 function loadUserLexicon() {
   let rows = []
-  try { rows = JSON.parse(readFileSync(USER_LEX_FILE, "utf8")) || [] } catch { return 0 }
+  try { rows = JSON.parse(stripBom(readFileSync(USER_LEX_FILE, 'utf8'))) || [] } catch { return 0 }
+  // 学自 openviking：坏条目跳过并计数，不让一条脏数据拖垮整份词库
+  const bad = []
+  rows = (Array.isArray(rows) ? rows : []).filter((e, i) => {
+    if (!e || typeof e !== 'object' || typeof e.title !== 'string' || !e.title.trim()) { bad.push(i); return false }
+    return true
+  })
+  _userLexBad = bad.length
   const have = new Set(AUTO_LEX.map((e) => e.title))
   let added = 0
   for (const e of rows) {
-    if (!e || !e.title || have.has(e.title)) continue
+    if (have.has(e.title)) continue
     const isPhrase = e.kind ? e.kind === 'phrase' : (/自创|自己编/.test(String(e.source || '')) || e.sourceType === '自创')
     AUTO_LEX.push({
       title: e.title,
@@ -1505,6 +1512,7 @@ function loadUserLexicon() {
 loadUserLexicon()
 // 学自 openwrite：用内容指纹而不是 mtime（同毫秒内两次写入 mtime 可能相同）
 let _userLexRev = ''
+var _userLexBad = 0 // var：loadUserLexicon() 在声明之前就会被调用
 function maybeReloadUserLex() {
   try {
     const raw = readFileSync(USER_LEX_FILE, 'utf8')
