@@ -1,0 +1,1589 @@
+[
+ {
+  "dir": "dsh-univer-office",
+  "files": 242,
+  "ownFiles": 7,
+  "ownBytes": 126716452,
+  "tools": [],
+  "routes": [],
+  "slots": [
+   "conversation.chat.turnTail",
+   "conversation.input.dock",
+   "plugins.bundle.config"
+  ],
+  "env": [
+   "WS_NO_BUFFER_UTIL",
+   "WS_NO_UTF_",
+   "UNIVER_DSH_GATEWAY_DEBUG"
+  ],
+  "deps": [],
+  "headers": [
+   "// src/host/telemetry/product-telemetry.ts import { randomUUID } from \"node:crypto\"; import { readFileSync } from \"node:",
+   "// Package uninstall lifecycle entry. It must never fail or slow removal: if the // bundled telemetry entry is missing ("
+  ]
+ },
+ {
+  "dir": "dsh-better-sidebar",
+  "files": 7,
+  "ownFiles": 7,
+  "ownBytes": 14343725,
+  "tools": [
+   "sidebar_open"
+  ],
+  "routes": [
+   "/sidebar/bundle",
+   "/sidebar/api",
+   "/sidebar/upload",
+   "/sidebar/write",
+   "/sidebar/archive",
+   "/sidebar/file",
+   "/sidebar/html",
+   "/sidebar/ws/agent-opens",
+   "/sidebar/ws/fs-watch",
+   "/sidebar/ws/sidechat"
+  ],
+  "slots": [
+   "conversation.session.header.utilities",
+   "shell.overlay",
+   "sidebar.right.pane.tab",
+   "sidebar.right.pane.tab.title",
+   "settings.section"
+  ],
+  "env": [
+   "LOG",
+   "DSH_SEARCH_DEBUG",
+   "DSH_HOME",
+   "WSL_DISTRO_NAME",
+   "WSL_INTEROP"
+  ],
+  "deps": [
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-settings",
+   "@deepseek-ai/dsh-tools",
+   "@deepseek-ai/dsh-llm",
+   "@deepseek-ai/dsh-agent",
+   "@deepseek-ai/dsh-subagent"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "_deepseek-harness-tui_dsh-tui",
+  "files": 951,
+  "ownFiles": 930,
+  "ownBytes": 9035860,
+  "tools": [
+   "apply_patch",
+   "web_search",
+   "view_image",
+   "image_generation",
+   "collab_agent",
+   "skill_search",
+   "skill_load"
+  ],
+  "routes": [],
+  "slots": [],
+  "env": [
+   "DSH_TUI_STANDALONE_BINARY",
+   "DSH_TUI_LANG",
+   "NODE_ENV",
+   "DSH_TUI_REACT_DEV",
+   "DSH_HOME",
+   "DEEPSEEK_API_KEY",
+   "DSH_TUI_BACKEND",
+   "DSH_TUI_RESUME_SESSION",
+   "DSH_TUI_NO_DELEGATE",
+   "DSH_TUI_LAUNCHER_VERSION"
+  ],
+  "deps": [
+   "@deepseek-ai/cordis",
+   "@deepseek-ai/dsh-llm",
+   "@deepseek-ai/dsh-session",
+   "@deepseek-ai/dsh-scope",
+   "@deepseek-ai/dsh-agent",
+   "@deepseek-ai/dsh-agent-instructions",
+   "@deepseek-ai/dsh-skill",
+   "@deepseek-ai/dsh-system-prompt",
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-session-persistence-jsonl",
+   "@deepseek-ai/dsh-atomic-write",
+   "@deepseek-ai/dsh-llm-pi-ai",
+   "@deepseek-ai/dsh-user-questions",
+   "@deepseek-ai/dsh-tool-ask-user"
+  ],
+  "headers": [
+   "// The single curated runtime value (a frozen integer contract marker); the // rest of this module stays types-only. exp",
+   "// Side-effect import: the canUseTool-shadow warning filter must be installed // before the first query() construction (",
+   "// Re-export shim: the Cordis-backed implementation lives behind the adapter // boundary so UI consumers never import of"
+  ]
+ },
+ {
+  "dir": "dsh-image-gen",
+  "files": 2,
+  "ownFiles": 2,
+  "ownBytes": 6849997,
+  "tools": [
+   "right_click",
+   "pointer_down",
+   "pointer_up",
+   "pointer_move",
+   "key_up",
+   "double_click",
+   "long_press",
+   "waiting_to_hide",
+   "canvas_state",
+   "view_canvas",
+   "generate_image",
+   "generate_images",
+   "edit_image",
+   "find_inspiration"
+  ],
+  "routes": [],
+  "slots": [
+   "conversation.chat.node",
+   "plugins.bundle.config",
+   "settings.plugin.item",
+   "conversation.input.right",
+   "tool.call.toolview",
+   "conversation.view",
+   "sidebar.right.pane.tab"
+  ],
+  "env": [
+   "TLDRAW_ENV",
+   "VERCEL_PUBLIC_TLDRAW_ENV",
+   "NEXT_PUBLIC_TLDRAW_ENV",
+   "TLDRAW_LICENSE_KEY",
+   "NEXT_PUBLIC_TLDRAW_LICENSE_KEY",
+   "REACT_APP_TLDRAW_LICENSE_KEY",
+   "GATSBY_TLDRAW_LICENSE_KEY",
+   "VITE_TLDRAW_LICENSE_KEY",
+   "PUBLIC_TLDRAW_LICENSE_KEY",
+   "NEXT_PUBLIC_GC_API_KEY"
+  ],
+  "deps": [
+   "@deepseek-ai/cordis",
+   "@deepseek-ai/schemastery"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "_xmanrui_dsh-im",
+  "files": 465,
+  "ownFiles": 464,
+  "ownBytes": 6757283,
+  "tools": [
+   "session_pick",
+   "workspace_pick",
+   "preset_pick",
+   "model_pick",
+   "steer_pick",
+   "watch_add",
+   "watch_remove",
+   "steer_quick",
+   "steer_form",
+   "steer_text",
+   "steer_submit",
+   "dsh_im_group_history",
+   "dsh_im_group_file"
+  ],
+  "routes": [
+   "/account/whoami",
+   "/login",
+   "/sync",
+   "/create_room",
+   "/keys/query",
+   "/keys/claim",
+   "/keys/upload",
+   "/keys/changes",
+   "/sendToDevice"
+  ],
+  "slots": [
+   "sidebar.session.row.leading",
+   "main",
+   "sidebar.panellist",
+   "plugins.detail.actions",
+   "settings.section"
+  ],
+  "env": [
+   "DSH_HOME",
+   "NODE_DEBUG",
+   "DSH_IM_CLIENT_ID",
+   "NODE_ENV",
+   "DSH_IM_LANGUAGE",
+   "DSH_IM_TELEGRAM_TOKEN",
+   "CHROME_PATH",
+   "DINGTALK_REGISTRATION_BASE_URL",
+   "DINGTALK_REGISTRATION_SOURCE",
+   "FEISHU_APP_SECRET"
+  ],
+  "deps": [],
+  "headers": [
+   "// Static avatar geometry and colors from ds-bot 0.1.7 (Apache-2.0). // Adapted from src/client/characters.js and inks.j",
+   "// Russian dictionary for the dsh-im settings UI in the DSH web GUI. // // Keys are the same Chinese literals the settin",
+   "// Exercise the actual settings card in Chromium without a running Host or IM account. // Usage: node scripts/verify-mod"
+  ]
+ },
+ {
+  "dir": "dsh-openwrite",
+  "files": 28,
+  "ownFiles": 28,
+  "ownBytes": 6099712,
+  "tools": [
+   "novel_embedding_profiles",
+   "novel_embedding_profile_save",
+   "novel_embedding_profile_select",
+   "novel_embedding_profile_delete",
+   "novel_status",
+   "novel_review_framework",
+   "novel_manuscript_acceptance",
+   "novel_trace_list",
+   "novel_context_preview",
+   "novel_outline_read",
+   "novel_reading_order",
+   "novel_reading_packet",
+   "novel_chapter_work",
+   "novel_scene_structure",
+   "novel_chapter_scenes",
+   "novel_scene_migration_preview",
+   "novel_assets_list",
+   "novel_search",
+   "novel_doc_read",
+   "novel_outline_edit"
+  ],
+  "routes": [
+   "/studio-panel/runtime",
+   "/revisions/from-review",
+   "/revisions/selection"
+  ],
+  "slots": [
+   "shell.overlay"
+  ],
+  "env": [
+   "DSH_BIN",
+   "DSH_HOME"
+  ],
+  "deps": [
+   "@deepseek-ai/cordis",
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-tools",
+   "@deepseek-ai/dsh-home-paths"
+  ],
+  "headers": [
+   "// Git installs build here only after the user authorizes this package in pnpm. // Precompiled Release tarballs need no "
+  ]
+ },
+ {
+  "dir": "dsh-tongflow",
+  "files": 2,
+  "ownFiles": 2,
+  "ownBytes": 5117639,
+  "tools": [
+   "tongflow_project_create",
+   "tongflow_project_open",
+   "tongflow_project_list",
+   "tongflow_project_status",
+   "tongflow_workflow_run",
+   "tongflow_run_status",
+   "tongflow_look",
+   "tongflow_perceive",
+   "tongflow_plugins_list",
+   "tongflow_plugins_install",
+   "tongflow_plugins_uninstall",
+   "tongflow_workflow_new",
+   "tongflow_workflow_patch",
+   "tongflow_workflow_read",
+   "tongflow_workflow_list",
+   "tongflow_workflow_validate",
+   "tongflow_workflow_compose",
+   "tongflow_node_catalog",
+   "tongflow_node_describe"
+  ],
+  "routes": [],
+  "slots": [
+   "conversation.view",
+   "conversation.session.header.utilities"
+  ],
+  "env": [
+   "TONGFLOW_STUDIO_ROOT",
+   "DSH_HOME"
+  ],
+  "deps": [
+   "@deepseek-ai/dsh-tools",
+   "@deepseek-ai/schemastery"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "dsh-plugin-wallpaper-engine",
+  "files": 62,
+  "ownFiles": 62,
+  "ownBytes": 4630728,
+  "tools": [],
+  "routes": [
+   "/diag",
+   "/api/local-assets"
+  ],
+  "slots": [
+   "sidebar.right.pane.tab",
+   "settings.section"
+  ],
+  "env": [
+   "DSH_WE_DATA_DIR",
+   "DSH_WE_CACHE_DIR",
+   "DSH_WE_LOG_LEVEL",
+   "DSH_WE_TRANSCODE_TIMEOUT_MS",
+   "DSH_WE_FFMPEG_URL",
+   "DSH_WE_FFMPEG",
+   "DSH_WE_NOTICE",
+   "DISPLAY",
+   "DSH_WE_OCCLUSION_TRACE",
+   "DSH_WE_STEAM_ROOT"
+  ],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_astron-team_skillhub-dsh",
+  "files": 5,
+  "ownFiles": 5,
+  "ownBytes": 2554316,
+  "tools": [],
+  "routes": [],
+  "slots": [
+   "plugins.bundle.config",
+   "tool.call.toolview",
+   "conversation.input.left",
+   "conversation.input.dock",
+   "main",
+   "sidebar.panellist",
+   "skillhub.catalog"
+  ],
+  "env": [
+   "GRACEFUL_FS_PLATFORM",
+   "NODE_DEBUG",
+   "TEST_GRACEFUL_FS_GLOBAL_PATCH",
+   "HOME",
+   "USERPROFILE"
+  ],
+  "deps": [
+   "@deepseek-ai/cordis",
+   "@deepseek-ai/dsh-typert-protocol",
+   "@deepseek-ai/dsh-tools",
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-home-paths",
+   "@deepseek-ai/dsh-sandbox",
+   "@deepseek-ai/dsh-skill-filesystem"
+  ],
+  "headers": [
+   "// src/host/index.ts import { symbols } from \"@deepseek-ai/cordis\"; import { Remote, RemoteError as RemoteError4, Remote"
+  ]
+ },
+ {
+  "dir": "dsh-vision-router",
+  "files": 183,
+  "ownFiles": 183,
+  "ownBytes": 2368015,
+  "tools": [
+   "vision_describe",
+   "vision_bootstrap",
+   "vision_materialize",
+   "vision_ground",
+   "vision_detect",
+   "vision_crop",
+   "vision_present",
+   "vision_pixel_diff",
+   "vision_colors",
+   "vision_ocr",
+   "vision_long_screenshot_ocr",
+   "vision_trace",
+   "vision_extract_foreground",
+   "vision_html_screenshot",
+   "vision_activate",
+   "vision_screenshot",
+   "vision_router_session_policy"
+  ],
+  "routes": [
+   "/_dsh/vision-router/logs",
+   "/_dsh/vision-router/request-screenshot-permission",
+   "/_dsh/vision-router/update-check",
+   "/_dsh/vision-router/self-update"
+  ],
+  "slots": [
+   "conversation.input.right",
+   "settings.section",
+   "tool.call.toolview"
+  ],
+  "env": [
+   "OPENCODE_API_KEY"
+  ],
+  "deps": [
+   "@deepseek-ai/schemastery"
+  ],
+  "headers": [
+   "// Public plugin entrypoint. // // P3-F keeps this file as the public schema/export boundary. Runtime ownership // lives",
+   "// dsh-vision-router: turn-level vision routing + an on-demand vision tool. // // Routing: the turn that contains an ima",
+   "// Known catalog-routing corrections: provider/model entries where the // installed pi-ai model catalog disagrees with t"
+  ]
+ },
+ {
+  "dir": "dshmarket",
+  "files": 53,
+  "ownFiles": 53,
+  "ownBytes": 2334125,
+  "tools": [],
+  "routes": [
+   "/dsh-market/api/v1/capabilities",
+   "/dsh-market/api/v1/updates/summary",
+   "/dsh-market/api/v1/updates",
+   "/dsh-market/api/v1/operations",
+   "/dsh-market/api/v1/rollback",
+   "/dsh-market/api/v1/restart",
+   "/dsh-market/backup",
+   "/dsh-market/restore",
+   "/dsh-market/webdav",
+   "/dsh-market/gist",
+   "/dsh-market/registry",
+   "/dsh-market/discovery-compatibility"
+  ],
+  "slots": [
+   "settings.section",
+   "sidebar.panellist",
+   "settings.plugin.item",
+   "plugins.bundle.config",
+   "settings.plugins.tab",
+   "plugins.tab",
+   "shell.overlay"
+  ],
+  "env": [
+   "DSHM_UPDATES_ORIGIN",
+   "PATH",
+   "DSH_MARKET_INSTALL_TIMEOUT_MS",
+   "PATHEXT",
+   "DSH_MARKET_HOT_MOUNT_TIMEOUT_MS",
+   "HTTPS_PROXY",
+   "HTTP_PROXY",
+   "NODE_OPTIONS"
+  ],
+  "deps": [
+   "@deepseek-ai/schemastery"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "dsh-mnemon",
+  "files": 13,
+  "ownFiles": 13,
+  "ownBytes": 1891651,
+  "tools": [
+   "mnemon_view_route",
+   "mnemon_view_action",
+   "mnemon_memory_bodies",
+   "mnemon_recall",
+   "mnemon_related",
+   "mnemon_status",
+   "mnemon_document_search",
+   "mnemon_document_create",
+   "mnemon_document_manage",
+   "mnemon_runtime_memory",
+   "mnemon_remember",
+   "mnemon_link",
+   "mnemon_forget",
+   "mnemon_memory_body_create",
+   "mnemon_memory_body_update",
+   "mnemon_memory_body_merge"
+  ],
+  "routes": [],
+  "slots": [
+   "main",
+   "sidebar.panellist",
+   "conversation.view",
+   "conversation.session.header.lineage",
+   "plugins.bundle.config",
+   "plugins.row.config",
+   "plugins.detail.actions",
+   "conversation.chat.turnTail"
+  ],
+  "env": [
+   "MNEMON_DATA_DIR",
+   "PATH",
+   "DSH_HOME",
+   "NPM_CONFIG_REGISTRY"
+  ],
+  "deps": [
+   "@deepseek-ai/cordis",
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-typert-protocol",
+   "@deepseek-ai/cosmokit"
+  ],
+  "headers": [
+   "//#region src/core/contracts/plugin.ts /** Declarative identity and graph relations shared by every Mnemon plugin. */ co"
+  ]
+ },
+ {
+  "dir": "dsh-mobile",
+  "files": 8,
+  "ownFiles": 7,
+  "ownBytes": 1716760,
+  "tools": [],
+  "routes": [
+   "/api/session/prompt",
+   "/mobile-access/auth/renew"
+  ],
+  "slots": [
+   "conversation.input.overlay",
+   "sidebar.workspaces.directoryFlow",
+   "conversation.hero.workspace.directoryFlow",
+   "settings.general.item",
+   "sidebar.footer.action"
+  ],
+  "env": [
+   "WINDIR",
+   "NODE_OPTIONS",
+   "DSH_HOME"
+  ],
+  "deps": [
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/cordis"
+  ],
+  "headers": [
+   "//#region packages/question-fixes/src/index.ts /** * Question-card fixes, node half. * * A pure UI plugin: this empty ap"
+  ]
+ },
+ {
+  "dir": "_tt-a1i_archify-dsh",
+  "files": 50,
+  "ownFiles": 49,
+  "ownBytes": 1713257,
+  "tools": [
+   "file_readable"
+  ],
+  "routes": [
+   "/schema_version",
+   "/diagram_type",
+   "/meta/translations",
+   "/meta/locale",
+   "/meta/legend",
+   "/meta/output",
+   "/meta/repository",
+   "/meta/repository/revision",
+   "/meta/repository/url",
+   "/meta/repository/provider",
+   "/semanticChecks/allowedRoots",
+   "/semanticChecks/allowedTerminals"
+  ],
+  "slots": [],
+  "env": [
+   "ARCHIFY_QUALITY_PROFILE",
+   "ARCHIFY_BRAND_ALLOW_PRIVATE",
+   "ARCHIFY_BRAND_CAPTURE_TIMEOUT_MS",
+   "ARCHIFY_REPO_ROOT",
+   "ARCHIFY_DIAGNOSTIC_FORMAT",
+   "ARCHIFY_UPDATE_CHECK_DISABLED",
+   "LOCALAPPDATA",
+   "XDG_CACHE_HOME",
+   "ARCHIFY_UPDATE_RELEASE_PATH",
+   "ARCHIFY_UPDATE_CACHE_DIRECTORY"
+  ],
+  "deps": [],
+  "headers": [
+   "// Internal architecture router shared by rendering and geometry inspection. // Create a new router when measured boxes ",
+   "// Orthogonal router for schema_version 2 lifecycle diagrams. // // v2 states sit on a fixed grid: one row per lane and ",
+   "// Generated by scripts/generate-brand-marks.mjs from brand-marks/catalog.json. // Simple Icons 16.28.0. Do not edit by "
+  ]
+ },
+ {
+  "dir": "dsh-connect-workbuddy",
+  "files": 4,
+  "ownFiles": 4,
+  "ownBytes": 1529251,
+  "tools": [
+   "codebuddy_ask"
+  ],
+  "routes": [
+   "/plugins/dsh-connect-workbuddy/__save"
+  ],
+  "slots": [
+   "conversation.input.left",
+   "conversation.input.model.label",
+   "conversation.composer.dock",
+   "shell.quota-notice"
+  ],
+  "env": [
+   "NODE_ENV"
+  ],
+  "deps": [
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-llm",
+   "@deepseek-ai/dsh-llm-pi-ai"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "_linxin666_dsh-remote-web-ui",
+  "files": 59,
+  "ownFiles": 54,
+  "ownBytes": 1504984,
+  "tools": [],
+  "routes": [],
+  "slots": [
+   "sidebar.footer.action"
+  ],
+  "env": [
+   "TUNNEL_TOKEN",
+   "DEBUG",
+   "DEBUG_FD",
+   "DSH_PROFILE",
+   "DSH_REMOTE_PUBLIC_BASE_URL",
+   "DSH_REMOTE_TRUSTED_HOSTS"
+  ],
+  "deps": [
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/cordis",
+   "@deepseek-ai/dsh-client-ui-primitives",
+   "@deepseek-ai/dsh-client-store",
+   "@deepseek-ai/dsh-host-webserver"
+  ],
+  "headers": [
+   "// Generated by scripts/sync-shared.mjs from shared/client/settings/plugin-card-seat.ts. Do not edit this copy; edit the",
+   "// Generated by scripts/sync-shared.mjs from shared/client/settings/settings-form.ts. Do not edit this copy; edit the sh",
+   "// Generated by scripts/sync-shared.mjs from shared/host/detached-work.ts. Do not edit this copy; edit the shared source"
+  ]
+ },
+ {
+  "dir": "dsh-cost-meter",
+  "files": 106,
+  "ownFiles": 91,
+  "ownBytes": 1354571,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [
+   "DSH_HOME",
+   "DSH_COST_METER_BILLION_LOADER",
+   "OPENCODE_AUTH_CONTENT",
+   "USERPROFILE",
+   "HOME",
+   "XDG_DATA_HOME",
+   "XDG_CONFIG_HOME",
+   "DEEPSEEK_BASE_URL",
+   "TOKENRHYTHM_COOKIE"
+  ],
+  "deps": [
+   "@deepseek-ai/dsh-credentials",
+   "@deepseek-ai/dsh-home-paths"
+  ],
+  "headers": [
+   "// OpenDesign public catalog checked 2026-10-15. USD / 1M tokens. export const OPENDESIGN_DEFAULT_PRICES = { \"claude-fab",
+   "// Official public price additions/corrections checked 2026-10-15. USD / 1M tokens. export const PROVIDER_PRICE_UPDATES ",
+   "// StepFun global Open Platform, checked 2026-10-16. USD / 1M tokens. // Regional quotes, Step Plan, tools and non-token"
+  ]
+ },
+ {
+  "dir": "dsh-whale-widget",
+  "files": 3,
+  "ownFiles": 3,
+  "ownBytes": 1205175,
+  "tools": [],
+  "routes": [
+   "/dsh-whale/audio-fragment"
+  ],
+  "slots": [],
+  "env": [
+   "DSH_HOME",
+   "DSHW_TRUSTED_HOSTS",
+   "DSHW_ADMIN_HOSTS",
+   "DSH_CLIENT_VERSION",
+   "DSH_VERSION",
+   "DSH_LOCALE",
+   "CODEX_HOME"
+  ],
+  "deps": [],
+  "headers": [
+   "// Balance observations are not a transaction API. Keep them separate from // token estimates and require explicit credi"
+  ]
+ },
+ {
+  "dir": "_linxin666_dsh-client-ui-task-board",
+  "files": 2,
+  "ownFiles": 2,
+  "ownBytes": 1159165,
+  "tools": [
+   "task_board_set_parent",
+   "task_board_run",
+   "task_board_manage",
+   "task_board_schedule",
+   "task_board_list",
+   "task_board_get",
+   "task_board_create",
+   "task_board_update"
+  ],
+  "routes": [],
+  "slots": [
+   "sidebar.panellist",
+   "main"
+  ],
+  "env": [],
+  "deps": [
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/cordis",
+   "@deepseek-ai/dsh-llm",
+   "@deepseek-ai/dsh-tools"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "_howmp_dsh-pentest",
+  "files": 10,
+  "ownFiles": 10,
+  "ownBytes": 1133700,
+  "tools": [
+   "pentest_submit",
+   "pentest_add_goal",
+   "pentest_add_intent",
+   "pentest_add_fact",
+   "pentest_add_finding",
+   "pentest_add_asset",
+   "pentest_state",
+   "pentest_graph",
+   "pentest_report"
+  ],
+  "routes": [],
+  "slots": [
+   "conversation.view"
+  ],
+  "env": [
+   "DSH_HOME"
+  ],
+  "deps": [
+   "@deepseek-ai/dsh-storage-domain",
+   "@deepseek-ai/dsh-tools",
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-storage"
+  ],
+  "headers": [
+   "//#region lib/types/index.js /** * The dsh-pentest bundle, node half: a patch-layer-only bundle. The rows in * `cordis.p",
+   "// src/invariant.ts var PACKAGE_NAME = \"@howmp/dsh-pentest\"; var DOMAIN_NAME = \"pentest\"; function recordKey(sessionId, ",
+   "//#region lib/types/index.js /** * Penetration-testing surface plugin, node half. Pure UI plugin: the empty * apply exis"
+  ]
+ },
+ {
+  "dir": "clearai-dsh",
+  "files": 19,
+  "ownFiles": 18,
+  "ownBytes": 1128132,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [
+   "DSH_HOME",
+   "CLEARAI_LANG",
+   "LC_ALL",
+   "LC_MESSAGES",
+   "LANG",
+   "PATH"
+  ],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_nanmicoder_dsh-agent-teams",
+  "files": 40,
+  "ownFiles": 40,
+  "ownBytes": 1000026,
+  "tools": [
+   "agent_teams_create",
+   "agent_teams_edit_plan",
+   "agent_teams_approve",
+   "agent_teams_add_member",
+   "agent_teams_remove_member",
+   "agent_teams_create_task",
+   "agent_teams_reassign_task",
+   "agent_teams_claim_task",
+   "agent_teams_update_task",
+   "agent_teams_amend_task",
+   "agent_teams_send_message",
+   "agent_teams_status",
+   "agent_teams_resume",
+   "agent_teams_delete"
+  ],
+  "routes": [
+   "/plugins/dsh-agent-teams/state",
+   "/plugins/dsh-agent-teams/halt",
+   "/plugins/dsh-agent-teams/plan",
+   "/plugins/dsh-agent-teams/assets"
+  ],
+  "slots": [
+   "conversation.session.header.actions",
+   "conversation.chat.turnTail",
+   "sidebar.right.pane.tab",
+   "shell.overlay",
+   "conversation.chat.commandview",
+   "conversation.chat.node"
+  ],
+  "env": [],
+  "deps": [
+   "@deepseek-ai/dsh-client-ui-primitives",
+   "@deepseek-ai/dsh-llm",
+   "@deepseek-ai/dsh-session",
+   "@deepseek-ai/dsh-subagent",
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-agent",
+   "@deepseek-ai/dsh-tools"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "_linxin666_dsh-ssh",
+  "files": 2,
+  "ownFiles": 2,
+  "ownBytes": 944150,
+  "tools": [
+   "ssh_list",
+   "ssh_exec",
+   "ssh_upload",
+   "ssh_download",
+   "ssh_tunnel",
+   "ssh_cluster"
+  ],
+  "routes": [],
+  "slots": [
+   "sidebar.panellist",
+   "main"
+  ],
+  "env": [
+   "USER",
+   "SSH_AUTH_SOCK",
+   "SHELL"
+  ],
+  "deps": [
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-tools"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "_changfenhuang_dsh-genui",
+  "files": 8,
+  "ownFiles": 2,
+  "ownBytes": 894718,
+  "tools": [
+   "render_ui",
+   "validate_dsh_ui"
+  ],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "dsh-pet",
+  "files": 17,
+  "ownFiles": 17,
+  "ownBytes": 863601,
+  "tools": [],
+  "routes": [],
+  "slots": [
+   "shell.overlay",
+   "settings.section"
+  ],
+  "env": [
+   "NODE_TEST_CONTEXT",
+   "DSH_PET_ELECTRON_PATH",
+   "DSH_PET_DESKTOP_FORCE",
+   "DISPLAY",
+   "WAYLAND_DISPLAY",
+   "USERPROFILE",
+   "HOME",
+   "DSH_HOME",
+   "DSH_PET_ELECTRON_VERSION",
+   "DSH_PET_ELECTRON_MIRROR"
+  ],
+  "deps": [
+   "@deepseek-ai/dsh-home-paths",
+   "@deepseek-ai/dsh-credentials",
+   "@deepseek-ai/dsh-llm"
+  ],
+  "headers": [
+   "// preload 桥：只暴露窗口控制原语—— // - setBounds：宠物窗口逐帧跟随（renderer 上报包围盒的屏幕坐标，主进程 setContentBounds）。 // x/y/width/height = 窗口内容区坐"
+  ]
+ },
+ {
+  "dir": "dsh-ops",
+  "files": 155,
+  "ownFiles": 154,
+  "ownBytes": 766870,
+  "tools": [],
+  "routes": [],
+  "slots": [
+   "plugins.row.config"
+  ],
+  "env": [
+   "DSH_OPS_TEST_BASH",
+   "DSH_OPS_VCVARS",
+   "PATH",
+   "DSH_HOME",
+   "DSH_OPS_WORKER_BIN",
+   "PATHEXT",
+   "DSH_OPS_INSTALL_SPEC",
+   "DSH_OPS_DSH_CLI",
+   "APPDATA",
+   "LOCALAPPDATA"
+  ],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "dsh-thoughtdag",
+  "files": 97,
+  "ownFiles": 44,
+  "ownBytes": 725248,
+  "tools": [
+   "web_search",
+   "ask_user_question",
+   "why_check",
+   "why_file",
+   "recall_turn"
+  ],
+  "routes": [],
+  "slots": [
+   "main",
+   "sidebar.panellist"
+  ],
+  "env": [
+   "DSH_HOME",
+   "TD_AGENT_IDLE_MS",
+   "CODEX_HOME",
+   "TD_PI_EXTRA_EXTENSIONS",
+   "SHELL",
+   "NVM_DIR",
+   "FNM_DIR",
+   "N_PREFIX",
+   "PATH",
+   "LOCALAPPDATA"
+  ],
+  "deps": [],
+  "headers": [
+   "// dsh-thoughtdag client half — the lightest possible browser shim. // It puts ThoughtDAG where the harness puts its own",
+   "// dsh-thoughtdag host half — a plain Cordis plugin that mounts the // ThoughtDAG SPA under a prefix on the EXISTING DSH",
+   "// Claude Code as an agent runtime: one `claude -p` process per turn, spoken // to in stream-json both ways. The turn's "
+  ]
+ },
+ {
+  "dir": "_anionex_dsh-vision-toolkit",
+  "files": 25,
+  "ownFiles": 25,
+  "ownBytes": 603808,
+  "tools": [
+   "vision_toolkit_evidence",
+   "vision_toolkit_storage"
+  ],
+  "routes": [],
+  "slots": [
+   "tool.call.toolview",
+   "settings.section",
+   "conversation.input.dock"
+  ],
+  "env": [
+   "DSH_HOME",
+   "DSH_VISION_TOOLKIT_ALLOW_DETACHED_RESTART",
+   "COMSPEC",
+   "VISION_SSL_VERIFY"
+  ],
+  "deps": [
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-credentials",
+   "@deepseek-ai/dsh-settings",
+   "@deepseek-ai/dsh-storage-domain",
+   "@deepseek-ai/dsh-tools",
+   "@deepseek-ai/dsh-llm"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "dsh-free-search",
+  "files": 13,
+  "ownFiles": 13,
+  "ownBytes": 548389,
+  "tools": [
+   "web_search_exa",
+   "web_search",
+   "search_web_pages",
+   "search_pro",
+   "global_search",
+   "zhihu_search",
+   "free_search_test",
+   "platform_search",
+   "video_search",
+   "advanced_search",
+   "multi_search",
+   "cache_search",
+   "domain_search"
+  ],
+  "routes": [],
+  "slots": [
+   "plugins.row.config"
+  ],
+  "env": [
+   "RESEARCH_CACHE_DIR",
+   "DSH_HOME",
+   "DECISION_MODEL_URL"
+  ],
+  "deps": [
+   "@deepseek-ai/dsh-settings",
+   "@deepseek-ai/dsh-tools",
+   "@deepseek-ai/schemastery"
+  ],
+  "headers": [
+   "// research 文档持久缓存（node:sqlite，零依赖）。Node <22.5 无 node:sqlite 时整体降级为 no-op，插件照常工作。 // ponytail: cache_search 用 LIKE 而非 FT",
+   "// #72 域名黑名单：在结果进入上下文前过滤内容农场（CSDN 等）。 // 匹配语义（issue #72 约定）： // - 域名相等或其子域命中（csdn.net 覆盖 blog.csdn.net） // - 忽略大小写；www. ",
+   "// 质量链 fetch provider：接管宿主 web_fetch（替代基础 http provider）。 // T1 直连（跟随重定向，仅文本类内容）→ T2 exa contents（$1/1000 页，清洗正文 markdow"
+  ]
+ },
+ {
+  "dir": "_wxg-prc-cpg_browser-skill-dsh-plugin",
+  "files": 2,
+  "ownFiles": 2,
+  "ownBytes": 408192,
+  "tools": [],
+  "routes": [],
+  "slots": [
+   "tool.call.toolview",
+   "shell.overlay"
+  ],
+  "env": [
+   "BSK_HOME"
+  ],
+  "deps": [
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-tools",
+   "@deepseek-ai/dsh-llm"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "_yunmiao_studymate",
+  "files": 18,
+  "ownFiles": 17,
+  "ownBytes": 375705,
+  "tools": [],
+  "routes": [],
+  "slots": [
+   "main",
+   "sidebar.panellist"
+  ],
+  "env": [
+   "DSH_HOME",
+   "LEARN_WORKSPACE"
+  ],
+  "deps": [],
+  "headers": [
+   "// Antigravity-specific orchestration replaces DSH conversation boundaries at export. import fs from 'node:fs'; import p",
+   "// Adapt the exported Antigravity plugin without modifying source DSH skills, // which remain the single authority for t",
+   "// npm / DSH 入口先初始化本包 TS 加载，再导出原插件契约。 import './typescript-runtime.mjs'; const { inject, apply } = await import('./dsh-p"
+  ]
+ },
+ {
+  "dir": "_linxin666_dsh-client-ui-git-graph",
+  "files": 34,
+  "ownFiles": 34,
+  "ownBytes": 369368,
+  "tools": [],
+  "routes": [
+   "/git",
+   "/git/events"
+  ],
+  "slots": [
+   "conversation.input.dock"
+  ],
+  "env": [],
+  "deps": [
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-client-ui-primitives"
+  ],
+  "headers": [
+   "// Generated by scripts/sync-shared.mjs from shared/client/main-session.ts. Do not edit this copy; edit the shared sourc",
+   "// Generated by scripts/sync-shared.mjs from shared/client/telemetry.ts. Do not edit this copy; edit the shared source a",
+   "// Generated by scripts/sync-shared.mjs from shared/host/dsh-home.ts. Do not edit this copy; edit the shared source and "
+  ]
+ },
+ {
+  "dir": "dsh-pocket",
+  "files": 16,
+  "ownFiles": 16,
+  "ownBytes": 318783,
+  "tools": [],
+  "routes": [],
+  "slots": [
+   "conversation.session.header.actions",
+   "shell.overlay",
+   "sidebar.footer.action",
+   "settings.section"
+  ],
+  "env": [
+   "DSH_POCKET_CLIENT_ID",
+   "NODE_ENV",
+   "DSH_HOME",
+   "DSH_POCKET_CLOUDFLARED",
+   "ELECTRON_RUN_AS_NODE",
+   "WSL_DISTRO_NAME",
+   "WSL_INTEROP"
+  ],
+  "deps": [],
+  "headers": [
+   "// dsh-pocket 设置页签 RPC 契约（client 与 host 共享） export const POCKET_RPC_CHANNEL = '/dsh-pocket'; export const MOBILE_RIGHTBA",
+   "// dsh-pocket 网页客户端打包：client/index.jsx → client/client.js import { mkdir, writeFile } from 'node:fs/promises'; import { ",
+   "// DSH primitives 图标导出的跨版本兼容层。 // // 背景（2026-09 实测，dsh 0.1.7-rc.2 + dsh-pocket 2.10.6）： // 移动端组件原来直接具名导入 // IconPanelLef"
+  ]
+ },
+ {
+  "dir": "_smalltailqwq_dsh-client-ui-skin-maid-atelier",
+  "files": 2,
+  "ownFiles": 2,
+  "ownBytes": 318315,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_openviking_dsh-memory-plugin",
+  "files": 32,
+  "ownFiles": 32,
+  "ownBytes": 283048,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [
+   "OPENVIKING_PENDING_DRAIN_INTERVAL_MS",
+   "OPENVIKING_EXTRA_HEADERS",
+   "OPENVIKING_PENDING_DIR",
+   "OPENVIKING_PENDING_MAX_RETRIES",
+   "OPENVIKING_PENDING_TTL_DAYS",
+   "OPENVIKING_PENDING_REPLAY_LIMIT",
+   "OPENVIKING_STATE_DIR"
+  ],
+  "deps": [
+   "@deepseek-ai/dsh-llm",
+   "@deepseek-ai/dsh-mcp-client",
+   "@deepseek-ai/dsh-skill-filesystem"
+  ],
+  "headers": [
+   "// GENERATED FROM examples/memory-plugin-shared/lib. DO NOT EDIT. import { applyInputFilters, compileInputFilters } from",
+   "// GENERATED FROM examples/memory-plugin-shared/lib. DO NOT EDIT. /** * Every knob a memory plugin reads, declared once.",
+   "// GENERATED FROM examples/memory-plugin-shared/lib. DO NOT EDIT. import { readFileSync } from \"node:fs\"; import { homed"
+  ]
+ },
+ {
+  "dir": "_ethanyoq_dsh-ai-novel-writer",
+  "files": 3,
+  "ownFiles": 3,
+  "ownBytes": 275622,
+  "tools": [
+   "novel_read",
+   "novel_apply_change"
+  ],
+  "routes": [],
+  "slots": [
+   "sidebar.footer.action",
+   "shell.overlay",
+   "settings.plugin.item"
+  ],
+  "env": [],
+  "deps": [
+   "@deepseek-ai/dsh-tools",
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-atomic-write",
+   "@deepseek-ai/dsh-llm",
+   "@deepseek-ai/dsh-home-paths",
+   "@deepseek-ai/dsh-workspace"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "_linxin666_dsh-client-ui-skill-explorer",
+  "files": 2,
+  "ownFiles": 2,
+  "ownBytes": 178032,
+  "tools": [],
+  "routes": [],
+  "slots": [
+   "sidebar.panellist",
+   "main"
+  ],
+  "env": [
+   "DSH_HOME",
+   "DSH_AGENTS_HOME"
+  ],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_liustack_modlens",
+  "files": 3,
+  "ownFiles": 3,
+  "ownBytes": 165220,
+  "tools": [],
+  "routes": [
+   "/modlens/paste",
+   "/modlens/config"
+  ],
+  "slots": [
+   "settings.plugin.item",
+   "plugins.bundle.config"
+  ],
+  "env": [
+   "MODLENS_DSH_CLI"
+  ],
+  "deps": [],
+  "headers": [
+   "// Browser half of the modlens dsh plugin: paste-to-path. // // A capture-phase paste listener runs before the composer'",
+   "// DeepSeek Harness (dsh) plugin: registers a modlens_read_image tool backed // by the modlens CLI that ships in this ve",
+   "// The only place this plugin starts a child process. // // The desktop app has no console of its own, so on Windows eve"
+  ]
+ },
+ {
+  "dir": "misakanet",
+  "files": 2,
+  "ownFiles": 2,
+  "ownBytes": 146145,
+  "tools": [],
+  "routes": [],
+  "slots": [
+   "settings.general.item",
+   "sidebar.right.pane.tab",
+   "sidebar.right.pane.tab.title"
+  ],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_linxin666_dsh-web-all",
+  "files": 7,
+  "ownFiles": 7,
+  "ownBytes": 122526,
+  "tools": [],
+  "routes": [
+   "/api/dsh-web-all/degraded"
+  ],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": [
+   "//#region src/state.ts const KEY = Symbol.for(\"dsh-web-all.shell-state\"); /** The process-wide shared shell state (one i",
+   "//#region ../../node_modules/.pnpm/@deepseek-ai+cosmokit@1.8.6/node_modules/@deepseek-ai/cosmokit/lib/index.js /** Retur"
+  ]
+ },
+ {
+  "dir": "_zilliz_memsearch-dsh",
+  "files": 3,
+  "ownFiles": 3,
+  "ownBytes": 97950,
+  "tools": [],
+  "routes": [
+   "/memsearch-dsh/skill-candidates",
+   "/memsearch-dsh/skill-review",
+   "/memsearch-dsh/open-memsearch",
+   "/memsearch-dsh/list-memsearch",
+   "/memsearch-dsh/read-file"
+  ],
+  "slots": [
+   "conversation.input.dock"
+  ],
+  "env": [
+   "MEMSEARCH_CMD",
+   "MEMSEARCH_DIR",
+   "HOME",
+   "DSH_CLI",
+   "MEMSEARCH_DSH_SUMMARIZE",
+   "PATHEXT",
+   "PATH",
+   "MEMSEARCH_PYTHON"
+  ],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_liustack_modsearch",
+  "files": 3,
+  "ownFiles": 3,
+  "ownBytes": 83398,
+  "tools": [
+   "x_search",
+   "read_page"
+  ],
+  "routes": [
+   "/modsearch/config"
+  ],
+  "slots": [
+   "plugins.bundle.config",
+   "settings.plugin.item"
+  ],
+  "env": [
+   "MODSEARCH_DSH_CLI"
+  ],
+  "deps": [],
+  "headers": [
+   "// Browser half of the modsearch dsh plugin: the settings card. // // dsh web users have no terminal, so `modsearch conf",
+   "// DeepSeek Harness (dsh) plugin: routes the harness's web capability through // the modsearch CLI that ships in this ve",
+   "// The only place the standalone dsh plugin starts a child process. dsh can run // inside a GUI host with no console, wh"
+  ]
+ },
+ {
+  "dir": "_ethanyoq_dsh-invoice-downloader",
+  "files": 11,
+  "ownFiles": 11,
+  "ownBytes": 60285,
+  "tools": [],
+  "routes": [],
+  "slots": [
+   "sidebar.footer.action",
+   "shell.overlay"
+  ],
+  "env": [
+   "DSH_HOME",
+   "USERPROFILE",
+   "HOME"
+  ],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_nagi-ovo_dsh-ads",
+  "files": 2,
+  "ownFiles": 1,
+  "ownBytes": 59984,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [
+   "GITHUB_TOKEN",
+   "GH_TOKEN"
+  ],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_anysearch_anysearch-dsh",
+  "files": 10,
+  "ownFiles": 9,
+  "ownBytes": 59423,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [
+   "@deepseek-ai/dsh-web",
+   "@deepseek-ai/dsh-credentials",
+   "@deepseek-ai/dsh-tool-web",
+   "@deepseek-ai/schemastery",
+   "@deepseek-ai/dsh-tools"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "dsh-deja",
+  "files": 3,
+  "ownFiles": 3,
+  "ownBytes": 49428,
+  "tools": [
+   "deja_recall",
+   "deja_session",
+   "deja_blame",
+   "deja_fix",
+   "deja_how",
+   "deja_remember"
+  ],
+  "routes": [],
+  "slots": [],
+  "env": [
+   "DEJA_BIN",
+   "DSH_HOME"
+  ],
+  "deps": [],
+  "headers": [
+   "// dsh-deja, browser half: the lines deja writes for the person. // // The host half hands the model its recall and keep",
+   "// dsh-deja — the history you already have, inside DeepSeek Harness. // // dsh answers questions about its own sessions ",
+   "// The plugin's decision, kept out of index.js because a host is free to treat // anything a plugin module exports as pa"
+  ]
+ },
+ {
+  "dir": "dsh-api-relay-audit",
+  "files": 1,
+  "ownFiles": 1,
+  "ownBytes": 15766,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "brooks-lint",
+  "files": 3,
+  "ownFiles": 3,
+  "ownBytes": 10122,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [
+   "HOME",
+   "USERPROFILE",
+   "DSH_HOME"
+  ],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "dsh-postiz",
+  "files": 2,
+  "ownFiles": 2,
+  "ownBytes": 7712,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [
+   "@deepseek-ai/schemastery"
+  ],
+  "headers": []
+ },
+ {
+  "dir": "_cloudbase_dsh-plugin",
+  "files": 2,
+  "ownFiles": 2,
+  "ownBytes": 3453,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [
+   "CLOUDBASE_MCP_COMMAND",
+   "CLOUDBASE_MCP_ARGS"
+  ],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_vectorize-io_hindsight-coding-agents",
+  "files": 1,
+  "ownFiles": 1,
+  "ownBytes": 599,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "ds-harness-remote",
+  "files": 1,
+  "ownFiles": 1,
+  "ownBytes": 252,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "billion-context",
+  "files": 0,
+  "ownFiles": 0,
+  "ownBytes": 0,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "cc-safety-net",
+  "files": 0,
+  "ownFiles": 0,
+  "ownBytes": 0,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "dsh-context",
+  "files": 2,
+  "ownFiles": 0,
+  "ownBytes": 0,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_agentscope-ai_reme-dsh-plugin",
+  "files": 0,
+  "ownFiles": 0,
+  "ownBytes": 0,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_avernet-plugin_deepseek-harness-channel-bcn",
+  "files": 0,
+  "ownFiles": 0,
+  "ownBytes": 0,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_open-pets_dsh",
+  "files": 0,
+  "ownFiles": 0,
+  "ownBytes": 0,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_struktoai_mirage-dsh",
+  "files": 0,
+  "ownFiles": 0,
+  "ownBytes": 0,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ },
+ {
+  "dir": "_wxg-prc-cpg_dsh-weknora",
+  "files": 0,
+  "ownFiles": 0,
+  "ownBytes": 0,
+  "tools": [],
+  "routes": [],
+  "slots": [],
+  "env": [],
+  "deps": [],
+  "headers": []
+ }
+]

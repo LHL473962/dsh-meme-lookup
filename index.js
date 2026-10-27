@@ -56,7 +56,8 @@ export function apply(ctx) {
         try {
           const url = new URL(req.url, 'http://127.0.0.1')
           const sub = url.pathname.replace('/api/meme-panel', '') || '/'
-          const readBody = async () => { let b = ''; for await (const c of req) b += c; try { return JSON.parse(b || '{}') } catch { return {} } }
+          // 学自 dsh-vision-router：请求体设上限，防止被打爆内存
+          const readBody = async () => { let b = ''; let n = 0; for await (const c of req) { n += Buffer.byteLength(c); if (n > 32 * 1024) throw new Error('BODY_TOO_LARGE'); b += c } try { return JSON.parse(b || '{}') } catch { return {} } }
           if (sub === '/settings' && req.method === 'GET') return send(200, loadSettings())
           if (sub === '/settings' && req.method === 'POST') {
             const cur = { ...loadSettings(), ...(await readBody()) }
