@@ -915,11 +915,11 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
     },
     output: textOutput,
     async execute(args) {
-      const title = String((args && args.title) || '').trim()
+      const title = String((args && args.title) || '').trim().slice(0, 40)
       if (!title) return { ok: false, error: 'EMPTY_TITLE' }
       const entry = {
         title,
-        meaning: String((args && args.meaning) || '').trim(),
+        meaning: String((args && args.meaning) || '').trim().slice(0, 500),
         usage: String((args && args.usage) || '').trim(),
         avoid: String((args && args.avoid) || '').trim(),
         tone: String((args && args.tone) || '').trim(),
@@ -1672,6 +1672,13 @@ function currentPersona() {
   return loadPersonas().find((p) => p.id === id) || { id: 'steady', name: '稳重', style: '克制', sample: '' }
 }
 
+// 学自 dsh-vision-router：错误文本先脱敏，别把本机路径回传出去
+function redactPaths(text) {
+  return String(text == null ? '' : text)
+    .replace(/[A-Za-z]:\\[^\s"']+/g, '<path>')
+    .replace(/\/(?:home|Users|root)\/[^\s"']+/g, '<path>')
+    .slice(0, 400)
+}
 function loadSettings() {
   const def = { tendency: 1, density: 1, allowRisky: false, autoUpdate: true }
   try { return { ...def, ...(JSON.parse(readFileSync(SETTINGS_FILE, "utf8")) || {}) } } catch { return def }
