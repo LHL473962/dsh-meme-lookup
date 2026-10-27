@@ -72,6 +72,7 @@ const HTML = [
   '</div>',
   '<h2>手动加梗</h2><div class="card">',
   '<label>梗名 <b>*</b></label><input id="title" placeholder="例：脑子下班了">',
+  '<label>条目类型</label><div class="seg" id="kind"><button data-v="meme" class="on">网络梗</button><button data-v="phrase">私人用语</button></div>',
   '<label>这梗哪来的 <b>*</b></label>',
   '<div class="tags" id="srcs"><span class="tag" data-v="自创">自己编的</span><span class="tag" data-v="出处不详">出处不详</span><span class="tag" data-v="有 BV">有 BV/链接</span></div>',
   '<input id="source" placeholder="选了「有 BV」再填 BV 号；其他情况可留空">',
@@ -97,6 +98,7 @@ const HTML = [
   'async function persist(){await fetch("/api/settings",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(st)})}',
   'let src="";document.querySelectorAll("#srcs .tag").forEach(t=>t.onclick=()=>{document.querySelectorAll("#srcs .tag").forEach(x=>x.classList.remove("on"));src=t.dataset.v;t.classList.add("on")});',
   'const tones=new Set();document.querySelectorAll("#tones .tag").forEach(t=>t.onclick=()=>{t.classList.toggle("on");t.classList.contains("on")?tones.add(t.dataset.v):tones.delete(t.dataset.v)});',
+  'let kind="meme";document.querySelectorAll("#kind button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#kind button").forEach(x=>x.classList.remove("on"));b.classList.add("on");kind=b.dataset.v});',
   'let vis="private";document.querySelectorAll("#vis button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#vis button").forEach(x=>x.classList.remove("on"));b.classList.add("on");vis=b.dataset.v});',
   'const $=id=>document.getElementById(id);',
   'window.editItem=function(i){const d=window.__LEX[i];$("title").value=d.title||"";$("source").value=d.source||"";$("meaning").value=d.meaning||"";$("avoid").value=d.avoid||"";$("example").value=d.example||"";$("variants").value=(d.variants||[]).join(", ");src=d.sourceType||"";document.querySelectorAll("#srcs .tag").forEach(t=>t.classList.toggle("on",t.dataset.v===src));tones.clear();(d.tone||[]).forEach(v=>{tones.add(v);document.querySelectorAll("#tones .tag").forEach(t=>{if(t.dataset.v===v)t.classList.add("on")})});window.scrollTo(0,0)};',
@@ -109,7 +111,7 @@ const HTML = [
   '  if(!title||!meaning){err.textContent="梗名和含义要填";err.style.display="block";return}',
   '  if(srcType==="有 BV"&&!source){err.textContent="选了「有 BV」就把 BV 号填上";err.style.display="block";return}',
   '  err.style.display="none";',
-  '  const body={title,meaning,source,sourceType:srcType,tone:[...tones],avoid:$("avoid").value,example:$("example").value,variants:$("variants").value,visibility:vis};',
+  '  const body={kind,title,meaning,source,sourceType:srcType,tone:[...tones],avoid:$("avoid").value,example:$("example").value,variants:$("variants").value,visibility:vis};',
   '  const r=await fetch("/api/userlex",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});',
   '  if(r.ok){location.reload()}else{err.textContent="保存失败";err.style.display="block"}',
   '};',
@@ -121,7 +123,7 @@ function render(s, lex) {
   const items = (lex || []).map((e, i) => {
     const vs = Array.isArray(e.variants) ? e.variants : String(e.variants || '').split(',').map((x) => x.trim()).filter(Boolean)
     const badge = e.visibility === 'public' ? '<span class="badge pub">申请公开·' + (e.review || 'pending') + '</span>' : '<span class="badge priv">仅自己</span>'
-    return '<div class="item"><div class="t">' + esc(e.title) + badge + '</div>' +
+    return '<div class="item"><div class="t">' + esc(e.title) + (e.kind === 'phrase' ? '<span class="badge priv">私人用语</span>' : '') + badge + '</div>' +
       '<div class="m">' + esc(e.meaning) + '</div>' +
       '<div class="m">来源：' + esc(e.sourceType || (e.source ? '有 BV' : '出处不详')) + (e.source ? ' · ' + esc(e.source) : '') + (e.tone && e.tone.length ? ' · 语气：' + esc(e.tone.join('/')) : '') + '</div>' +
       (e.avoid ? '<div class="m">别用：' + esc(e.avoid) + '</div>' : '') +
