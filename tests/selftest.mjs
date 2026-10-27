@@ -1,5 +1,7 @@
 // 自检：跑一轮确定性的检查，输出 PASS/FAIL 报告（给另一台机器上的 AI 用）
-import { writeFileSync } from 'node:fs'
+import { writeFileSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { homedir } from 'node:os'
 import { apply } from '../index.js'
 
 // 正式参数：--simulate=429|500|404|offline
@@ -18,17 +20,53 @@ if (sim) {
   }
 }
 
+// ENTRY_GONE：单次只 WARN，连续 N 天才 FAIL（词条真被删一次不该把 CI 打红）
+const ENTRY_GONE_FAIL_DAYS = Math.max(1, Number((args.find((a) => a.startsWith('--entry-gone-streak=')) || '').split('=')[1]) || 3)
+// 测试专用：模拟 404 也走真实连续计数（默认模拟不落盘，保证可重复）
+const ENTRY_GONE_USE_STATE = args.includes('--entry-gone-use-state')
+const SELFTEST_STATE = join(process.env.DSH_HOME || join(homedir(), '.dsh'), 'meme-selftest-state.json')
+const pad2 = (n) => String(n).padStart(2, '0')
+function dayKey(offset = 0) {
+  const d = new Date()
+  d.setHours(12, 0, 0, 0)
+  d.setDate(d.getDate() + offset)
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`
+}
+function readState() {
+  try { return JSON.parse(readFileSync(SELFTEST_STATE, 'utf8')) || {} } catch { return {} }
+}
+function bumpEntryGoneStreak() {
+  if (sim && !ENTRY_GONE_USE_STATE) return 1 // 模拟默认不落盘，保证可重复
+  const st = readState()
+  const keep = new Set(Array.isArray(st.entryGone) ? st.entryGone : [])
+  keep.add(dayKey(0))
+  let streak = 0
+  while (keep.has(dayKey(-streak))) streak++
+  const pruned = [...keep].filter((d) => d >= dayKey(-30)).sort()
+  try { writeFileSync(SELFTEST_STATE, JSON.stringify({ ...st, entryGone: pruned }, null, 2)) } catch {}
+  return streak
+}
+function resetEntryGone() {
+  if (sim && !ENTRY_GONE_USE_STATE) return
+  const st = readState()
+  if (!st.entryGone) return
+  delete st.entryGone
+  try { writeFileSync(SELFTEST_STATE, JSON.stringify(st, null, 2)) } catch {}
+}
+
 const tools = []
 apply({ tools: { register: (t) => tools.push(t) } })
 const get = (n) => tools.find((t) => t.name === n)
 const results = []
 const add = (name, ok, detail) => results.push({ name, ok, detail })
 const addSkip = (name, detail) => results.push({ name, ok: true, skipped: true, detail })
+const addWarn = (name, detail) => results.push({ name, ok: true, warned: true, detail })
 
 async function safe(name, fn) {
   try {
     const d = await fn()
-    if (d && d.skip) addSkip(name, d.detail)
+    if (d && d.warn) addWarn(name, d.detail)
+    else if (d && d.skip) addSkip(name, d.detail)
     else add(name, true, d)
   } catch (e) { add(name, false, String((e && e.message) || e)) }
 }
@@ -68,13 +106,18 @@ await safe('假梗不编造', async () => {
   return '未给正面判定: ' + verdict
 })
 
-// 5. 已知梗有判定（限流/上游故障 SKIP；数据问题 ENTRY_GONE 和 UNKNOWN 一律 FAIL）
+// 5. 已知梗有判定：限流/上游 SKIP；ENTRY_GONE 单次 WARN、连续 N 天 FAIL；UNKNOWN FAIL
 await safe('已知梗判定', async () => {
   const r = await get('meme_coach').execute({ text: '芭比Q' })
   if (r && (r.error === 'RATE_LIMITED' || r.error === 'UPSTREAM_ERROR')) return { skip: true, detail: r.error + '，本轮跳过' }
-  if (r && r.error === 'ENTRY_GONE') throw new Error('词条详情 404（数据变了，不是限流）: ' + String(r.hint || ''))
+  if (r && r.error === 'ENTRY_GONE') {
+    const days = bumpEntryGoneStreak()
+    if (days >= ENTRY_GONE_FAIL_DAYS) throw new Error(`词条详情 404 已连续 ${days} 天（数据变了，不是限流）: ${String(r.hint || '')}`)
+    return { warn: true, detail: `ENTRY_GONE 第 ${days} 天（单次只 WARN，连续 ${ENTRY_GONE_FAIL_DAYS} 天才 FAIL）` }
+  }
   if (!r.verdict) throw new Error('无 verdict' + (r && r.error ? '（' + r.error + '）' : ''))
   if (r.verdict === 'UNKNOWN') throw new Error('已知梗被判 UNKNOWN（非上游故障）: ' + String(r.reason || r.label || ''))
+  resetEntryGone() // 详情正常，清零 ENTRY_GONE 连续计数
   return r.verdict + ' / 出处 ' + r.provenance
 })
 
@@ -193,14 +236,15 @@ await safe('工具 schema 合法', async () => {
   if (bad.length) throw new Error(`${bad.length} 个工具参数不是 object schema: ${bad.map((b) => b.name).join(',')}`)
   return `${tools.length} 个都是 object schema`
 })
-const pass = results.filter((r) => r.ok && !r.skipped).length
+const pass = results.filter((r) => r.ok && !r.skipped && !r.warned).length
 const fail = results.filter((r) => !r.ok).length
 const skip = results.filter((r) => r.skipped).length
+const warn = results.filter((r) => r.warned).length
 const reportPath = args.find((a) => !a.startsWith('--')) || 'selftest-report.md'
 const report = ['# 自检报告', '', '时间：' + new Date().toISOString(), '']
   .concat(sim ? ['模拟：--simulate=' + sim + '（只影响 cnmeme.wiki）', ''] : [])
-  .concat(['通过 ' + pass + ' / 跳过 ' + skip + ' / 失败 ' + fail, '', '| 检查 | 结果 | 说明 |', '|---|---|---|'])
-  .concat(results.map((r) => '| ' + r.name + ' | ' + (r.skipped ? 'SKIP' : r.ok ? 'PASS' : '**FAIL**') + ' | ' + String(r.detail).replace(/\|/g, '/').slice(0, 120) + ' |'))
+  .concat(['通过 ' + pass + ' / 跳过 ' + skip + ' / 警告 ' + warn + ' / 失败 ' + fail, '', '| 检查 | 结果 | 说明 |', '|---|---|---|'])
+  .concat(results.map((r) => '| ' + r.name + ' | ' + (r.warned ? 'WARN' : r.skipped ? 'SKIP' : r.ok ? 'PASS' : '**FAIL**') + ' | ' + String(r.detail).replace(/\|/g, '/').slice(0, 120) + ' |'))
   .join('\n')
 console.log(report)
 writeFileSync(reportPath, report, 'utf8')

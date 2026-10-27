@@ -41,11 +41,24 @@ node tests/selftest.mjs selftest-report.md
 12 项分别是：工具注册、emoji 变体、句式模板、假梗不编造、已知梗判定、设置读写、用户加梗生效、面板服务（含 `/api/meme-panel` 路由）、请求体上限覆盖、版本一致、设置写入幂等、工具 schema 合法。
 
 > 上游（cnmeme.wiki）限流时，`假梗不编造` / `已知梗判定` 可能显示 **SKIP**——那不是失败，
-> 重跑即可。SKIP 不算通过，报告头会单独计数。
->
-> 本地复现上游故障（只拦 cnmeme.wiki，不碰真实网络）：
-> `node tests/selftest.mjs --simulate=429`（也可 500 / 404 / offline）。
-> 429 / 500 / offline → 两项 SKIP；404 → `ENTRY_GONE`，算 FAIL（数据问题，不是限流）。
+> 重跑即可。SKIP / WARN 不算通过，报告头会单独计数；退出码只看 FAIL。
+
+### 本地复现上游故障（CI 按这张表判）
+
+参数只拦 `cnmeme.wiki`，不碰真实网络；报告头会写「模拟：…」。
+
+| 命令 | 预期结果 | 退出码 |
+|---|---|---|
+| `node tests/selftest.mjs` | 12 通过 / 0 跳过 / 0 警告 / 0 失败 | 0 |
+| `--simulate=429` | 10 通过 / 2 跳过（RATE_LIMITED） / 0 / 0 | 0 |
+| `--simulate=500` | 10 通过 / 2 跳过（UPSTREAM_ERROR） / 0 / 0 | 0 |
+| `--simulate=offline` | 10 通过 / 2 跳过（UPSTREAM_ERROR） / 0 / 0 | 0 |
+| `--simulate=404` | 10 通过 / 1 跳过 / 1 警告（ENTRY_GONE 单次） / 0 | 0 |
+| `--simulate=404 --entry-gone-streak=1` | 10 通过 / 1 跳过 / 0 警告 / 1 失败（ENTRY_GONE） | 1 |
+
+> `ENTRY_GONE`（词条详情 404）单次只 WARN，连续 `--entry-gone-streak` 天（默认 3）才 FAIL；
+> 详情正常时计数自动清零。`HTTP_ERROR` / `UNKNOWN` 仍是 FAIL。
+> `--entry-gone-use-state` 是验证连续计数用的测试开关（默认模拟不落盘），CI 不需要。
 
 **任何一项 FAIL 都要原样记录**，包括报错文本。
 
@@ -99,7 +112,7 @@ meme_coach：尊嘟假嘟
 ## 四、反馈格式（照抄）
 
 ```
-【环境】Windows 版本 / DSH 版本 / 插件版本 v1.6.2
+【环境】Windows 版本 / DSH 版本 / 插件版本 v1.6.3
 【自检】通过 X / 失败 Y（贴报告）
 【失败项】哪一条、报错文本
 【人测】
