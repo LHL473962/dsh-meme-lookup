@@ -2,6 +2,22 @@
 import { writeFileSync } from 'node:fs'
 import { apply } from '../index.js'
 
+// 正式参数：--simulate=429|500|404|offline
+// 只拦 cnmeme.wiki，用来复现 SKIP（429/500/offline）与 ENTRY_GONE（404）分支，不碰真实网络
+const args = process.argv.slice(2)
+const sim = (args.find((a) => a.startsWith('--simulate=')) || '').split('=')[1] || ''
+if (sim) {
+  const realFetch = globalThis.fetch
+  globalThis.fetch = async (url, opts) => {
+    if (String(url).includes('cnmeme.wiki')) {
+      if (sim === 'offline') throw new Error('simulated offline')
+      const status = sim === '429' ? 429 : sim === '500' ? 500 : sim === '404' ? 404 : Number(sim) || 429
+      return { ok: false, status }
+    }
+    return realFetch(url, opts)
+  }
+}
+
 const tools = []
 apply({ tools: { register: (t) => tools.push(t) } })
 const get = (n) => tools.find((t) => t.name === n)
@@ -42,21 +58,22 @@ await safe('句式模板识别', async () => {
   return '贷笔大的 OK'
 })
 
-// 4. 不存在的梗不许编（上游限流/挂了就 SKIP，别把「查不到」当成「不编造」的证据）
+// 4. 不存在的梗不许编（上游不可用就 SKIP——「查不到」不能当成「不编造」的证据）
 await safe('假梗不编造', async () => {
   const r = await get('meme_coach').execute({ text: '猫咪陀螺仪' })
-  if (r && (r.error === 'RATE_LIMITED' || r.error === 'UPSTREAM_ERROR')) return { skip: true, detail: r.error + '，本轮跳过' }
+  if (r && r.error) return { skip: true, detail: r.error + '，本轮跳过' }
   const verdict = String(r.verdict || '')
   const bad = /USABLE|USE_WITH_CARE/.test(verdict)
   if (bad) throw new Error('对假梗给出了 ' + verdict + '，可能编造')
   return '未给正面判定: ' + verdict
 })
 
-// 5. 已知梗有判定（只允许限流/上游故障 SKIP；UNKNOWN 一律算 FAIL）
+// 5. 已知梗有判定（限流/上游故障 SKIP；数据问题 ENTRY_GONE 和 UNKNOWN 一律 FAIL）
 await safe('已知梗判定', async () => {
   const r = await get('meme_coach').execute({ text: '芭比Q' })
   if (r && (r.error === 'RATE_LIMITED' || r.error === 'UPSTREAM_ERROR')) return { skip: true, detail: r.error + '，本轮跳过' }
-  if (!r.verdict) throw new Error('无 verdict')
+  if (r && r.error === 'ENTRY_GONE') throw new Error('词条详情 404（数据变了，不是限流）: ' + String(r.hint || ''))
+  if (!r.verdict) throw new Error('无 verdict' + (r && r.error ? '（' + r.error + '）' : ''))
   if (r.verdict === 'UNKNOWN') throw new Error('已知梗被判 UNKNOWN（非上游故障）: ' + String(r.reason || r.label || ''))
   return r.verdict + ' / 出处 ' + r.provenance
 })
@@ -179,9 +196,12 @@ await safe('工具 schema 合法', async () => {
 const pass = results.filter((r) => r.ok && !r.skipped).length
 const fail = results.filter((r) => !r.ok).length
 const skip = results.filter((r) => r.skipped).length
-const report = ['# 自检报告', '', '时间：' + new Date().toISOString(), '', '通过 ' + pass + ' / 跳过 ' + skip + ' / 失败 ' + fail, '', '| 检查 | 结果 | 说明 |', '|---|---|---|']
+const reportPath = args.find((a) => !a.startsWith('--')) || 'selftest-report.md'
+const report = ['# 自检报告', '', '时间：' + new Date().toISOString(), '']
+  .concat(sim ? ['模拟：--simulate=' + sim + '（只影响 cnmeme.wiki）', ''] : [])
+  .concat(['通过 ' + pass + ' / 跳过 ' + skip + ' / 失败 ' + fail, '', '| 检查 | 结果 | 说明 |', '|---|---|---|'])
   .concat(results.map((r) => '| ' + r.name + ' | ' + (r.skipped ? 'SKIP' : r.ok ? 'PASS' : '**FAIL**') + ' | ' + String(r.detail).replace(/\|/g, '/').slice(0, 120) + ' |'))
   .join('\n')
 console.log(report)
-writeFileSync(process.argv[2] || 'selftest-report.md', report, 'utf8')
+writeFileSync(reportPath, report, 'utf8')
 process.exit(fail > 0 ? 1 : 0)

@@ -42,6 +42,10 @@ node tests/selftest.mjs selftest-report.md
 
 > 上游（cnmeme.wiki）限流时，`假梗不编造` / `已知梗判定` 可能显示 **SKIP**——那不是失败，
 > 重跑即可。SKIP 不算通过，报告头会单独计数。
+>
+> 本地复现上游故障（只拦 cnmeme.wiki，不碰真实网络）：
+> `node tests/selftest.mjs --simulate=429`（也可 500 / 404 / offline）。
+> 429 / 500 / offline → 两项 SKIP；404 → `ENTRY_GONE`，算 FAIL（数据问题，不是限流）。
 
 **任何一项 FAIL 都要原样记录**，包括报错文本。
 
@@ -95,7 +99,7 @@ meme_coach：尊嘟假嘟
 ## 四、反馈格式（照抄）
 
 ```
-【环境】Windows 版本 / DSH 版本 / 插件版本 v1.6.1
+【环境】Windows 版本 / DSH 版本 / 插件版本 v1.6.2
 【自检】通过 X / 失败 Y（贴报告）
 【失败项】哪一条、报错文本
 【人测】
