@@ -1675,10 +1675,12 @@ function currentPersona() {
 
 // 学自 dsh-vision-router：错误文本先脱敏，别把本机路径回传出去
 function redactPaths(text) {
-  return String(text == null ? '' : text)
-    .replace(/[A-Za-z]:\\[^\s"']+/g, '<path>')
-    .replace(/\/(?:home|Users|root)\/[^\s"']+/g, '<path>')
-    .slice(0, 400)
+  // 学自 open-pets 的 sanitizeStatusLine：压平换行、去掉 URL、替换路径、截断
+  let s = String(text == null ? '' : text).replace(/[\r\n]+/g, ' ')
+  s = s.replace(/https?:\/\/\S+/gi, '<url>')
+  s = s.replace(/[A-Za-z]:\\[^\s"']+/g, '<path>')
+  s = s.replace(/\/(?:home|Users|root)\/[^\s"']+/g, '<path>')
+  return s.trim().slice(0, 400)
 }
 // 学自 dshmarket：原子写，崩在写一半也不会把设置/词表截断
 function writeFileAtomic(file, content) {
