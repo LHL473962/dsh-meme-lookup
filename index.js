@@ -510,6 +510,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
           scenes,
           evasion: detectEvasion(text),
           persona: currentPersona(),
+          persona_lines: personaBank(currentPersona().id).slice(0, 4),
           self_reaction: scenes.length ? { scene: scenes[0].name, character: scenes[0].reaction.name, note: scenes[0].usage } : null,
           meme_tiers: {
             live: memes.filter((m) => m.tier === 'live').map((m) => m.span),
@@ -1649,6 +1650,11 @@ function classifyContext(text, memes) {
 }
 
 const PERSONA_FILE = new URL('./personas.json', import.meta.url)
+const BANKS_FILE = new URL('./persona_banks.json', import.meta.url)
+function personaBank(id) {
+  try { const j = JSON.parse(readFileSync(BANKS_FILE, 'utf8')); const it = (j.items || []).find((x) => x.id === id); return it ? it.lines : [] } catch { return [] }
+}
+
 function loadPersonas() {
   try { return (JSON.parse(readFileSync(PERSONA_FILE, 'utf8')) || {}).items || [] } catch { return [] }
 }
