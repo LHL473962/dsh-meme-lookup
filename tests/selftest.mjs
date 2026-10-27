@@ -85,9 +85,13 @@ await safe('用户加梗生效', async () => {
 
 // 8. 面板服务（可选）
 await safe('面板服务', async () => {
-  const r = await fetch('http://127.0.0.1:8797/', { signal: AbortSignal.timeout(1500) })
-  if (!r.ok) throw new Error('HTTP ' + r.status)
-  return 'HTTP ' + r.status
+  try {
+    const r = await fetch('http://127.0.0.1:8797/', { signal: AbortSignal.timeout(1500) })
+    if (!r.ok) throw new Error('HTTP ' + r.status)
+    return 'HTTP ' + r.status
+  } catch {
+    return '未启动（可选，node tools/panel.mjs 才有）'
+  }
 })
 
 const pass = results.filter((r) => r.ok).length
