@@ -1276,6 +1276,15 @@ async function freshnessOf(title, tags) {
   const label = score >= 0.6 ? 'fresh' : score >= 0.3 ? 'usable' : score > 0 ? 'stale' : 'unknown'
   const value = { score: Number(score.toFixed(2)), label, last_used_days: lastUsedDays, recent30, half_life_days: half, applicability: Number(applicability.toFixed(2)) }
   FRESH_CACHE[key] = { value, at: Date.now() }
+  // 学自 vision-router 的有界状态：缓存条目设上限，超了按最旧淘汰
+  {
+    const MAX = 500
+    const ks = Object.keys(FRESH_CACHE)
+    if (ks.length > MAX) {
+      ks.sort((a, b) => (FRESH_CACHE[a].at || 0) - (FRESH_CACHE[b].at || 0))
+      for (const k of ks.slice(0, ks.length - MAX)) delete FRESH_CACHE[k]
+    }
+  }
   try { writeFileSync2(FRESH_CACHE_FILE, JSON.stringify(FRESH_CACHE)) } catch {}
   return value
 }
