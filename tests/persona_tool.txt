@@ -1,0 +1,27 @@
+
+  ctx.tools.register({
+    name: 'meme_persona',
+    description: '人格/说话风格：稳重、损友、贴吧、捧场、自嘲、冷面。只管怎么说，不管该不该说。',
+    parameters: {
+      action: { type: 'string', description: 'list 列出 / get 当前 / set 切换' },
+      id: { type: 'string', description: '人格 id：steady/roast/tieba/hype/selfmock/deadpan' },
+    },
+    output: textOutput,
+    async execute(args) {
+      const a = String((args && args.action) || 'list')
+      let list = []
+      try { list = (JSON.parse(readFileSync(PERSONA_FILE, 'utf8')) || {}).items || [] } catch {}
+      const cur = loadSettings().persona || 'steady'
+      if (a === 'list') return { ok: true, current: cur, personas: list.map((p) => ({ id: p.id, name: p.name, desc: p.desc })) }
+      if (a === 'get') return { ok: true, persona: list.find((p) => p.id === cur) || null }
+      if (a === 'set') {
+        const want = String((args && args.id) || '').trim()
+        const found = list.find((p) => p.id === want || p.name === want)
+        if (!found) return { ok: false, error: 'UNKNOWN_PERSONA', available: list.map((p) => p.id) }
+        const st = loadSettings()
+        writeFileSync(SETTINGS_FILE, JSON.stringify({ ...st, persona: found.id }, null, 2))
+        return { ok: true, persona: found }
+      }
+      return { ok: false, error: 'BAD_ACTION' }
+    },
+  })

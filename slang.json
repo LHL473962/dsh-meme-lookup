@@ -12,7 +12,8 @@
     "绷不住了啊",
     "没绷住"
    ],
-   "meaning": "忍不住笑了或情绪失控"
+   "meaning": "忍不住笑了或情绪失控",
+   "domain": "通用"
   },
   {
    "title": "破防",
@@ -25,7 +26,8 @@
     "破防了",
     "大破防"
    ],
-   "meaning": "心理防线被击穿"
+   "meaning": "心理防线被击穿",
+   "domain": "通用"
   },
   {
    "title": "麻了",
@@ -37,7 +39,8 @@
     "我麻了",
     "麻住了"
    ],
-   "meaning": "被整到失去反应"
+   "meaning": "被整到失去反应",
+   "domain": "通用"
   },
   {
    "title": "裂开",
@@ -49,7 +52,8 @@
     "我裂开了",
     "直接裂开"
    ],
-   "meaning": "崩了、撑不住"
+   "meaning": "崩了、撑不住",
+   "domain": "通用"
   },
   {
    "title": "笑死",
@@ -63,7 +67,8 @@
     "笑麻了",
     "笑拥了"
    ],
-   "meaning": "笑到不行"
+   "meaning": "笑到不行",
+   "domain": "通用"
   },
   {
    "title": "无语",
@@ -76,7 +81,8 @@
     "无语子",
     "无大语"
    ],
-   "meaning": "说不出话"
+   "meaning": "说不出话",
+   "domain": "通用"
   },
   {
    "title": "服了",
@@ -89,7 +95,8 @@
     "真服了",
     "服气"
    ],
-   "meaning": "认输或无奈"
+   "meaning": "认输或无奈",
+   "domain": "通用"
   },
   {
    "title": "绝了",
@@ -101,7 +108,8 @@
     "真绝了",
     "太绝了"
    ],
-   "meaning": "好到或离谱到极致"
+   "meaning": "好到或离谱到极致",
+   "domain": "通用"
   },
   {
    "title": "乐",
@@ -114,7 +122,8 @@
     "乐死",
     "开乐"
    ],
-   "meaning": "看热闹不嫌事大"
+   "meaning": "看热闹不嫌事大",
+   "domain": "通用"
   },
   {
    "title": "泪目",
@@ -126,7 +135,8 @@
     "泪崩",
     "看哭了"
    ],
-   "meaning": "被感动"
+   "meaning": "被感动",
+   "domain": "通用"
   },
   {
    "title": "上头",
@@ -137,7 +147,8 @@
    "aliases": [
     "太上头了"
    ],
-   "meaning": "情绪被带起来停不下"
+   "meaning": "情绪被带起来停不下",
+   "domain": "通用"
   },
   {
    "title": "下头",
@@ -150,7 +161,8 @@
     "下头男",
     "下头女"
    ],
-   "meaning": "瞬间反感"
+   "meaning": "瞬间反感",
+   "domain": "通用"
   },
   {
    "title": "尴尬",
@@ -162,7 +174,8 @@
     "社死",
     "社会性死亡"
    ],
-   "meaning": "当众丢脸"
+   "meaning": "当众丢脸",
+   "domain": "通用"
   },
   {
    "title": "慌",
@@ -174,7 +187,8 @@
     "心慌",
     "慌了"
    ],
-   "meaning": "紧张"
+   "meaning": "紧张",
+   "domain": "通用"
   },
   {
    "title": "急",
@@ -187,7 +201,8 @@
     "急急急",
     "急死了"
    ],
-   "meaning": "被戳到痛处"
+   "meaning": "被戳到痛处",
+   "domain": "通用"
   },
   {
    "title": "离谱",
@@ -200,7 +215,8 @@
     "离谱他妈",
     "离谱到家"
    ],
-   "meaning": "不合常理"
+   "meaning": "不合常理",
+   "domain": "通用"
   },
   {
    "title": "逆天",
@@ -212,7 +228,8 @@
     "逆天玩意",
     "太逆天了"
    ],
-   "meaning": "离谱到不讲道理"
+   "meaning": "离谱到不讲道理",
+   "domain": "通用"
   },
   {
    "title": "阴间",
@@ -225,7 +242,8 @@
     "阴间玩意",
     "啥阴"
    ],
-   "meaning": "诡异、让人不适"
+   "meaning": "诡异、让人不适",
+   "domain": "通用"
   },
   {
    "title": "抽象",
@@ -237,7 +255,8 @@
     "太抽象了",
     "抽象行为"
    ],
-   "meaning": "看不懂、难以理解"
+   "meaning": "看不懂、难以理解",
+   "domain": "通用"
   },
   {
    "title": "典",
@@ -250,7 +269,8 @@
     "太典了",
     "典"
    ],
-   "meaning": "典型到可以当范例（多含讽刺）"
+   "meaning": "典型到可以当范例（多含讽刺）",
+   "domain": "通用"
   },
   {
    "title": "就这",
@@ -262,7 +282,8 @@
     "就这？",
     "就这水平"
    ],
-   "meaning": "轻蔑地表示不过如此"
+   "meaning": "轻蔑地表示不过如此",
+   "domain": "通用"
   },
   {
    "title": "啊这",
@@ -274,7 +295,8 @@
     "这……",
     "这波"
    ],
-   "meaning": "一时不知说什么"
+   "meaning": "一时不知说什么",
+   "domain": "通用"
   },
   {
    "title": "有一说一",
@@ -286,7 +308,8 @@
     "有一说一确实",
     "说实话"
    ],
-   "meaning": "客观讲"
+   "meaning": "客观讲",
+   "domain": "通用"
   },
   {
    "title": "属实",
@@ -298,7 +321,8 @@
     "属实干货",
     "属实离谱"
    ],
-   "meaning": "确实是"
+   "meaning": "确实是",
+   "domain": "通用"
   },
   {
    "title": "确实",
@@ -310,7 +334,8 @@
     "确实如此",
     "有道理"
    ],
-   "meaning": "认同"
+   "meaning": "认同",
+   "domain": "通用"
   },
   {
    "title": "合理",
@@ -322,7 +347,8 @@
     "很合理",
     "不太合理"
    ],
-   "meaning": "讲得通"
+   "meaning": "讲得通",
+   "domain": "通用"
   },
   {
    "title": "不至于",
@@ -333,7 +359,8 @@
    "aliases": [
     "不至于吧"
    ],
-   "meaning": "觉得反应过度"
+   "meaning": "觉得反应过度",
+   "domain": "通用"
   },
   {
    "title": "行吧",
@@ -345,7 +372,8 @@
     "那行吧",
     "好吧"
    ],
-   "meaning": "勉强接受"
+   "meaning": "勉强接受",
+   "domain": "通用"
   },
   {
    "title": "可以",
@@ -357,7 +385,8 @@
     "这个可以",
     "行了"
    ],
-   "meaning": "认可"
+   "meaning": "认可",
+   "domain": "通用"
   },
   {
    "title": "难评",
@@ -369,7 +398,8 @@
     "不好评",
     "很难评"
    ],
-   "meaning": "不好下结论"
+   "meaning": "不好下结论",
+   "domain": "通用"
   },
   {
    "title": "摆烂",
@@ -382,7 +412,8 @@
     "摆了",
     "摆烂了"
    ],
-   "meaning": "放弃努力"
+   "meaning": "放弃努力",
+   "domain": "通用"
   },
   {
    "title": "躺平",
@@ -394,7 +425,8 @@
     "躺了",
     "平躺"
    ],
-   "meaning": "不再竞争"
+   "meaning": "不再竞争",
+   "domain": "通用"
   },
   {
    "title": "内卷",
@@ -406,7 +438,8 @@
     "卷起来了",
     "太卷了"
    ],
-   "meaning": "过度竞争"
+   "meaning": "过度竞争",
+   "domain": "通用"
   },
   {
    "title": "摸鱼",
@@ -418,7 +451,8 @@
     "划水",
     "摸会儿鱼"
    ],
-   "meaning": "偷懒"
+   "meaning": "偷懒",
+   "domain": "通用"
   },
   {
    "title": "爆肝",
@@ -430,7 +464,8 @@
     "肝了",
     "熬夜爆肝"
    ],
-   "meaning": "熬夜硬干"
+   "meaning": "熬夜硬干",
+   "domain": "通用"
   },
   {
    "title": "熬穿",
@@ -442,7 +477,8 @@
     "熬穿了",
     "熬夜熬穿"
    ],
-   "meaning": "熬夜到极限"
+   "meaning": "熬夜到极限",
+   "domain": "通用"
   },
   {
    "title": "emo",
@@ -454,7 +490,8 @@
     "emo了",
     "我emo了"
    ],
-   "meaning": "情绪低落"
+   "meaning": "情绪低落",
+   "domain": "通用"
   },
   {
    "title": "社畜",
@@ -466,7 +503,8 @@
     "打工人",
     "上班狗"
    ],
-   "meaning": "自嘲上班族"
+   "meaning": "自嘲上班族",
+   "domain": "通用"
   },
   {
    "title": "日常",
@@ -478,7 +516,8 @@
     "日常了",
     "属于日常"
    ],
-   "meaning": "常态"
+   "meaning": "常态",
+   "domain": "通用"
   },
   {
    "title": "白嫖",
@@ -490,7 +529,8 @@
     "白嫖党",
     "白嫖成功"
    ],
-   "meaning": "免费拿"
+   "meaning": "免费拿",
+   "domain": "通用"
   },
   {
    "title": "开香槟",
@@ -502,7 +542,8 @@
     "开香槟咯",
     "先开香槟"
    ],
-   "meaning": "提前庆祝（多含反讽）"
+   "meaning": "提前庆祝（多含反讽）",
+   "domain": "通用"
   },
   {
    "title": "下饭",
@@ -514,7 +555,8 @@
     "很下饭",
     "下饭操作"
    ],
-   "meaning": "菜到适合配饭看"
+   "meaning": "菜到适合配饭看",
+   "domain": "通用"
   },
   {
    "title": "上分",
@@ -526,7 +568,8 @@
     "上大分",
     "掉分"
    ],
-   "meaning": "表现极好或极差"
+   "meaning": "表现极好或极差",
+   "domain": "通用"
   },
   {
    "title": "草台班子",
@@ -538,7 +581,8 @@
     "草台",
     "草台班"
    ],
-   "meaning": "组织混乱不专业"
+   "meaning": "组织混乱不专业",
+   "domain": "通用"
   },
   {
    "title": "锐评",
@@ -550,7 +594,8 @@
     "锐评一下",
     "我来锐评"
    ],
-   "meaning": "犀利点评"
+   "meaning": "犀利点评",
+   "domain": "通用"
   },
   {
    "title": "整活",
@@ -562,7 +607,8 @@
     "整活了",
     "整个活"
    ],
-   "meaning": "搞事情"
+   "meaning": "搞事情",
+   "domain": "通用"
   },
   {
    "title": "玩梗",
@@ -574,7 +620,8 @@
     "玩个梗",
     "抛梗"
    ],
-   "meaning": "使用梗"
+   "meaning": "使用梗",
+   "domain": "通用"
   },
   {
    "title": "接梗",
@@ -586,7 +633,8 @@
     "接住了",
     "没接住"
    ],
-   "meaning": "回应别人的梗"
+   "meaning": "回应别人的梗",
+   "domain": "通用"
   },
   {
    "title": "二创",
@@ -598,7 +646,8 @@
     "二次创作",
     "同人"
    ],
-   "meaning": "基于原作的再创作"
+   "meaning": "基于原作的再创作",
+   "domain": "通用"
   },
   {
    "title": "出圈",
@@ -610,7 +659,8 @@
     "破圈",
     "出圈了"
    ],
-   "meaning": "小众扩散到大众"
+   "meaning": "小众扩散到大众",
+   "domain": "通用"
   },
   {
    "title": "退潮",
@@ -622,7 +672,8 @@
     "过气了",
     "凉了"
    ],
-   "meaning": "热度下降"
+   "meaning": "热度下降",
+   "domain": "通用"
   },
   {
    "title": "考古",
@@ -634,7 +685,8 @@
     "挖坟",
     "考古现场"
    ],
-   "meaning": "翻旧内容"
+   "meaning": "翻旧内容",
+   "domain": "通用"
   },
   {
    "title": "文艺复兴",
@@ -645,7 +697,8 @@
    "aliases": [
     "文艺复兴了"
    ],
-   "meaning": "老内容重新流行"
+   "meaning": "老内容重新流行",
+   "domain": "通用"
   },
   {
    "title": "爷青回",
@@ -656,7 +709,8 @@
    "aliases": [
     "爷的青春回来了"
    ],
-   "meaning": "回忆杀（略旧）"
+   "meaning": "回忆杀（略旧）",
+   "domain": "通用"
   },
   {
    "title": "爷青结",
@@ -667,7 +721,8 @@
    "aliases": [
     "爷的青春结束了"
    ],
-   "meaning": "系列完结（略旧）"
+   "meaning": "系列完结（略旧）",
+   "domain": "通用"
   },
   {
    "title": "梦回",
@@ -678,7 +733,8 @@
    "aliases": [
     "梦回当年"
    ],
-   "meaning": "唤起旧记忆"
+   "meaning": "唤起旧记忆",
+   "domain": "通用"
   },
   {
    "title": "电子榨菜",
@@ -690,7 +746,8 @@
     "下饭视频",
     "电子咸菜"
    ],
-   "meaning": "吃饭时看的视频"
+   "meaning": "吃饭时看的视频",
+   "domain": "通用"
   },
   {
    "title": "电子木鱼",
@@ -702,7 +759,8 @@
     "敲木鱼",
     "赛博木鱼"
    ],
-   "meaning": "假装修行解压"
+   "meaning": "假装修行解压",
+   "domain": "通用"
   },
   {
    "title": "赛博",
@@ -714,7 +772,8 @@
     "赛博朋克",
     "赛博许愿"
    ],
-   "meaning": "虚拟/网络化前缀"
+   "meaning": "虚拟/网络化前缀",
+   "domain": "通用"
   },
   {
    "title": "云",
@@ -726,7 +785,8 @@
     "云玩家",
     "云体验"
    ],
-   "meaning": "只看不玩"
+   "meaning": "只看不玩",
+   "domain": "通用"
   },
   {
    "title": "草",
@@ -738,7 +798,8 @@
     "艹",
     "我靠"
    ],
-   "meaning": "惊叹"
+   "meaning": "惊叹",
+   "domain": "通用"
   },
   {
    "title": "好家伙",
@@ -749,7 +810,8 @@
    "aliases": [
     "好家伙啊"
    ],
-   "meaning": "惊讶"
+   "meaning": "惊讶",
+   "domain": "通用"
   },
   {
    "title": "我超",
@@ -761,7 +823,8 @@
     "我焯",
     "我擦"
    ],
-   "meaning": "惊叹"
+   "meaning": "惊叹",
+   "domain": "通用"
   },
   {
    "title": "啊对对对",
@@ -772,7 +835,8 @@
    "aliases": [
     "对对对"
    ],
-   "meaning": "阴阳怪气地附和"
+   "meaning": "阴阳怪气地附和",
+   "domain": "通用"
   },
   {
    "title": "你礼貌吗",
@@ -783,7 +847,8 @@
    "aliases": [
     "礼貌吗"
    ],
-   "meaning": "指责对方说话过分"
+   "meaning": "指责对方说话过分",
+   "domain": "通用"
   },
   {
    "title": "你这就不对了",
@@ -794,7 +859,8 @@
    "aliases": [
     "这就没意思了"
    ],
-   "meaning": "半开玩笑地抗议"
+   "meaning": "半开玩笑地抗议",
+   "domain": "通用"
   },
   {
    "title": "属于是",
@@ -805,7 +871,8 @@
    "aliases": [
     "属于是了"
    ],
-   "meaning": "判断句式"
+   "meaning": "判断句式",
+   "domain": "通用"
   },
   {
    "title": "纯路人",
@@ -816,7 +883,8 @@
    "aliases": [
     "完全路人"
    ],
-   "meaning": "假装中立"
+   "meaning": "假装中立",
+   "domain": "通用"
   },
   {
    "title": "不吹不黑",
@@ -827,7 +895,8 @@
    "aliases": [
     "客观讲"
    ],
-   "meaning": "表示客观"
+   "meaning": "表示客观",
+   "domain": "通用"
   },
   {
    "title": "认真你就输了",
@@ -838,7 +907,8 @@
    "aliases": [
     "认真就输了"
    ],
-   "meaning": "劝别较真"
+   "meaning": "劝别较真",
+   "domain": "通用"
   },
   {
    "title": "急了急了",
@@ -849,7 +919,8 @@
    "aliases": [
     "急了"
    ],
-   "meaning": "嘲讽对方情绪化"
+   "meaning": "嘲讽对方情绪化",
+   "domain": "通用"
   },
   {
    "title": "急了也没用",
@@ -860,7 +931,8 @@
    "aliases": [
     "急也没用"
    ],
-   "meaning": "嘲讽升级"
+   "meaning": "嘲讽升级",
+   "domain": "通用"
   },
   {
    "title": "笑不活了",
@@ -871,7 +943,8 @@
    "aliases": [
     "笑不活"
    ],
-   "meaning": "笑到极限"
+   "meaning": "笑到极限",
+   "domain": "通用"
   },
   {
    "title": "我裂开",
@@ -882,7 +955,8 @@
    "aliases": [
     "裂开"
    ],
-   "meaning": "崩溃"
+   "meaning": "崩溃",
+   "domain": "通用"
   },
   {
    "title": "世界名画",
@@ -894,7 +968,8 @@
     "名场面",
     "名画"
    ],
-   "meaning": "经典场面"
+   "meaning": "经典场面",
+   "domain": "通用"
   },
   {
    "title": "什么水平",
@@ -905,7 +980,8 @@
    "aliases": [
     "这什么水平"
    ],
-   "meaning": "质疑水平"
+   "meaning": "质疑水平",
+   "domain": "通用"
   },
   {
    "title": "就这啊",
@@ -916,7 +992,8 @@
    "aliases": [
     "就这"
    ],
-   "meaning": "轻蔑"
+   "meaning": "轻蔑",
+   "domain": "通用"
   },
   {
    "title": "什么成分",
@@ -927,7 +1004,8 @@
    "aliases": [
     "成分不明"
    ],
-   "meaning": "质疑身份/立场（慎用）"
+   "meaning": "质疑身份/立场（慎用）",
+   "domain": "通用"
   },
   {
    "title": "不知道说什么",
@@ -938,7 +1016,8 @@
    "aliases": [
     "不知当讲不当讲"
    ],
-   "meaning": "犹豫"
+   "meaning": "犹豫",
+   "domain": "通用"
   },
   {
    "title": "小丑竟是我自己",
@@ -949,7 +1028,8 @@
    "aliases": [
     "小丑是我"
    ],
-   "meaning": "自嘲"
+   "meaning": "自嘲",
+   "domain": "通用"
   },
   {
    "title": "先别庆功",
@@ -961,7 +1041,8 @@
     "先别急",
     "先别开香槟"
    ],
-   "meaning": "提醒先验证"
+   "meaning": "提醒先验证",
+   "domain": "通用"
   },
   {
    "title": "跑一下",
@@ -973,7 +1054,8 @@
     "先跑一下",
     "跑个测试"
    ],
-   "meaning": "动手验证"
+   "meaning": "动手验证",
+   "domain": "通用"
   },
   {
    "title": "闭环",
@@ -985,7 +1067,8 @@
     "形成闭环",
     "闭环了"
    ],
-   "meaning": "流程走通"
+   "meaning": "流程走通",
+   "domain": "通用"
   },
   {
    "title": "对齐",
@@ -997,7 +1080,8 @@
     "对齐一下",
     "先对齐"
    ],
-   "meaning": "统一认识"
+   "meaning": "统一认识",
+   "domain": "通用"
   },
   {
    "title": "拉齐",
@@ -1008,7 +1092,8 @@
    "aliases": [
     "拉齐认知"
    ],
-   "meaning": "统一到同一水平"
+   "meaning": "统一到同一水平",
+   "domain": "通用"
   },
   {
    "title": "拆解",
@@ -1019,7 +1104,8 @@
    "aliases": [
     "拆一下"
    ],
-   "meaning": "分解分析"
+   "meaning": "分解分析",
+   "domain": "通用"
   },
   {
    "title": "复盘",
@@ -1030,7 +1116,8 @@
    "aliases": [
     "复盘一下"
    ],
-   "meaning": "事后总结"
+   "meaning": "事后总结",
+   "domain": "通用"
   },
   {
    "title": "兜底",
@@ -1041,7 +1128,8 @@
    "aliases": [
     "兜一下"
    ],
-   "meaning": "保底"
+   "meaning": "保底",
+   "domain": "通用"
   },
   {
    "title": "兜得住",
@@ -1052,7 +1140,8 @@
    "aliases": [
     "兜不住"
    ],
-   "meaning": "能否保底"
+   "meaning": "能否保底",
+   "domain": "通用"
   },
   {
    "title": "落地",
@@ -1064,7 +1153,8 @@
     "能落地",
     "落不了地"
    ],
-   "meaning": "真正实现"
+   "meaning": "真正实现",
+   "domain": "通用"
   },
   {
    "title": "梭哈",
@@ -1076,7 +1166,8 @@
     "梭哈一把",
     "全压"
    ],
-   "meaning": "把筹码全推上去，赌一把大的"
+   "meaning": "把筹码全推上去，赌一把大的",
+   "domain": "通用"
   },
   {
    "title": "计划通",
@@ -1088,7 +1179,8 @@
     "计划通り",
     "计划通り"
    ],
-   "meaning": "一切按计划进行（阴阳怪气用）"
+   "meaning": "一切按计划进行（阴阳怪气用）",
+   "domain": "通用"
   },
   {
    "title": "班味",
@@ -1100,7 +1192,8 @@
     "班味重",
     "一身班味"
    ],
-   "meaning": "上班上到脸上的疲惫感"
+   "meaning": "上班上到脸上的疲惫感",
+   "domain": "通用"
   },
   {
    "title": "牛马",
@@ -1112,7 +1205,8 @@
     "牛马打工人",
     "干牛马活"
    ],
-   "meaning": "自嘲被当牲口使的打工人"
+   "meaning": "自嘲被当牲口使的打工人",
+   "domain": "通用"
   },
   {
    "title": "冻住",
@@ -1124,7 +1218,8 @@
     "冻住了",
     "冷住"
    ],
-   "meaning": "被冷笑话冻住，反应不过来"
+   "meaning": "被冷笑话冻住，反应不过来",
+   "domain": "通用"
   },
   {
    "title": "学到了",
@@ -1136,7 +1231,8 @@
     "学到老",
     "学废了"
    ],
-   "meaning": "假装受教，实际表示离谱"
+   "meaning": "假装受教，实际表示离谱",
+   "domain": "通用"
   },
   {
    "title": "先跑一下",
@@ -1148,7 +1244,8 @@
     "跑一下",
     "先跑一遍"
    ],
-   "meaning": "先验证再庆祝"
+   "meaning": "先验证再庆祝",
+   "domain": "通用"
   },
   {
    "title": "关掉",
@@ -1159,7 +1256,2148 @@
    "aliases": [
     "关了吧"
    ],
-   "meaning": "建议终止，别再继续"
+   "meaning": "建议终止，别再继续",
+   "domain": "通用"
+  },
+  {
+   "title": "躺赢",
+   "tier": "slang",
+   "tags": [
+    "游戏",
+    "口语"
+   ],
+   "aliases": [
+    "连躺",
+    "躺了两把",
+    "被带飞"
+   ],
+   "meaning": "自己没怎么发力，被队友带赢",
+   "domain": "通用"
+  },
+  {
+   "title": "带飞",
+   "tier": "slang",
+   "tags": [
+    "游戏",
+    "口语"
+   ],
+   "aliases": [
+    "被带飞",
+    "大爹带飞"
+   ],
+   "meaning": "队友强到把你抬起来",
+   "domain": "通用"
+  },
+  {
+   "title": "大爹",
+   "tier": "slang",
+   "tags": [
+    "游戏",
+    "口语"
+   ],
+   "aliases": [
+    "爹",
+    "大腿"
+   ],
+   "meaning": "对强队友的戏称",
+   "domain": "通用"
+  },
+  {
+   "title": "开黑",
+   "tier": "slang",
+   "tags": [
+    "游戏",
+    "口语"
+   ],
+   "aliases": [
+    "开一局",
+    "组队"
+   ],
+   "meaning": "组队打游戏",
+   "domain": "通用"
+  },
+  {
+   "title": "白给",
+   "tier": "slang",
+   "tags": [
+    "游戏",
+    "口语"
+   ],
+   "aliases": [
+    "白给了",
+    "送了"
+   ],
+   "meaning": "没打出价值就死了",
+   "domain": "通用"
+  },
+  {
+   "title": "拉扯",
+   "tier": "slang",
+   "tags": [
+    "游戏",
+    "口语"
+   ],
+   "aliases": [
+    "疯狂拉扯"
+   ],
+   "meaning": "来回周旋",
+   "domain": "通用"
+  },
+  {
+   "title": "坐牢",
+   "tier": "slang",
+   "tags": [
+    "游戏",
+    "口语"
+   ],
+   "aliases": [
+    "在坐牢"
+   ],
+   "meaning": "游戏体验极差但还得打",
+   "domain": "通用"
+  },
+  {
+   "title": "爽飞",
+   "tier": "slang",
+   "tags": [
+    "游戏",
+    "口语"
+   ],
+   "aliases": [
+    "爽飞了",
+    "爽到飞起"
+   ],
+   "meaning": "爽到不行",
+   "domain": "通用"
+  },
+  {
+   "title": "超神",
+   "tier": "slang",
+   "tags": [
+    "游戏",
+    "口语"
+   ],
+   "aliases": [
+    "五杀",
+    "超神了"
+   ],
+   "meaning": "打出高光",
+   "domain": "通用"
+  },
+  {
+   "title": "拉胯",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "游戏"
+   ],
+   "aliases": [
+    "太拉胯"
+   ],
+   "meaning": "表现差",
+   "domain": "游戏"
+  },
+  {
+   "title": "封神",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "游戏"
+   ],
+   "aliases": [
+    "封神了"
+   ],
+   "meaning": "表现神级",
+   "domain": "游戏"
+  },
+  {
+   "title": "心态崩了",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "游戏"
+   ],
+   "aliases": [
+    "心态炸了"
+   ],
+   "meaning": "被打到情绪失控",
+   "domain": "游戏"
+  },
+  {
+   "title": "挂机",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "游戏"
+   ],
+   "aliases": [
+    "挂机了"
+   ],
+   "meaning": "不操作混时间",
+   "domain": "游戏"
+  },
+  {
+   "title": "演员",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "游戏"
+   ],
+   "aliases": [
+    "在演"
+   ],
+   "meaning": "故意送",
+   "domain": "游戏"
+  },
+  {
+   "title": "代练",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "游戏"
+   ],
+   "aliases": [
+    "找代练"
+   ],
+   "meaning": "请人替打",
+   "domain": "游戏"
+  },
+  {
+   "title": "氪金",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "游戏"
+   ],
+   "aliases": [
+    "氪了"
+   ],
+   "meaning": "花钱变强",
+   "domain": "游戏"
+  },
+  {
+   "title": "抽卡",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "游戏"
+   ],
+   "aliases": [
+    "抽歪了"
+   ],
+   "meaning": "抽角色",
+   "domain": "游戏"
+  },
+  {
+   "title": "保底",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "游戏"
+   ],
+   "aliases": [
+    "吃保底"
+   ],
+   "meaning": "最后才出",
+   "domain": "游戏"
+  },
+  {
+   "title": "碾压",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "游戏"
+   ],
+   "aliases": [
+    "碾了"
+   ],
+   "meaning": "实力差距大",
+   "domain": "游戏"
+  },
+  {
+   "title": "五五开",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "游戏"
+   ],
+   "aliases": [
+    "半斤八两"
+   ],
+   "meaning": "势均力敌",
+   "domain": "游戏"
+  },
+  {
+   "title": "打工人",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "打工魂"
+   ],
+   "meaning": "自嘲上班族",
+   "domain": "职场"
+  },
+  {
+   "title": "KPI",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "背指标"
+   ],
+   "meaning": "考核指标",
+   "domain": "职场"
+  },
+  {
+   "title": "画饼",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "老板画饼"
+   ],
+   "meaning": "空头承诺",
+   "domain": "职场"
+  },
+  {
+   "title": "背锅",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "甩锅"
+   ],
+   "meaning": "承担责任",
+   "domain": "职场"
+  },
+  {
+   "title": "加班",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "加了个班"
+   ],
+   "meaning": "延长工时",
+   "domain": "职场"
+  },
+  {
+   "title": "996",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "早九晚九"
+   ],
+   "meaning": "高强度工时",
+   "domain": "职场"
+  },
+  {
+   "title": "开会",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "开个会"
+   ],
+   "meaning": "集体会议",
+   "domain": "职场"
+  },
+  {
+   "title": "汇报",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "对齐汇报"
+   ],
+   "meaning": "向上报告",
+   "domain": "职场"
+  },
+  {
+   "title": "提效",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "提个效"
+   ],
+   "meaning": "提高效率",
+   "domain": "职场"
+  },
+  {
+   "title": "降本",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "降本增效"
+   ],
+   "meaning": "省钱提效",
+   "domain": "职场"
+  },
+  {
+   "title": "裁员",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "被裁"
+   ],
+   "meaning": "被辞退",
+   "domain": "职场"
+  },
+  {
+   "title": "裸辞",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "直接裸辞"
+   ],
+   "meaning": "不找下家就辞",
+   "domain": "职场"
+  },
+  {
+   "title": "跳槽",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "跳了"
+   ],
+   "meaning": "换工作",
+   "domain": "职场"
+  },
+  {
+   "title": "面试",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "去面一个"
+   ],
+   "meaning": "求职面谈",
+   "domain": "职场"
+  },
+  {
+   "title": "offer",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "拿到offer"
+   ],
+   "meaning": "录用通知",
+   "domain": "职场"
+  },
+  {
+   "title": "试用期",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "在试用"
+   ],
+   "meaning": "入职考察期",
+   "domain": "职场"
+  },
+  {
+   "title": "年终奖",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "等年终"
+   ],
+   "meaning": "年末奖金",
+   "domain": "职场"
+  },
+  {
+   "title": "团建",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "职场"
+   ],
+   "aliases": [
+    "去团建"
+   ],
+   "meaning": "集体活动",
+   "domain": "职场"
+  },
+  {
+   "title": "卷王",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "卷王本王"
+   ],
+   "meaning": "极度努力的人",
+   "domain": "校园"
+  },
+  {
+   "title": "学渣",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "我是学渣"
+   ],
+   "meaning": "成绩差",
+   "domain": "校园"
+  },
+  {
+   "title": "学霸",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "人形学霸"
+   ],
+   "meaning": "成绩好",
+   "domain": "校园"
+  },
+  {
+   "title": "挂科",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "挂了两门"
+   ],
+   "meaning": "考试不及格",
+   "domain": "校园"
+  },
+  {
+   "title": "补考",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "去补考"
+   ],
+   "meaning": "重新考试",
+   "domain": "校园"
+  },
+  {
+   "title": "熬夜",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "熬了个大夜"
+   ],
+   "meaning": "通宵不睡",
+   "domain": "校园"
+  },
+  {
+   "title": "早八",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "上早八"
+   ],
+   "meaning": "早上八点的课",
+   "domain": "校园"
+  },
+  {
+   "title": "水课",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "水一门"
+   ],
+   "meaning": "轻松混学分的课",
+   "domain": "校园"
+  },
+  {
+   "title": "点名",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "被点名"
+   ],
+   "meaning": "课堂点到",
+   "domain": "校园"
+  },
+  {
+   "title": "期末",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "期末周"
+   ],
+   "meaning": "学期末考试",
+   "domain": "校园"
+  },
+  {
+   "title": "论文",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "写论文"
+   ],
+   "meaning": "学术写作",
+   "domain": "校园"
+  },
+  {
+   "title": "查重",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "查重过高"
+   ],
+   "meaning": "论文重复率检测",
+   "domain": "校园"
+  },
+  {
+   "title": "答辩",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "要答辩"
+   ],
+   "meaning": "毕业答辩",
+   "domain": "校园"
+  },
+  {
+   "title": "毕业",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "毕业了"
+   ],
+   "meaning": "完成学业",
+   "domain": "校园"
+  },
+  {
+   "title": "保研",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "保上了"
+   ],
+   "meaning": "推荐免试读研",
+   "domain": "校园"
+  },
+  {
+   "title": "考研",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "在考研"
+   ],
+   "meaning": "研究生入学考试",
+   "domain": "校园"
+  },
+  {
+   "title": "实习",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "去实习"
+   ],
+   "meaning": "在校实践",
+   "domain": "校园"
+  },
+  {
+   "title": "社团",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "进社团"
+   ],
+   "meaning": "学生组织",
+   "domain": "校园"
+  },
+  {
+   "title": "食堂",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "食堂菜"
+   ],
+   "meaning": "校内餐厅",
+   "domain": "校园"
+  },
+  {
+   "title": "宿舍",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "校园"
+   ],
+   "aliases": [
+    "回宿舍"
+   ],
+   "meaning": "学生住处",
+   "domain": "校园"
+  },
+  {
+   "title": "舔狗",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "舔了"
+   ],
+   "meaning": "单方面讨好",
+   "domain": "情感"
+  },
+  {
+   "title": "恋爱脑",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "恋爱脑发作"
+   ],
+   "meaning": "恋爱冲昏头",
+   "domain": "情感"
+  },
+  {
+   "title": "官宣",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "官宣了"
+   ],
+   "meaning": "公开关系",
+   "domain": "情感"
+  },
+  {
+   "title": "分手",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "分了"
+   ],
+   "meaning": "结束关系",
+   "domain": "情感"
+  },
+  {
+   "title": "复合",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "又复合"
+   ],
+   "meaning": "重新在一起",
+   "domain": "情感"
+  },
+  {
+   "title": "暧昧",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "在暧昧"
+   ],
+   "meaning": "关系不明",
+   "domain": "情感"
+  },
+  {
+   "title": "备胎",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "当备胎"
+   ],
+   "meaning": "候补对象",
+   "domain": "情感"
+  },
+  {
+   "title": "脱单",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "脱单了"
+   ],
+   "meaning": "结束单身",
+   "domain": "情感"
+  },
+  {
+   "title": "催婚",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "被催婚"
+   ],
+   "meaning": "被催结婚",
+   "domain": "情感"
+  },
+  {
+   "title": "相亲",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "去相亲"
+   ],
+   "meaning": "介绍对象",
+   "domain": "情感"
+  },
+  {
+   "title": "社恐",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "社恐了"
+   ],
+   "meaning": "害怕社交",
+   "domain": "情感"
+  },
+  {
+   "title": "社牛",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "社牛本牛"
+   ],
+   "meaning": "社交极强",
+   "domain": "情感"
+  },
+  {
+   "title": "生理性喜欢",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "生理性反应"
+   ],
+   "meaning": "不由自主动心",
+   "domain": "情感"
+  },
+  {
+   "title": "边界感",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "没什么边界感"
+   ],
+   "meaning": "分寸意识",
+   "domain": "情感"
+  },
+  {
+   "title": "情绪价值",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "给点情绪价值"
+   ],
+   "meaning": "让人舒服的能力",
+   "domain": "情感"
+  },
+  {
+   "title": "精神内耗",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "内耗严重"
+   ],
+   "meaning": "反复纠结",
+   "domain": "情感"
+  },
+  {
+   "title": "钝感力",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "钝感一点"
+   ],
+   "meaning": "迟钝反而好",
+   "domain": "情感"
+  },
+  {
+   "title": "磁场",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情感"
+   ],
+   "aliases": [
+    "磁场不合"
+   ],
+   "meaning": "相处感觉",
+   "domain": "情感"
+  },
+  {
+   "title": "家务",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "做家务"
+   ],
+   "meaning": "家庭劳动",
+   "domain": "家庭"
+  },
+  {
+   "title": "带娃",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "在带娃"
+   ],
+   "meaning": "照顾孩子",
+   "domain": "家庭"
+  },
+  {
+   "title": "老人机",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "用老人机"
+   ],
+   "meaning": "功能简单的手机",
+   "domain": "家庭"
+  },
+  {
+   "title": "回老家",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "回趟老家"
+   ],
+   "meaning": "返乡",
+   "domain": "家庭"
+  },
+  {
+   "title": "过年",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "过年了"
+   ],
+   "meaning": "春节",
+   "domain": "家庭"
+  },
+  {
+   "title": "亲戚",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "走亲戚"
+   ],
+   "meaning": "家族往来",
+   "domain": "家庭"
+  },
+  {
+   "title": "催生",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "被催生"
+   ],
+   "meaning": "被催要孩子",
+   "domain": "家庭"
+  },
+  {
+   "title": "夫妻",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "两口子"
+   ],
+   "meaning": "婚姻双方",
+   "domain": "家庭"
+  },
+  {
+   "title": "独居",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "一个人住"
+   ],
+   "meaning": "独自生活",
+   "domain": "家庭"
+  },
+  {
+   "title": "养宠",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "养猫养狗"
+   ],
+   "meaning": "宠物的饲养",
+   "domain": "家庭"
+  },
+  {
+   "title": "遛狗",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "去遛狗"
+   ],
+   "meaning": "带狗出门",
+   "domain": "家庭"
+  },
+  {
+   "title": "翻车",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "翻车了"
+   ],
+   "meaning": "搞砸",
+   "domain": "家庭"
+  },
+  {
+   "title": "打扫",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "扫一下"
+   ],
+   "meaning": "清洁",
+   "domain": "家庭"
+  },
+  {
+   "title": "做饭",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "下个厨"
+   ],
+   "meaning": "自己烧菜",
+   "domain": "家庭"
+  },
+  {
+   "title": "外卖",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "点外卖"
+   ],
+   "meaning": "叫外送",
+   "domain": "家庭"
+  },
+  {
+   "title": "囤货",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "囤了一堆"
+   ],
+   "meaning": "大量备货",
+   "domain": "家庭"
+  },
+  {
+   "title": "收纳",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "收纳一下"
+   ],
+   "meaning": "整理存放",
+   "domain": "家庭"
+  },
+  {
+   "title": "搬家",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "搬了家"
+   ],
+   "meaning": "换住处",
+   "domain": "家庭"
+  },
+  {
+   "title": "房租",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "交房租"
+   ],
+   "meaning": "租房费用",
+   "domain": "家庭"
+  },
+  {
+   "title": "水电费",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "家庭"
+   ],
+   "aliases": [
+    "交水电"
+   ],
+   "meaning": "日常开销",
+   "domain": "家庭"
+  },
+  {
+   "title": "剁手",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "剁手了"
+   ],
+   "meaning": "忍不住买",
+   "domain": "消费"
+  },
+  {
+   "title": "平替",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "找个平替"
+   ],
+   "meaning": "便宜替代品",
+   "domain": "消费"
+  },
+  {
+   "title": "智商税",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "交智商税"
+   ],
+   "meaning": "白花钱",
+   "domain": "消费"
+  },
+  {
+   "title": "回血",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "回点血"
+   ],
+   "meaning": "恢复点钱或精力",
+   "domain": "消费"
+  },
+  {
+   "title": "羊毛",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "薅羊毛"
+   ],
+   "meaning": "占小便宜",
+   "domain": "消费"
+  },
+  {
+   "title": "满减",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "凑满减"
+   ],
+   "meaning": "促销活动",
+   "domain": "消费"
+  },
+  {
+   "title": "预售",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "付了预售"
+   ],
+   "meaning": "提前付款",
+   "domain": "消费"
+  },
+  {
+   "title": "尾款",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "付尾款"
+   ],
+   "meaning": "分期剩余",
+   "domain": "消费"
+  },
+  {
+   "title": "退货",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "退了"
+   ],
+   "meaning": "退还商品",
+   "domain": "消费"
+  },
+  {
+   "title": "客服",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "找客服"
+   ],
+   "meaning": "售后人员",
+   "domain": "消费"
+  },
+  {
+   "title": "快递",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "到快递"
+   ],
+   "meaning": "物流包裹",
+   "domain": "消费"
+  },
+  {
+   "title": "包邮",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "不包邮"
+   ],
+   "meaning": "免费配送",
+   "domain": "消费"
+  },
+  {
+   "title": "砍一刀",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "帮砍一刀"
+   ],
+   "meaning": "邀人砍价",
+   "domain": "消费"
+  },
+  {
+   "title": "优惠券",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "领张券"
+   ],
+   "meaning": "折扣凭证",
+   "domain": "消费"
+  },
+  {
+   "title": "性价比",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "性价比高"
+   ],
+   "meaning": "划不划算",
+   "domain": "消费"
+  },
+  {
+   "title": "刺客",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "雪糕刺客"
+   ],
+   "meaning": "价格背刺",
+   "domain": "消费"
+  },
+  {
+   "title": "溢价",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "有溢价"
+   ],
+   "meaning": "加价",
+   "domain": "消费"
+  },
+  {
+   "title": "二手",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "挂二手"
+   ],
+   "meaning": "转卖",
+   "domain": "消费"
+  },
+  {
+   "title": "分期",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "消费"
+   ],
+   "aliases": [
+    "分个期"
+   ],
+   "meaning": "分批付款",
+   "domain": "消费"
+  },
+  {
+   "title": "养生",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "开始养生"
+   ],
+   "meaning": "注重保养",
+   "domain": "健康"
+  },
+  {
+   "title": "失眠",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "睡不着"
+   ],
+   "meaning": "入睡困难",
+   "domain": "健康"
+  },
+  {
+   "title": "脱发",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "掉头发"
+   ],
+   "meaning": "头发变少",
+   "domain": "健康"
+  },
+  {
+   "title": "颈椎",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "颈椎疼"
+   ],
+   "meaning": "颈部问题",
+   "domain": "健康"
+  },
+  {
+   "title": "久坐",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "坐太久"
+   ],
+   "meaning": "长期坐着",
+   "domain": "健康"
+  },
+  {
+   "title": "体检",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "去体检"
+   ],
+   "meaning": "身体检查",
+   "domain": "健康"
+  },
+  {
+   "title": "医保",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "走医保"
+   ],
+   "meaning": "医疗保险",
+   "domain": "健康"
+  },
+  {
+   "title": "挂号",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "挂个号"
+   ],
+   "meaning": "医院预约",
+   "domain": "健康"
+  },
+  {
+   "title": "感冒",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "感冒了"
+   ],
+   "meaning": "上呼吸道感染",
+   "domain": "健康"
+  },
+  {
+   "title": "发烧",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "烧了"
+   ],
+   "meaning": "体温升高",
+   "domain": "健康"
+  },
+  {
+   "title": "过敏",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "过敏了"
+   ],
+   "meaning": "免疫反应",
+   "domain": "健康"
+  },
+  {
+   "title": "减肥",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "减脂"
+   ],
+   "meaning": "降低体重",
+   "domain": "健康"
+  },
+  {
+   "title": "增肌",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "练肌肉"
+   ],
+   "meaning": "增加肌肉",
+   "domain": "健康"
+  },
+  {
+   "title": "卡路里",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "控卡"
+   ],
+   "meaning": "热量单位",
+   "domain": "健康"
+  },
+  {
+   "title": "跑步",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "去跑步"
+   ],
+   "meaning": "有氧运动",
+   "domain": "健康"
+  },
+  {
+   "title": "健身",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "去健身"
+   ],
+   "meaning": "锻炼",
+   "domain": "健康"
+  },
+  {
+   "title": "瑜伽",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "练瑜伽"
+   ],
+   "meaning": "柔韧训练",
+   "domain": "健康"
+  },
+  {
+   "title": "心理咨询",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "看看心理"
+   ],
+   "meaning": "心理疏导",
+   "domain": "健康"
+  },
+  {
+   "title": "作息",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "健康"
+   ],
+   "aliases": [
+    "作息乱"
+   ],
+   "meaning": "生活规律",
+   "domain": "健康"
+  },
+  {
+   "title": "冲浪",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "网上冲浪"
+   ],
+   "meaning": "浏览网络",
+   "domain": "网络"
+  },
+  {
+   "title": "刷屏",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "刷屏了"
+   ],
+   "meaning": "大量重复内容",
+   "domain": "网络"
+  },
+  {
+   "title": "点赞",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "点个赞"
+   ],
+   "meaning": "表示喜欢",
+   "domain": "网络"
+  },
+  {
+   "title": "投币",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "投个币"
+   ],
+   "meaning": "B站支持",
+   "domain": "网络"
+  },
+  {
+   "title": "收藏",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "码一下"
+   ],
+   "meaning": "保存内容",
+   "domain": "网络"
+  },
+  {
+   "title": "转发",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "转一下"
+   ],
+   "meaning": "分享",
+   "domain": "网络"
+  },
+  {
+   "title": "关注",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "关注了"
+   ],
+   "meaning": "订阅",
+   "domain": "网络"
+  },
+  {
+   "title": "取关",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "取关了"
+   ],
+   "meaning": "取消订阅",
+   "domain": "网络"
+  },
+  {
+   "title": "拉黑",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "拉黑了"
+   ],
+   "meaning": "屏蔽对方",
+   "domain": "网络"
+  },
+  {
+   "title": "举报",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "举报了"
+   ],
+   "meaning": "投诉",
+   "domain": "网络"
+  },
+  {
+   "title": "开盒",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "被开盒"
+   ],
+   "meaning": "曝光隐私（恶劣）",
+   "domain": "网络"
+  },
+  {
+   "title": "网暴",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "被网暴"
+   ],
+   "meaning": "网络暴力（恶劣）",
+   "domain": "网络"
+  },
+  {
+   "title": "带节奏",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "带节奏了"
+   ],
+   "meaning": "引导舆论",
+   "domain": "网络"
+  },
+  {
+   "title": "反转",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "反转了"
+   ],
+   "meaning": "情况逆转",
+   "domain": "网络"
+  },
+  {
+   "title": "吃瓜",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "吃个瓜"
+   ],
+   "meaning": "围观八卦",
+   "domain": "网络"
+  },
+  {
+   "title": "塌房",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "塌了"
+   ],
+   "meaning": "人设崩塌",
+   "domain": "网络"
+  },
+  {
+   "title": "人设",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "立人设"
+   ],
+   "meaning": "公众形象",
+   "domain": "网络"
+  },
+  {
+   "title": "流量",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "蹭流量"
+   ],
+   "meaning": "关注度",
+   "domain": "网络"
+  },
+  {
+   "title": "热搜",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "上热搜"
+   ],
+   "meaning": "热门话题",
+   "domain": "网络"
+  },
+  {
+   "title": "发疯文学",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "发疯"
+   ],
+   "meaning": "夸张表达",
+   "domain": "网络"
+  },
+  {
+   "title": "阴阳怪气",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "阴阳"
+   ],
+   "meaning": "反话讽刺",
+   "domain": "网络"
+  },
+  {
+   "title": "嘴替",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "我的嘴替"
+   ],
+   "meaning": "替我说出想法",
+   "domain": "网络"
+  },
+  {
+   "title": "电子宠物",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "网络"
+   ],
+   "aliases": [
+    "赛博宠物"
+   ],
+   "meaning": "线上养的东西",
+   "domain": "网络"
+  },
+  {
+   "title": "气笑",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情绪"
+   ],
+   "aliases": [
+    "气笑了"
+   ],
+   "meaning": "气到发笑",
+   "domain": "情绪"
+  },
+  {
+   "title": "委屈",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情绪"
+   ],
+   "aliases": [
+    "好委屈"
+   ],
+   "meaning": "受了不公平",
+   "domain": "情绪"
+  },
+  {
+   "title": "焦虑",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情绪"
+   ],
+   "aliases": [
+    "很焦虑"
+   ],
+   "meaning": "不安",
+   "domain": "情绪"
+  },
+  {
+   "title": "心累",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情绪"
+   ],
+   "aliases": [
+    "累觉不爱"
+   ],
+   "meaning": "精神疲惫",
+   "domain": "情绪"
+  },
+  {
+   "title": "治愈",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情绪"
+   ],
+   "aliases": [
+    "被治愈"
+   ],
+   "meaning": "感到温暖",
+   "domain": "情绪"
+  },
+  {
+   "title": "感动",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情绪"
+   ],
+   "aliases": [
+    "破防了"
+   ],
+   "meaning": "情绪被触动",
+   "domain": "情绪"
+  },
+  {
+   "title": "踏实",
+   "tier": "slang",
+   "tags": [
+    "口语",
+    "情绪"
+   ],
+   "aliases": [
+    "心里踏实"
+   ],
+   "meaning": "安心",
+   "domain": "情绪"
   }
  ]
 }

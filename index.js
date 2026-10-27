@@ -509,6 +509,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
           memes,
           scenes,
           evasion: detectEvasion(text),
+          persona: currentPersona(),
           self_reaction: scenes.length ? { scene: scenes[0].name, character: scenes[0].reaction.name, note: scenes[0].usage } : null,
           meme_tiers: {
             live: memes.filter((m) => m.tier === 'live').map((m) => m.span),
@@ -817,6 +818,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
           ok: true,
           density: n,
           suggestions: out,
+          persona: currentPersona(),
           self_reaction: sacrifice ? { scene: '我付出代价，让你们得到', character: '宿傩', when: sacrificeLine } : self,
           attribution: out.map((o) => o.meme + ' 出自 ' + (o.source.bvid || '无') + (o.source.creator ? ' / ' + o.source.creator : '')),
           notes: [
@@ -831,6 +833,33 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
     },
   })
 
+
+  ctx.tools.register({
+    name: 'meme_persona',
+    description: '人格/说话风格：稳重、损友、贴吧、捧场、自嘲、冷面。只管怎么说，不管该不该说。',
+    parameters: {
+      action: { type: 'string', description: 'list 列出 / get 当前 / set 切换' },
+      id: { type: 'string', description: '人格 id：steady/roast/tieba/hype/selfmock/deadpan' },
+    },
+    output: textOutput,
+    async execute(args) {
+      const a = String((args && args.action) || 'list')
+      let list = []
+      try { list = (JSON.parse(readFileSync(PERSONA_FILE, 'utf8')) || {}).items || [] } catch {}
+      const cur = loadSettings().persona || 'steady'
+      if (a === 'list') return { ok: true, current: cur, personas: list.map((p) => ({ id: p.id, name: p.name, desc: p.desc })) }
+      if (a === 'get') return { ok: true, persona: list.find((p) => p.id === cur) || null }
+      if (a === 'set') {
+        const want = String((args && args.id) || '').trim()
+        const found = list.find((p) => p.id === want || p.name === want)
+        if (!found) return { ok: false, error: 'UNKNOWN_PERSONA', available: list.map((p) => p.id) }
+        const st = loadSettings()
+        writeFileSync(SETTINGS_FILE, JSON.stringify({ ...st, persona: found.id }, null, 2))
+        return { ok: true, persona: found }
+      }
+      return { ok: false, error: 'BAD_ACTION' }
+    },
+  })
   ctx.tools.register({
     name: 'meme_settings',
     description: '玩梗开关：调「玩梗倾向」（稳重/正常/活泛）和「玩梗浓度」（每条回复最多几个梗），也可开关自动更新。',
@@ -1478,7 +1507,7 @@ function aliasBoost(text, item) {
 const CONTEXT_RULES = [
   { type: '正事', cues: [/帮我|请看|麻烦|为什么|怎么|报错|错误|失败|截止|明天|钱|额度|部署|安装|配置|修/], weight: 2 },
   { type: '讽刺', cues: [/呵呵|真棒|厉害|牛啊|哦是吗|不愧是|又是你/, /[“”"].+[“”"]/], weight: 2 },
-  { type: '调侃', cues: [/哈哈|草|乐|笑死|绷不住|笑出声|梗|玩梗/, /[😂🤣😅🐶]/u], weight: 2 },
+  { type: '调侃', cues: [/哈哈|草|乐|笑死|绷不住|笑出声|梗|玩梗|爽|躺赢|带飞|大爹|上分|下饭|就这/, /[😂🤣😅🐶]/u], weight: 2 },
   { type: '情绪', cues: [/烦|累|崩|焦虑|难受|失眠|压力/, /[😭😞😔]/u], weight: 2 },
 ]
 
@@ -1616,6 +1645,15 @@ function classifyContext(text, memes) {
   const order = memes.length ? ['讽刺', '调侃', '情绪', '正事', '普通'] : ['讽刺', '情绪', '正事', '调侃', '普通']
   const ranked = [...scores.entries()].sort((a, b) => b[1] - a[1] || order.indexOf(a[0]) - order.indexOf(b[0]))
   return { type: ranked[0][0], scores: Object.fromEntries(ranked) }
+}
+
+const PERSONA_FILE = new URL('./personas.json', import.meta.url)
+function loadPersonas() {
+  try { return (JSON.parse(readFileSync(PERSONA_FILE, 'utf8')) || {}).items || [] } catch { return [] }
+}
+function currentPersona() {
+  const id = loadSettings().persona || 'steady'
+  return loadPersonas().find((p) => p.id === id) || { id: 'steady', name: '稳重', style: '克制', sample: '' }
 }
 
 function loadSettings() {
