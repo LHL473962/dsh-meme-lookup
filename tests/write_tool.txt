@@ -1,0 +1,98 @@
+
+  ctx.tools.register({
+    name: 'meme_write',
+    description: '写文案时用梗：给一段主题/草稿，挑出能用的梗，说明放在哪、怎么用、要不要署名，按你的玩梗浓度控制数量。',
+    parameters: {
+      text: { type: 'string', description: '文案草稿或主题' },
+      limit: { type: 'number', description: '最多给几个梗位，默认跟设置里的浓度走' },
+      tone: { type: 'string', description: '稳/皮/损，默认稳' },
+    },
+    output: textOutput,
+    async execute(args) {
+      try {
+        const text = String((args && args.text) || '').trim()
+        if (!text) return { ok: false, error: 'EMPTY_TEXT' }
+        const st = loadSettings()
+        const n = Math.min(Math.max(Number((args && args.limit) || st.density || 2), 0), 5)
+        if (n === 0) return { ok: true, suggestions: [], note: '你的浓度设为 0，这篇不给梗位' }
+
+        const ctxWords = keywords(text, 8)
+        const scenes = detectReactionScene(text)
+        const used = new Set(detectMemes(text).map((m) => m.canonical))
+
+        // 话题相关标签（跟 suggest 同一套，保持行为一致）
+        const TOPIC = [
+          { keys: ['加班', '上班', '工作', '打工', '累', '社畜'], tags: ['打工人', '社畜', '上班', '自嘲', '生活梗', '职场', '吐槽'] },
+          { keys: ['游戏', '排位', '队友', '开黑'], tags: ['游戏梗', '电竞梗'] },
+          { keys: ['AI', '模型', '代码', '报错', '插件'], tags: ['AI梗', '科技', '程序员', '电脑'] },
+          { keys: ['吃', '饿', '外卖', '夜宵'], tags: ['美食', '生活梗'] },
+          { keys: ['睡', '熬夜', '失眠', '困'], tags: ['生活梗', '自嘲'] },
+          { keys: ['猫', '狗', '宠物'], tags: ['动物梗', '宠物'] },
+        ]
+        const want = new Set()
+        for (const m of TOPIC) if (m.keys.some((k) => text.includes(k))) m.tags.forEach((t) => want.add(t))
+
+        const cands = []
+        for (const e of AUTO_LEX) {
+          const t = String(e.title || '')
+          if (!t || t.length < 2 || t.length > 12 || used.has(t)) continue
+          if (e.provenance !== 'complete') continue
+          const tierOk = e.tier === undefined || e.tier === 'live' || e.tier === 'fading'
+          if (!tierOk) continue
+          const tags = e.tags_raw || []
+          if (tags.some((x) => RISKY_TAGS.some((r) => String(x).includes(r)))) continue
+          const hay = t + ' ' + tags.join(' ')
+          let score = 0
+          for (const w of ctxWords) if (hay.includes(w)) score += w.length * 2
+          for (const tg of want) if (tags.some((x) => String(x).includes(tg))) score += 8
+          const ctxAboutGame = /游戏|动画|二次元|星穹|番|主播/.test(text)
+          if (!ctxAboutGame && /游戏梗|动画梗|二次创作|番剧/.test(tags.join(' '))) score -= 25
+          if (/文字梗|吐槽|生活梗|自嘲|网络迷因|谐音梗|调侃/.test(tags.join(' '))) score += 5
+          score += (HEAT_INDEX[e.bvid] || 0) >= 300000 ? 10 : 4
+          if (score <= 0) continue
+          cands.push({ ...e, score, view: HEAT_INDEX[e.bvid] || 0 })
+        }
+        cands.sort((a, b) => b.score - a.score)
+
+        const out = []
+        for (const c of cands.slice(0, 12)) {
+          if (out.length >= n) break
+          const f = await freshnessOf(c.title, c.tags_raw)
+          if (f.label === 'stale') continue
+          const tags = (c.tags_raw || []).join(' ')
+          const how = /图像梗|表情包/.test(tags)
+            ? '当反应图用：说到这段时把图贴出来，不加字也行'
+            : /谐音梗/.test(tags)
+              ? '当双关用：字幕里把谐音点写清楚，别让观众猜'
+              : /句式模板|口头禅/.test(tags)
+                ? '当句式用：套进自己的话里，别整句照搬'
+                : '当句号用：一句话说完接它，1.2~2.5 秒'
+          out.push({
+            meme: c.title,
+            where: out.length === 0 ? '开头 5 秒内（抓人）' : (out.length === 1 ? '中段转折处' : '结尾收束'),
+            how,
+            why: '话题相关度 ' + c.score + ' 分，' + freshnessText(f.label),
+            source: { bvid: c.bvid, creator: c.creator || null },
+            risk: f.label === 'stale' ? '已过时' : '低',
+          })
+        }
+
+        const self = scenes.length ? { scene: scenes[0].name, character: scenes[0].reaction.name, when: scenes[0].usage } : null
+        return {
+          ok: true,
+          density: n,
+          suggestions: out,
+          self_reaction: self,
+          attribution: out.map((o) => o.meme + ' 出自 ' + (o.source.bvid || '无') + (o.source.creator ? ' / ' + o.source.creator : '')),
+          notes: [
+            '同一支片子里，同一个梗别用两次',
+            '梗位之间至少隔 30 秒',
+            out.length === 0 ? '没找到又相关又没过时的梗，这篇建议不玩梗' : '',
+          ].filter(Boolean),
+        }
+      } catch (e) {
+        return { ok: false, error: 'WRITE_FAILED', message: String((e && e.message) || e) }
+      }
+    },
+  })
+
