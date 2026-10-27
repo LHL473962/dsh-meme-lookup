@@ -151,7 +151,7 @@ export function apply(ctx) {
           })),
         }
       } catch (e) {
-        return { ok: false, error: 'REQUEST_FAILED', status: (e && e.status) || null, message: String((e && e.message) || e) }
+        return { ok: false, error: 'REQUEST_FAILED', status: (e && e.status) || null, message: redactPaths((e && e.message) || e) }
       }
     },
   })
@@ -231,7 +231,7 @@ export function apply(ctx) {
           note: candidates.length ? '按关键词命中数排序，分数低的不等于无关，需要人工看' : '没命中：可能库里没收录，或画面文字太少',
         }
       } catch (e) {
-        return { ok: false, error: 'UNDERSTAND_FAILED', message: String((e && e.message) || e) }
+        return { ok: false, error: 'UNDERSTAND_FAILED', message: redactPaths((e && e.message) || e) }
       } finally {
         if (workdir) { try { rmSync(workdir, { recursive: true, force: true }) } catch {} }
       }
@@ -455,7 +455,7 @@ export function apply(ctx) {
           alternatives: ranked.slice(1).map((x) => x.title).concat(soft.map((x) => x.title)),
         }
       } catch (e) {
-        return { ok: false, error: 'COACH_FAILED', message: String((e && e.message) || e) }
+        return { ok: false, error: 'COACH_FAILED', message: redactPaths((e && e.message) || e) }
       } finally {
         if (workdir) { try { rmSync(workdir, { recursive: true, force: true }) } catch {} }
       }
@@ -539,7 +539,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
           ].filter(Boolean),
         }
       } catch (e) {
-        return { ok: false, error: 'CHAT_FAILED', message: String((e && e.message) || e) }
+        return { ok: false, error: 'CHAT_FAILED', message: redactPaths((e && e.message) || e) }
       }
     },
   })
@@ -648,7 +648,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
 
         return { ok: true, tone, count: picked.length, suggestions: picked, reranked: false, note: '只抛对方大概率认识的梗；冷门不出现在这里' }
       } catch (e) {
-        return { ok: false, error: 'SUGGEST_FAILED', message: String((e && e.message) || e) }
+        return { ok: false, error: 'SUGGEST_FAILED', message: redactPaths((e && e.message) || e) }
       }
     },
   })
@@ -680,7 +680,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
           limits: ['OCR 读不了彩色 emoji（🥶 这类会整行丢失）', '图片太小或字太密会漏字'],
         }
       } catch (e) {
-        return { ok: false, error: 'SCREEN_FAILED', message: String((e && e.message) || e) }
+        return { ok: false, error: 'SCREEN_FAILED', message: redactPaths((e && e.message) || e) }
       }
     },
   })
@@ -701,7 +701,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
         if (r.code !== 0) return { ok: false, error: 'MATCH_FAILED', detail: (r.err || '').slice(0, 200) }
         return JSON.parse(r.out.trim() || '{"ok":false}')
       } catch (e) {
-        return { ok: false, error: 'EMOTE_FAILED', message: String((e && e.message) || e) }
+        return { ok: false, error: 'EMOTE_FAILED', message: redactPaths((e && e.message) || e) }
       }
     },
   })
@@ -839,7 +839,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
           ].filter(Boolean),
         }
       } catch (e) {
-        return { ok: false, error: 'WRITE_FAILED', message: String((e && e.message) || e) }
+        return { ok: false, error: 'WRITE_FAILED', message: redactPaths((e && e.message) || e) }
       }
     },
   })
@@ -975,7 +975,7 @@ if (!AUTO_LEX.some((x) => x.title === title)) {
         }
         return { ok: true, added: merged.added, total: AUTO_LEX.length, repo }
       } catch (e) {
-        return { ok: false, error: 'SYNC_FAILED', message: String((e && e.message) || e) }
+        return { ok: false, error: 'SYNC_FAILED', message: redactPaths((e && e.message) || e) }
       } finally {
         try { rmSync(tmp, { recursive: true, force: true }) } catch {}
       }
