@@ -71,6 +71,15 @@ await safe('用户加梗生效', async () => {
   const r = await get('meme_chat').execute({ text: mark })
   const hit = (r.memes || []).some((m) => m.canonical === mark)
   if (!hit) throw new Error('刚加完就认不出（可能没重载）')
+  // 清理：别把自检条目留在用户词库里
+  try {
+    const { readFileSync: rf, writeFileSync: wf } = await import('node:fs')
+    const { join } = await import('node:path')
+    const { homedir } = await import('node:os')
+    const p = join(process.env.DSH_HOME || join(homedir(), '.dsh'), 'meme-user-lexicon.json')
+    const list = JSON.parse(rf(p, 'utf8')).filter((e) => e.title !== mark)
+    wf(p, JSON.stringify(list, null, 2))
+  } catch {}
   return mark + ' OK'
 })
 

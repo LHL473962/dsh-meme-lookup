@@ -419,6 +419,7 @@ export function apply(ctx) {
         const text = String((args && args.text) || '').trim()
         if (!text) return { ok: false, error: 'EMPTY_TEXT' }
         const clauses = splitClauses(text)
+        maybeReloadUserLex()
         const lexMemes = detectMemes(text)
         const patMemes = detectPatterns(text).filter((p) => !lexMemes.some((m) => p.at < m.at + m.span.length && p.at + p.span.length > m.at))
         const memes = lexMemes.concat(patMemes)
@@ -729,6 +730,7 @@ if (!AUTO_LEX.some((x) => x.title === title)) {
 }
 // ============ 梗理解：抽帧 + OCR + 检索 ============
 import { spawnSync } from 'node:child_process'
+import { statSync } from 'node:fs'
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -1196,6 +1198,13 @@ function loadUserLexicon() {
   return added
 }
 loadUserLexicon()
+let _userLexMtime = 0
+function maybeReloadUserLex() {
+  try {
+    const st = statSync(USER_LEX_FILE)
+    if (st.mtimeMs !== _userLexMtime) { _userLexMtime = st.mtimeMs; loadUserLexicon() }
+  } catch {}
+}
 // 口语/抽象补充（2026-10-27）：公开梗库不收这类词
 const SLANG_FILE = new URL('./slang.json', import.meta.url)
 try {
