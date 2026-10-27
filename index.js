@@ -718,12 +718,22 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
         const CURATED = [
           { keys: ['加班', '上班', '打工', '社畜', '班味', '累'], memes: ['打工人', '社畜', '班味', '摸鱼', '电子榨菜', '牛马'] },
           { keys: ['崩', '报错', 'bug', '挂了', '失败'], memes: ['破防', '摆烂', '草台班子', '麻了', '裂开'] },
-          { keys: ['赌', '梭哈', '全压', '搏一把', '押'], memes: ['梭哈', '背水一战'] },
+          { keys: ['赌', '梭哈', '全压', '搏一把', '押'], memes: ['梭哈'] },
           { keys: ['聪明', '妙', '技巧', '破解', '白嫖', '教你', '绕过去', '诀窍', '方法'], memes: ['学到了', '计划通'] },
           { keys: ['离谱', '逆天', '抽象', '看不懂'], memes: ['离谱', '逆天', '抽象'] },
           { keys: ['跑一下', '上线', '庆功', '验证', '灰测'], memes: ['先别庆功', '跑一下', '闭环'] },
           { keys: ['冷笑话', '谐音', '段子', '讲个笑话'], memes: ['冻住', '笑死'] },
         ]
+        // 宿傩句式：先写「代价」，再写「目的」——不是赌一把，是我愿意为你们付这个代价
+        const sacrifice = /(让|为了).{0,12}(看到|知道|明白|用上|学会)/.test(text) || /(代价|豁出去|我垫|贷款)/.test(text)
+        let purpose = ''
+        if (sacrifice) {
+          purpose = text.replace(/^.*?(让你们?|就?是为了|为了|也要)/, '').trim().replace(/^让/, '')
+          if (/看到/.test(purpose)) purpose = '都能' + purpose.slice(purpose.indexOf('看到'))
+          else purpose = purpose.replace(/^我(们)?/, '').replace(/^大家/, '').trim()
+          if (!purpose) purpose = '都能看到这期视频'
+        }
+        const sacrificeLine = sacrifice ? '我贷了笔大的，让你们' + purpose : null
         const titleSet = new Set(AUTO_LEX.map((e) => e.title))
         const curatedOut = []
         for (const c of CURATED) {
@@ -806,7 +816,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
           ok: true,
           density: n,
           suggestions: out,
-          self_reaction: self,
+          self_reaction: sacrifice ? { scene: '我付出代价，让你们得到', character: '宿傩', when: sacrificeLine } : self,
           attribution: out.map((o) => o.meme + ' 出自 ' + (o.source.bvid || '无') + (o.source.creator ? ' / ' + o.source.creator : '')),
           notes: [
             '同一支片子里，同一个梗别用两次',
