@@ -102,11 +102,37 @@ await safe('请求体上限覆盖', async () => {
   const here = fileURLToPath(new URL('..', import.meta.url))
   const src = rf(join(here, 'index.js'), 'utf8')
   const sites = [...src.matchAll(/for await \(const c of req\)/g)].map((m) => m.index)
-  const bad = sites.filter((i) => !/32 \* 1024|MAX_BODY/.test(src.slice(i, i + 260)))
+  const bad = sites.filter((i) => !/32 \* 1024|MAX_BODY|maxBytes/.test(src.slice(i, i + 320)))
   if (bad.length) throw new Error(`${bad.length} 处读请求体没有字节上限` )
   return `${sites.length} 处都有上限`
 })
 
+// 学自 anysearch 的 version.js：版本常量必须与 package.json 一致
+await safe('版本一致', async () => {
+  const { readFileSync: rf } = await import('node:fs')
+  const { join } = await import('node:path')
+  const { fileURLToPath } = await import('node:url')
+  const here = fileURLToPath(new URL('..', import.meta.url))
+  const pkg = JSON.parse(rf(join(here, 'package.json'), 'utf8'))
+  const mod = await import('../index.js')
+  if (mod.VERSION !== pkg.version) throw new Error(`VERSION=${mod.VERSION} 与 package.json ${pkg.version} 不一致`)
+  return mod.VERSION
+})
+
+// 学自 openwrite/writeIfChanged：内容不变就不该改写文件
+await safe('设置写入幂等', async () => {
+  const { statSync: st } = await import('node:fs')
+  const { join } = await import('node:path')
+  const { homedir } = await import('node:os')
+  const p = join(process.env.DSH_HOME || join(homedir(), '.dsh'), 'meme-settings.json')
+  await get('meme_settings').execute({ action: 'set', tendency: 1, density: 1 })
+  const a = st(p).mtimeMs
+  await new Promise((r) => setTimeout(r, 20))
+  await get('meme_settings').execute({ action: 'set', tendency: 1, density: 1 })
+  const b = st(p).mtimeMs
+  if (a !== b) throw new Error('相同内容仍改写了文件')
+  return '未改写'
+})
 const pass = results.filter((r) => r.ok).length
 const fail = results.length - pass
 const report = ['# 自检报告', '', '时间：' + new Date().toISOString(), '', '通过 ' + pass + ' / 失败 ' + fail, '', '| 检查 | 结果 | 说明 |', '|---|---|---|']

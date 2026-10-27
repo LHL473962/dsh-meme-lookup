@@ -14,6 +14,9 @@
 // 设置与词表写在 ~/.dsh/ 下：meme-settings.json / meme-user-lexicon.json（原子写 + 文件锁）。
 const API = 'https://cnmeme.wiki/api/v1/public'
 
+// 版本常量：selftest 会核对它与 package.json 一致（学自 anysearch 的 version.js）
+export const VERSION = '1.5.0'
+
 export const name = 'meme-lookup'
 export const inject = ['tools', 'webServer']
 
@@ -73,7 +76,7 @@ export function apply(ctx) {
           const url = new URL(req.url, 'http://127.0.0.1')
           const sub = url.pathname.replace('/api/meme-panel', '') || '/'
           // 学自 dsh-vision-router：请求体设上限，防止被打爆内存
-          const readBody = async () => { let b = ''; let n = 0; for await (const c of req) { n += Buffer.byteLength(c); if (n > 32 * 1024) throw new Error('BODY_TOO_LARGE'); b += c } try { return JSON.parse(b || '{}') } catch { return {} } }
+          const readBody = () => readBodyBounded(req)
           if (sub === '/settings' && req.method === 'GET') return send(200, loadSettings())
           if (sub === '/settings' && req.method === 'POST') {
             // 学自 wallpaper-engine：未知键要回报，静默忽略和“写丢了”分不清
@@ -81,7 +84,7 @@ export function apply(ctx) {
             const KNOWN = ['tendency', 'density', 'allowRisky', 'autoUpdate', 'persona']
             const ignored = Object.keys(patch || {}).filter((k) => !KNOWN.includes(k))
             const cur = normalizeSettings({ ...loadSettings(), ...patch })
-            writeIfChanged(SETTINGS_FILE, JSON.stringify(cur, null, 2))
+            withFileLock(SETTINGS_FILE, () => writeIfChanged(SETTINGS_FILE, JSON.stringify(cur, null, 2)))
             return send(200, ignored.length ? { ...cur, ignored } : cur)
           }
           if (sub === '/userlex' && req.method === 'GET') {
@@ -925,7 +928,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
         if (args.density !== undefined) cur.density = Math.max(0, Math.min(3, Number(args.density) || 0))
         if (args.allow_risky !== undefined) cur.allowRisky = !!args.allow_risky
         if (args.auto_update !== undefined) cur.autoUpdate = !!args.auto_update
-        writeFileAtomic(SETTINGS_FILE, JSON.stringify(cur, null, 2))
+        withFileLock(SETTINGS_FILE, () => writeIfChanged(SETTINGS_FILE, JSON.stringify(cur, null, 2)))
         return { ok: true, settings: cur }
       }
       return { ok: false, error: 'BAD_ACTION' }
@@ -1812,8 +1815,9 @@ function normalizeSettings(raw) {
 }
 
 // 学自 dsh-vision-toolkit：写词表前加锁，防面板与工具同时写互相覆盖
-function withLexiconLock(fn, timeoutMs = 2000) {
-  const lock = USER_LEX_FILE + '.lock'
+// 通用文件锁（学自 vision-toolkit 的锁 + 心跳、dshmarket 的原子写）
+function withFileLock(file, fn, timeoutMs = 2000) {
+  const lock = file + '.lock'
   const started = Date.now()
   for (;;) {
     try {
@@ -1831,6 +1835,24 @@ function withLexiconLock(fn, timeoutMs = 2000) {
     }
   }
   try { return fn() } finally { try { rmSync(lock, { force: true }) } catch {} }
+}
+
+function withLexiconLock(fn, timeoutMs = 2000) {
+  return withFileLock(USER_LEX_FILE, fn, timeoutMs)
+}
+
+// 唯一的请求体读取实现（学自 wallpaper 的 http-body：累加 · 计闸 · 一次解码）
+async function readBodyBounded(req, maxBytes = 32 * 1024) {
+  let size = 0
+  const chunks = []
+  for await (const c of req) {
+    const buf = Buffer.isBuffer(c) ? c : Buffer.from(c)
+    size += buf.byteLength
+    if (size > maxBytes) { const e = new Error('BODY_TOO_LARGE'); e.code = 'BODY_TOO_LARGE'; throw e }
+    chunks.push(buf)
+  }
+  if (!chunks.length) return {}
+  try { return JSON.parse(stripBom(Buffer.concat(chunks).toString('utf8')) || '{}') } catch { return {} }
 }
 
 // 学自 dsh-im 的 identity 思路：内容没变就不要写盘（避免无谓 mtime 变动与重载）
