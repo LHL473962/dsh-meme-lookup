@@ -4,6 +4,8 @@
 
 > 数据源：cnmeme.wiki 公开 API + B 站公开接口。所有判定都带证据，查不到就明说查不到。
 
+> 仓库：https://github.com/LHL473962/dsh-meme-lookup
+
 ## 五个工具
 
 | 工具 | 作用 |
