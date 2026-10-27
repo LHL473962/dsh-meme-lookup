@@ -93,6 +93,7 @@ export function apply(ctx) {
             // 学自 workspace-upload：只收白名单字段（strict），多出来的键回报而不是默默写进库
             const body = await readBody()
             if (!body.title) return send(400, { ok: false, error: 'EMPTY_TITLE', hint: '梗名必填' })
+            if (looksLikeSecret(body.title)) return send(400, { ok: false, error: 'SECRET_LIKE_TITLE', hint: '这条看起来像密钥，不会存进词库' })
             const ENTRY_KEYS = ['title', 'meaning', 'usage', 'avoid', 'tone', 'example', 'source', 'sourceType', 'variants', 'visibility', 'kind']
             const ignored = Object.keys(body || {}).filter((k) => !ENTRY_KEYS.includes(k))
             const e = {}
@@ -944,6 +945,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
     async execute(args) {
       const title = String((args && args.title) || '').trim().slice(0, 40)
       if (!title) return { ok: false, error: 'EMPTY_TITLE' }
+      if (looksLikeSecret(title)) return { ok: false, error: 'SECRET_LIKE_TITLE', hint: '这条看起来像密钥，不会存进词库' }
       const entry = {
         title,
         meaning: String((args && args.meaning) || '').trim().slice(0, 500),
@@ -1785,6 +1787,12 @@ function writeFileAtomic(file, content) {
 
 // 学自 dshmarket：用户可能用记事本改过文件，UTF-8 BOM 会让 JSON.parse 直接失败
 // 学自 dsh-im 的 ERROR_MESSAGES：每个错误码配一句人能照着做的解释
+// 学自 dsh-im 的 safeSecretRef：条目名不允许长得像凭证
+const SECRET_LIKE = /(sk-[A-Za-z0-9]{16,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{20,}|Bearer\s+[A-Za-z0-9._-]{20,})/
+function looksLikeSecret(value) {
+  return SECRET_LIKE.test(String(value || ''))
+}
+
 const ERROR_HINTS = {
   NO_TEXT: 'OCR 没读到字：图片可能太小、只有表情，或字体被特效覆盖。',
   MATCH_FAILED: '表情匹配脚本跑失败：多半是 Python 缺 opencv，装一下 opencv-python-headless。',
