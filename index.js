@@ -29,7 +29,12 @@ const clip = (s, n = 400) => (typeof s === 'string' && s.length > n ? s.slice(0,
 
 async function getJson(url, attempt = 0) {
   try {
-    const res = await fetch(url, { headers: { accept: 'application/json', 'user-agent': 'dsh-meme-lookup/0.2' } })
+    // 学自 dsh-im 的更新检查：禁重定向、限超时、限长度
+    const res = await fetch(url, {
+      headers: { accept: 'application/json', 'user-agent': 'dsh-meme-lookup/1.4.x' },
+      redirect: 'error',
+      signal: AbortSignal.timeout(10000),
+    })
     if (!res.ok) {
       const err = new Error('HTTP_' + res.status)
       err.status = res.status
