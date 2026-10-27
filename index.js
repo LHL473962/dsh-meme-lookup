@@ -545,6 +545,18 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
         const tone = String((args && args.tone) || '稳')
         const already = new Set(detectMemes(ctxText).map((m) => m.span))
 
+        // 先按话题算“想要的标签”，候选池据此放宽热度门槛
+        const TOPIC_MAP0 = [
+          { keys: ['加班', '上班', '工作', '打工', '工资', '下班', '累', '熬', '社畜'], tags: ['打工人', '社畜', '上班', '自嘲', '生活梗', '职场', '吐槽'] },
+          { keys: ['游戏', '开黑', '排位', '打团', '上分', '队友', '崩'], tags: ['游戏梗', '电竞梗', '玩家社群'] },
+          { keys: ['AI', '模型', '提示词', '插件', '代码', '报错', 'bug', '崩了'], tags: ['AI梗', '科技', '程序员', '电脑', '吐槽'] },
+          { keys: ['吃', '饿', '外卖', '夜宵', '饭'], tags: ['美食', '生活梗'] },
+          { keys: ['困', '睡', '熬夜', '失眠'], tags: ['生活梗', '自嘲'] },
+          { keys: ['猫', '狗', '动物'], tags: ['动物梗', '宠物'] },
+        ]
+        const wantTags0 = new Set()
+        for (const m of TOPIC_MAP0) if (m.keys.some((k) => ctxText.includes(k))) m.tags.forEach((t) => wantTags0.add(t))
+
         const pool = []
         for (const e of AUTO_LEX) {
           if (!e.title || e.title.length < 2 || e.title.length > 10) continue
@@ -554,7 +566,10 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
           const tags = e.tags_raw || []
           if (tags.some((t) => RISKY_TAGS.some((r) => String(t).includes(r)))) continue
           const view = HEAT_INDEX[e.bvid] || 0
-          if (view < 100000) continue
+          const tierOk = e.tier === undefined || e.tier === 'live' || e.tier === 'fading'
+          if (!tierOk) continue
+          const topicHit = wantTags0.size > 0 && tags.some((t) => wantTags0.has(t))
+          if (view < 100000 && !topicHit) continue
           pool.push({ ...e, view })
         }
         if (!pool.length) return { ok: true, suggestions: [], note: '没有够大众的候选' }
@@ -571,11 +586,21 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
         ]
         const wantTags = new Set()
         for (const m of TOPIC_MAP) if (m.keys.some((k) => ctxText.includes(k))) m.tags.forEach((t) => wantTags.add(t))
-        const scored = pool.map((e) => {
+        // 话题命中优先：有相关标签的候选先筛出来，避免永远推同几个热门游戏梗
+        const relPool = wantTags.size ? pool.filter((e) => (e.tags_raw || []).some((t) => wantTags.has(t))) : []
+        const usePool = relPool.length >= 3 ? relPool : pool
+        const scored = usePool.map((e) => {
           let rel = 0
           const hay = String(e.title) + ' ' + (e.tags_raw || []).join(' ')
           for (const w of ctxWords) if (hay.includes(w)) rel += w.length
           for (const t of wantTags) if (hay.includes(t)) rel += 8
+          // 场景梗惩罚：上下文没聊游戏/动画，就别推游戏动画梗
+          const tagStr = (e.tags_raw || []).join(' ')
+          const ctxAboutGame = /游戏|动画|二次元|星穹|番|角色|up主|主播/.test(ctxText)
+          const offTopic = !ctxAboutGame && /游戏梗|动画梗|二次创作|电竞梗|番剧/.test(tagStr)
+          if (offTopic) rel -= 30
+          const dailyBonus = /文字梗|吐槽|生活梗|自嘲|网络迷因|谐音梗|调侃|口头禅/.test(tagStr) ? 6 : 0
+          rel += dailyBonus
           const heatBonus = e.view >= 1000000 ? 30 : e.view >= 300000 ? 18 : 8
           const usableBonus = /句式模板|句式套用|口头禅|网络用语/.test((e.tags_raw || []).join(' ')) ? 12 : 0
           return { ...e, score: rel * 2 + heatBonus + usableBonus, rel }
@@ -598,7 +623,8 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
           why: e.rel > 0 ? '跟当前话题有词重叠，好接' : '大众梗，安全但不算贴题',
         }))
 
-        const reranked = await rerankWithModel(ctxText, scored.slice(0, 20))
+        // 模型重排默认关：这个接口每次要 2 万多 token，贵且慢；需要时在 meme-suggest.json 加 "rerank": true
+        const reranked = SC.rerank ? await rerankWithModel(ctxText, scored.slice(0, 12)) : null
         if (reranked && reranked.length) {
           const byTitle = new Map(picked.map((p) => [p.title, p]))
           const final = reranked.map((x) => ({ ...(byTitle.get(x.title) || { title: x.title }), why: x.why || '模型推荐' }))
@@ -932,7 +958,7 @@ async function rerankWithModel(ctxText, candidates) {
     model: SC.model,
     messages: [
       { role: 'system', content: '你是中文网络用语顾问。只输出 JSON，不要解释。' },
-      { role: 'user', content: '对方说：「' + ctxText + '」\n下面这些梗，挑 1~3 个最合适接这句话的（要求：对方大概率认识、不冒犯、贴题）。\n' + list + '\n输出格式：[{"title":"梗名","why":"一句话理由"}]' },
+      { role: 'user', content: '对方说：「' + ctxText + '」\n下面这些梗，挑 0~3 个最合适接这句话的。规则：\n1) 必须和这句话的具体处境相关（职场/情绪/日常），不能只是“理论上能接”\n2) 游戏、动画、特定作品的角色梗，除非这句话本身在聊那个作品，否则不要选\n3) 宁可少选，也不要凑数；一个都不合适就返回 []\n' + list + '\n输出格式：[{"title":"梗名","why":"一句话理由（不超过20字）"}]' },
     ],
     max_completion_tokens: 300,
   }
