@@ -984,6 +984,7 @@ if (!AUTO_LEX.some((x) => x.title === title)) {
 }
 // ============ 梗理解：抽帧 + OCR + 检索 ============
 import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { openSync, closeSync, statSync as statSync2 } from 'node:fs'
 import { renameSync } from 'node:fs'
 import { statSync } from 'node:fs'
@@ -1467,11 +1468,13 @@ function loadUserLexicon() {
   return added
 }
 loadUserLexicon()
-let _userLexMtime = 0
+// 学自 openwrite：用内容指纹而不是 mtime（同毫秒内两次写入 mtime 可能相同）
+let _userLexRev = ''
 function maybeReloadUserLex() {
   try {
-    const st = statSync(USER_LEX_FILE)
-    if (st.mtimeMs !== _userLexMtime) { _userLexMtime = st.mtimeMs; loadUserLexicon() }
+    const raw = readFileSync(USER_LEX_FILE, 'utf8')
+    const rev = String(raw.length) + ':' + createHash('sha256').update(raw).digest('hex').slice(0, 16)
+    if (rev !== _userLexRev) { _userLexRev = rev; loadUserLexicon() }
   } catch {}
 }
 // 口语/抽象补充（2026-10-27）：公开梗库不收这类词
