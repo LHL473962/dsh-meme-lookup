@@ -76,9 +76,13 @@ export function apply(ctx) {
           const readBody = async () => { let b = ''; let n = 0; for await (const c of req) { n += Buffer.byteLength(c); if (n > 32 * 1024) throw new Error('BODY_TOO_LARGE'); b += c } try { return JSON.parse(b || '{}') } catch { return {} } }
           if (sub === '/settings' && req.method === 'GET') return send(200, loadSettings())
           if (sub === '/settings' && req.method === 'POST') {
-            const cur = { ...loadSettings(), ...(await readBody()) }
+            // 学自 wallpaper-engine：未知键要回报，静默忽略和“写丢了”分不清
+            const patch = await readBody()
+            const KNOWN = ['tendency', 'density', 'allowRisky', 'autoUpdate', 'persona']
+            const ignored = Object.keys(patch || {}).filter((k) => !KNOWN.includes(k))
+            const cur = normalizeSettings({ ...loadSettings(), ...patch })
             writeFileAtomic(SETTINGS_FILE, JSON.stringify(cur, null, 2))
-            return send(200, cur)
+            return send(200, ignored.length ? { ...cur, ignored } : cur)
           }
           if (sub === '/userlex' && req.method === 'GET') {
             let list = []
