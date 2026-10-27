@@ -929,10 +929,12 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
         addedAt: new Date().toISOString(),
       }
       let list = []
-      try { list = JSON.parse(readFileSync(USER_LEX_FILE, 'utf8')) || [] } catch {}
-      list = list.filter((e) => e.title !== title)
-      list.push(entry)
-      writeFileAtomic(USER_LEX_FILE, JSON.stringify(list, null, 2))
+      withLexiconLock(() => {
+        try { list = JSON.parse(readFileSync(USER_LEX_FILE, 'utf8')) || [] } catch {}
+        list = list.filter((e) => e.title !== title)
+        list.push(entry)
+        writeFileAtomic(USER_LEX_FILE, JSON.stringify(list, null, 2))
+      })
       // 立刻进内存，别等重启
 const isPhraseNew = entry.sourceType === "自创"
 if (!AUTO_LEX.some((x) => x.title === title)) {
@@ -982,6 +984,7 @@ if (!AUTO_LEX.some((x) => x.title === title)) {
 }
 // ============ 梗理解：抽帧 + OCR + 检索 ============
 import { spawnSync } from 'node:child_process'
+import { openSync, closeSync, statSync as statSync2 } from 'node:fs'
 import { renameSync } from 'node:fs'
 import { statSync } from 'node:fs'
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -1697,6 +1700,41 @@ function withWindowsRetry(fn, attempts = 4) {
   throw last
 }
 
+// 学自 dsh-ops：配置严格校验（未知键拒绝、范围检查、错误信息可操作）
+function normalizeSettings(raw) {
+  const def = { tendency: 1, density: 1, allowRisky: false, autoUpdate: true, persona: 'steady' }
+  const out = { ...def }
+  if (!raw || typeof raw !== 'object') return out
+  if (Number.isInteger(raw.tendency) && raw.tendency >= 0 && raw.tendency <= 2) out.tendency = raw.tendency
+  if (Number.isInteger(raw.density) && raw.density >= 0 && raw.density <= 3) out.density = raw.density
+  if (typeof raw.allowRisky === 'boolean') out.allowRisky = raw.allowRisky
+  if (typeof raw.autoUpdate === 'boolean') out.autoUpdate = raw.autoUpdate
+  if (typeof raw.persona === 'string' && /^[a-z][a-z0-9-]{1,30}$/.test(raw.persona)) out.persona = raw.persona
+  return out
+}
+
+// 学自 dsh-vision-toolkit：写词表前加锁，防面板与工具同时写互相覆盖
+function withLexiconLock(fn, timeoutMs = 2000) {
+  const lock = USER_LEX_FILE + '.lock'
+  const started = Date.now()
+  for (;;) {
+    try {
+      const fd = openSync(lock, 'wx')
+      try { writeFileSync(fd, String(process.pid)) } finally { closeSync(fd) }
+      break
+    } catch (e) {
+      if (e.code !== 'EEXIST') break
+      try {
+        const st = statSync(lock)
+        if (Date.now() - st.mtimeMs > 15000) { rmSync(lock, { force: true }); continue }
+      } catch {}
+      if (Date.now() - started > timeoutMs) break
+      try { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 50) } catch {}
+    }
+  }
+  try { return fn() } finally { try { rmSync(lock, { force: true }) } catch {} }
+}
+
 function writeFileAtomic(file, content) {
   const tmp = file + '.tmp-' + process.pid + '-' + Date.now()
   try {
@@ -1709,8 +1747,7 @@ function writeFileAtomic(file, content) {
 }
 
 function loadSettings() {
-  const def = { tendency: 1, density: 1, allowRisky: false, autoUpdate: true }
-  try { return { ...def, ...(JSON.parse(readFileSync(SETTINGS_FILE, "utf8")) || {}) } } catch { return def }
+  try { return normalizeSettings(JSON.parse(readFileSync(SETTINGS_FILE, "utf8"))) } catch { return normalizeSettings(null) }
 }
 
 function replyPolicy(context, memes) {
