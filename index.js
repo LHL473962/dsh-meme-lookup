@@ -45,6 +45,14 @@ export function apply(ctx) {
       path: '/api/meme-panel',
       handler: async (req, res) => {
         const send = (code, body) => { res.writeHead(code, { 'content-type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(body)) }
+        // 学自 dsh-image-gen：同源检查，不让跨站页面读写词表
+        { const o = String(req.headers.origin || '')
+          if (o) {
+            const h = String(req.headers.host || '')
+            let same = false
+            try { same = new URL(o).host === h } catch { same = false }
+            if (!same) return send(403, { ok: false, error: 'origin-rejected' })
+          } }
         try {
           const url = new URL(req.url, 'http://127.0.0.1')
           const sub = url.pathname.replace('/api/meme-panel', '') || '/'
