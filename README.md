@@ -43,6 +43,16 @@
 2. **别名不算证据**：别名命中封顶 79 分，只能进备选。
 3. **陈年老梗不抛**：时效 stale 强制降档，且永不主动推荐。
 
+## 云端更新（不依赖 B 站插件）
+
+`meme_sync` 用 `git clone --depth 1` 拉本仓库，合并词表；没有 B 站插件也能更新。
+仓库里 `lexicon_danmaku.json` / `lexicon_all.json` 就是云端词库本体。
+
+## 面板
+
+- `meme_settings`：玩梗倾向（稳重/正常/活泛）、浓度（0~3）、是否允许慎用级、是否自动更新
+- `meme_add`：用户手动加梗（含义/用法/别用场景/语气/示例/出处/变体），存 `~/.dsh/meme-user-lexicon.json`
+
 ## 安装
 
 1. 把本目录拷到 `<profile>/node_modules/dsh-meme-lookup/`
