@@ -1149,6 +1149,16 @@ try {
   if (Array.isArray(raw)) AUTO_LEX = raw.filter((x) => x && x.title && x.slug)
 } catch {}
 
+// 评论区高频（2026-10-27 扫 220 个视频的评论 + 楼中楼）
+const COMMENT_FILE = new URL('./lexicon_comment.json', import.meta.url)
+try {
+  const rows = JSON.parse(readFileSync(COMMENT_FILE, 'utf8'))
+  const have4 = new Set(AUTO_LEX.map((e) => e.title))
+  if (Array.isArray(rows)) for (const e of rows) {
+    if (!e || !e.title || have4.has(e.title)) continue
+    AUTO_LEX.push(e); have4.add(e.title)
+  }
+} catch {}
 // 弹幕高频短语（2026-10-27 扫 160 条热门视频得来）：这些是「正在被使用」的证据
 const DANMAKU_FILE = new URL('./lexicon_danmaku.json', import.meta.url)
 try {
