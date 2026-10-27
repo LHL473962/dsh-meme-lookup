@@ -1,83 +1,132 @@
 {
- "note": "口语/抽象类补充词：不靠公开梗库，靠日常观察补。tier=slang 表示是日常说法，不做梗的判定，只做识别。",
+ "note": "口语底色词：公开梗库不收，靠日常使用观察补。tier=slang 表示只做识别、不做梗判定。",
  "items": [
   {
-   "title": "阴间",
-   "tier": "slang",
-   "tags": [
-    "口语",
-    "调侃"
-   ],
-   "aliases": [
-    "阴间东西",
-    "阴间玩意",
-    "阴间操作",
-    "阴间滤镜",
-    "阴间时间"
-   ],
-   "meaning": "诡异、不合常理、让人不舒服的东西；评论里常用「这啥阴间东西」"
-  },
-  {
-   "title": "啥阴",
-   "tier": "slang",
-   "tags": [
-    "口语",
-    "缩写"
-   ],
-   "aliases": [
-    "啥阴间"
-   ],
-   "meaning": "「什么阴间东西」的缩写，看到离谱画面时的吐槽"
-  },
-  {
-   "title": "抽象",
-   "tier": "slang",
-   "tags": [
-    "口语",
-    "调侃"
-   ],
-   "aliases": [
-    "太抽象了",
-    "抽象行为"
-   ],
-   "meaning": "看不懂、离谱、难以理解的行为或内容"
-  },
-  {
-   "title": "逆天",
-   "tier": "slang",
-   "tags": [
-    "口语",
-    "调侃"
-   ],
-   "aliases": [
-    "逆天玩意",
-    "太逆天了"
-   ],
-   "meaning": "离谱到不讲道理，比「离谱」更重"
-  },
-  {
-   "title": "离谱",
+   "title": "绷不住",
    "tier": "slang",
    "tags": [
     "口语"
    ],
    "aliases": [
-    "离大谱",
-    "离谱他妈"
+    "绷不住了",
+    "绷不住了啊",
+    "没绷住"
    ],
-   "meaning": "不合常理"
+   "meaning": "忍不住笑了或情绪失控"
   },
   {
-   "title": "开摆",
+   "title": "破防",
    "tier": "slang",
    "tags": [
     "口语"
    ],
    "aliases": [
-    "摆了",
-    "摆烂了"
+    "破大防",
+    "破防了",
+    "大破防"
    ],
-   "meaning": "放弃挣扎、不再努力"
+   "meaning": "心理防线被击穿"
+  },
+  {
+   "title": "麻了",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "我麻了",
+    "麻住了"
+   ],
+   "meaning": "被整到失去反应"
+  },
+  {
+   "title": "裂开",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "我裂开了",
+    "直接裂开"
+   ],
+   "meaning": "崩了、撑不住"
+  },
+  {
+   "title": "笑死",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "笑死我了",
+    "笑不活了",
+    "笑麻了",
+    "笑拥了"
+   ],
+   "meaning": "笑到不行"
+  },
+  {
+   "title": "无语",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "我无语了",
+    "无语子",
+    "无大语"
+   ],
+   "meaning": "说不出话"
+  },
+  {
+   "title": "服了",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "我服了",
+    "真服了",
+    "服气"
+   ],
+   "meaning": "认输或无奈"
+  },
+  {
+   "title": "绝了",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "真绝了",
+    "太绝了"
+   ],
+   "meaning": "好到或离谱到极致"
+  },
+  {
+   "title": "乐",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "乐了",
+    "乐死",
+    "开乐"
+   ],
+   "meaning": "看热闹不嫌事大"
+  },
+  {
+   "title": "泪目",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "泪崩",
+    "看哭了"
+   ],
+   "meaning": "被感动"
   },
   {
    "title": "上头",
@@ -88,7 +137,7 @@
    "aliases": [
     "太上头了"
    ],
-   "meaning": "情绪被带起来、停不下来"
+   "meaning": "情绪被带起来停不下"
   },
   {
    "title": "下头",
@@ -97,9 +146,925 @@
     "口语"
    ],
    "aliases": [
-    "太下头了"
+    "太下头了",
+    "下头男",
+    "下头女"
    ],
-   "meaning": "让人瞬间反感、兴致全无"
+   "meaning": "瞬间反感"
+  },
+  {
+   "title": "尴尬",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "社死",
+    "社会性死亡"
+   ],
+   "meaning": "当众丢脸"
+  },
+  {
+   "title": "慌",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "心慌",
+    "慌了"
+   ],
+   "meaning": "紧张"
+  },
+  {
+   "title": "急",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "急了",
+    "急急急",
+    "急死了"
+   ],
+   "meaning": "被戳到痛处"
+  },
+  {
+   "title": "离谱",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "离大谱",
+    "离谱他妈",
+    "离谱到家"
+   ],
+   "meaning": "不合常理"
+  },
+  {
+   "title": "逆天",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "逆天玩意",
+    "太逆天了"
+   ],
+   "meaning": "离谱到不讲道理"
+  },
+  {
+   "title": "阴间",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "阴间东西",
+    "阴间玩意",
+    "啥阴"
+   ],
+   "meaning": "诡异、让人不适"
+  },
+  {
+   "title": "抽象",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "太抽象了",
+    "抽象行为"
+   ],
+   "meaning": "看不懂、难以理解"
+  },
+  {
+   "title": "典",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "典中典",
+    "太典了",
+    "典"
+   ],
+   "meaning": "典型到可以当范例（多含讽刺）"
+  },
+  {
+   "title": "就这",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "就这？",
+    "就这水平"
+   ],
+   "meaning": "轻蔑地表示不过如此"
+  },
+  {
+   "title": "啊这",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "这……",
+    "这波"
+   ],
+   "meaning": "一时不知说什么"
+  },
+  {
+   "title": "有一说一",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "有一说一确实",
+    "说实话"
+   ],
+   "meaning": "客观讲"
+  },
+  {
+   "title": "属实",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "属实干货",
+    "属实离谱"
+   ],
+   "meaning": "确实是"
+  },
+  {
+   "title": "确实",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "确实如此",
+    "有道理"
+   ],
+   "meaning": "认同"
+  },
+  {
+   "title": "合理",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "很合理",
+    "不太合理"
+   ],
+   "meaning": "讲得通"
+  },
+  {
+   "title": "不至于",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "不至于吧"
+   ],
+   "meaning": "觉得反应过度"
+  },
+  {
+   "title": "行吧",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "那行吧",
+    "好吧"
+   ],
+   "meaning": "勉强接受"
+  },
+  {
+   "title": "可以",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "这个可以",
+    "行了"
+   ],
+   "meaning": "认可"
+  },
+  {
+   "title": "难评",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "不好评",
+    "很难评"
+   ],
+   "meaning": "不好下结论"
+  },
+  {
+   "title": "摆烂",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "开摆",
+    "摆了",
+    "摆烂了"
+   ],
+   "meaning": "放弃努力"
+  },
+  {
+   "title": "躺平",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "躺了",
+    "平躺"
+   ],
+   "meaning": "不再竞争"
+  },
+  {
+   "title": "内卷",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "卷起来了",
+    "太卷了"
+   ],
+   "meaning": "过度竞争"
+  },
+  {
+   "title": "摸鱼",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "划水",
+    "摸会儿鱼"
+   ],
+   "meaning": "偷懒"
+  },
+  {
+   "title": "爆肝",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "肝了",
+    "熬夜爆肝"
+   ],
+   "meaning": "熬夜硬干"
+  },
+  {
+   "title": "熬穿",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "熬穿了",
+    "熬夜熬穿"
+   ],
+   "meaning": "熬夜到极限"
+  },
+  {
+   "title": "emo",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "emo了",
+    "我emo了"
+   ],
+   "meaning": "情绪低落"
+  },
+  {
+   "title": "社畜",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "打工人",
+    "上班狗"
+   ],
+   "meaning": "自嘲上班族"
+  },
+  {
+   "title": "日常",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "日常了",
+    "属于日常"
+   ],
+   "meaning": "常态"
+  },
+  {
+   "title": "白嫖",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "白嫖党",
+    "白嫖成功"
+   ],
+   "meaning": "免费拿"
+  },
+  {
+   "title": "开香槟",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "开香槟咯",
+    "先开香槟"
+   ],
+   "meaning": "提前庆祝（多含反讽）"
+  },
+  {
+   "title": "下饭",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "很下饭",
+    "下饭操作"
+   ],
+   "meaning": "菜到适合配饭看"
+  },
+  {
+   "title": "上分",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "上大分",
+    "掉分"
+   ],
+   "meaning": "表现极好或极差"
+  },
+  {
+   "title": "草台班子",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "草台",
+    "草台班"
+   ],
+   "meaning": "组织混乱不专业"
+  },
+  {
+   "title": "锐评",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "锐评一下",
+    "我来锐评"
+   ],
+   "meaning": "犀利点评"
+  },
+  {
+   "title": "整活",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "整活了",
+    "整个活"
+   ],
+   "meaning": "搞事情"
+  },
+  {
+   "title": "玩梗",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "玩个梗",
+    "抛梗"
+   ],
+   "meaning": "使用梗"
+  },
+  {
+   "title": "接梗",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "接住了",
+    "没接住"
+   ],
+   "meaning": "回应别人的梗"
+  },
+  {
+   "title": "二创",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "二次创作",
+    "同人"
+   ],
+   "meaning": "基于原作的再创作"
+  },
+  {
+   "title": "出圈",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "破圈",
+    "出圈了"
+   ],
+   "meaning": "小众扩散到大众"
+  },
+  {
+   "title": "退潮",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "过气了",
+    "凉了"
+   ],
+   "meaning": "热度下降"
+  },
+  {
+   "title": "考古",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "挖坟",
+    "考古现场"
+   ],
+   "meaning": "翻旧内容"
+  },
+  {
+   "title": "文艺复兴",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "文艺复兴了"
+   ],
+   "meaning": "老内容重新流行"
+  },
+  {
+   "title": "爷青回",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "爷的青春回来了"
+   ],
+   "meaning": "回忆杀（略旧）"
+  },
+  {
+   "title": "爷青结",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "爷的青春结束了"
+   ],
+   "meaning": "系列完结（略旧）"
+  },
+  {
+   "title": "梦回",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "梦回当年"
+   ],
+   "meaning": "唤起旧记忆"
+  },
+  {
+   "title": "电子榨菜",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "下饭视频",
+    "电子咸菜"
+   ],
+   "meaning": "吃饭时看的视频"
+  },
+  {
+   "title": "电子木鱼",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "敲木鱼",
+    "赛博木鱼"
+   ],
+   "meaning": "假装修行解压"
+  },
+  {
+   "title": "赛博",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "赛博朋克",
+    "赛博许愿"
+   ],
+   "meaning": "虚拟/网络化前缀"
+  },
+  {
+   "title": "云",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "云玩家",
+    "云体验"
+   ],
+   "meaning": "只看不玩"
+  },
+  {
+   "title": "草",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "艹",
+    "我靠"
+   ],
+   "meaning": "惊叹"
+  },
+  {
+   "title": "好家伙",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "好家伙啊"
+   ],
+   "meaning": "惊讶"
+  },
+  {
+   "title": "我超",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "我焯",
+    "我擦"
+   ],
+   "meaning": "惊叹"
+  },
+  {
+   "title": "啊对对对",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "对对对"
+   ],
+   "meaning": "阴阳怪气地附和"
+  },
+  {
+   "title": "你礼貌吗",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "礼貌吗"
+   ],
+   "meaning": "指责对方说话过分"
+  },
+  {
+   "title": "你这就不对了",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "这就没意思了"
+   ],
+   "meaning": "半开玩笑地抗议"
+  },
+  {
+   "title": "属于是",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "属于是了"
+   ],
+   "meaning": "判断句式"
+  },
+  {
+   "title": "纯路人",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "完全路人"
+   ],
+   "meaning": "假装中立"
+  },
+  {
+   "title": "不吹不黑",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "客观讲"
+   ],
+   "meaning": "表示客观"
+  },
+  {
+   "title": "认真你就输了",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "认真就输了"
+   ],
+   "meaning": "劝别较真"
+  },
+  {
+   "title": "急了急了",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "急了"
+   ],
+   "meaning": "嘲讽对方情绪化"
+  },
+  {
+   "title": "急了也没用",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "急也没用"
+   ],
+   "meaning": "嘲讽升级"
+  },
+  {
+   "title": "笑不活了",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "笑不活"
+   ],
+   "meaning": "笑到极限"
+  },
+  {
+   "title": "我裂开",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "裂开"
+   ],
+   "meaning": "崩溃"
+  },
+  {
+   "title": "世界名画",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "名场面",
+    "名画"
+   ],
+   "meaning": "经典场面"
+  },
+  {
+   "title": "什么水平",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "这什么水平"
+   ],
+   "meaning": "质疑水平"
+  },
+  {
+   "title": "就这啊",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "就这"
+   ],
+   "meaning": "轻蔑"
+  },
+  {
+   "title": "什么成分",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "成分不明"
+   ],
+   "meaning": "质疑身份/立场（慎用）"
+  },
+  {
+   "title": "不知道说什么",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "不知当讲不当讲"
+   ],
+   "meaning": "犹豫"
+  },
+  {
+   "title": "小丑竟是我自己",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "小丑是我"
+   ],
+   "meaning": "自嘲"
+  },
+  {
+   "title": "先别庆功",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "先别急",
+    "先别开香槟"
+   ],
+   "meaning": "提醒先验证"
+  },
+  {
+   "title": "跑一下",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "先跑一下",
+    "跑个测试"
+   ],
+   "meaning": "动手验证"
+  },
+  {
+   "title": "闭环",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "形成闭环",
+    "闭环了"
+   ],
+   "meaning": "流程走通"
+  },
+  {
+   "title": "对齐",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "对齐一下",
+    "先对齐"
+   ],
+   "meaning": "统一认识"
+  },
+  {
+   "title": "拉齐",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "拉齐认知"
+   ],
+   "meaning": "统一到同一水平"
+  },
+  {
+   "title": "拆解",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "拆一下"
+   ],
+   "meaning": "分解分析"
+  },
+  {
+   "title": "复盘",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "复盘一下"
+   ],
+   "meaning": "事后总结"
+  },
+  {
+   "title": "兜底",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "兜一下"
+   ],
+   "meaning": "保底"
+  },
+  {
+   "title": "兜得住",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "兜不住"
+   ],
+   "meaning": "能否保底"
+  },
+  {
+   "title": "落地",
+   "tier": "slang",
+   "tags": [
+    "口语"
+   ],
+   "aliases": [
+    "能落地",
+    "落不了地"
+   ],
+   "meaning": "真正实现"
   }
  ]
 }
