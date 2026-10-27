@@ -61,7 +61,7 @@ export function apply(ctx) {
           if (sub === '/settings' && req.method === 'GET') return send(200, loadSettings())
           if (sub === '/settings' && req.method === 'POST') {
             const cur = { ...loadSettings(), ...(await readBody()) }
-            writeFileSync(SETTINGS_FILE, JSON.stringify(cur, null, 2))
+            writeFileAtomic(SETTINGS_FILE, JSON.stringify(cur, null, 2))
             return send(200, cur)
           }
           if (sub === '/userlex' && req.method === 'GET') {
@@ -77,7 +77,7 @@ export function apply(ctx) {
             const idx = list.findIndex((x) => x.title === e.title)
             const row = { ...e, addedAt: new Date().toISOString(), review: e.visibility === 'public' ? 'pending' : 'private' }
             if (idx >= 0) list[idx] = row; else list.push(row)
-            writeFileSync(USER_LEX_FILE, JSON.stringify(list, null, 2))
+            writeFileAtomic(USER_LEX_FILE, JSON.stringify(list, null, 2))
             loadUserLexicon()
             return send(200, { ok: true, total: list.length })
           }
@@ -86,7 +86,7 @@ export function apply(ctx) {
             let list = []
             try { list = JSON.parse(readFileSync(USER_LEX_FILE, 'utf8')) || [] } catch {}
             if (idx >= 0) list.splice(idx, 1)
-            writeFileSync(USER_LEX_FILE, JSON.stringify(list, null, 2))
+            writeFileAtomic(USER_LEX_FILE, JSON.stringify(list, null, 2))
             return send(200, { ok: true, total: list.length })
           }
           return send(404, { ok: false, error: 'NOT_FOUND' })
@@ -893,7 +893,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
         if (args.density !== undefined) cur.density = Math.max(0, Math.min(3, Number(args.density) || 0))
         if (args.allow_risky !== undefined) cur.allowRisky = !!args.allow_risky
         if (args.auto_update !== undefined) cur.autoUpdate = !!args.auto_update
-        writeFileSync(SETTINGS_FILE, JSON.stringify(cur, null, 2))
+        writeFileAtomic(SETTINGS_FILE, JSON.stringify(cur, null, 2))
         return { ok: true, settings: cur }
       }
       return { ok: false, error: 'BAD_ACTION' }
@@ -932,7 +932,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
       try { list = JSON.parse(readFileSync(USER_LEX_FILE, 'utf8')) || [] } catch {}
       list = list.filter((e) => e.title !== title)
       list.push(entry)
-      writeFileSync(USER_LEX_FILE, JSON.stringify(list, null, 2))
+      writeFileAtomic(USER_LEX_FILE, JSON.stringify(list, null, 2))
       // 立刻进内存，别等重启
 const isPhraseNew = entry.sourceType === "自创"
 if (!AUTO_LEX.some((x) => x.title === title)) {
@@ -982,6 +982,7 @@ if (!AUTO_LEX.some((x) => x.title === title)) {
 }
 // ============ 梗理解：抽帧 + OCR + 检索 ============
 import { spawnSync } from 'node:child_process'
+import { renameSync } from 'node:fs'
 import { statSync } from 'node:fs'
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -1679,6 +1680,18 @@ function redactPaths(text) {
     .replace(/\/(?:home|Users|root)\/[^\s"']+/g, '<path>')
     .slice(0, 400)
 }
+// 学自 dshmarket：原子写，崩在写一半也不会把设置/词表截断
+function writeFileAtomic(file, content) {
+  const tmp = file + '.tmp-' + process.pid + '-' + Date.now()
+  try {
+    writeFileSync(tmp, content)
+    renameSync(tmp, file)
+  } catch (e) {
+    try { rmSync(tmp, { force: true }) } catch {}
+    throw e
+  }
+}
+
 function loadSettings() {
   const def = { tendency: 1, density: 1, allowRisky: false, autoUpdate: true }
   try { return { ...def, ...(JSON.parse(readFileSync(SETTINGS_FILE, "utf8")) || {}) } } catch { return def }
