@@ -725,15 +725,13 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
           { keys: ['冷笑话', '谐音', '段子', '讲个笑话'], memes: ['冻住', '笑死'] },
         ]
         // 宿傩句式：先写「代价」，再写「目的」——不是赌一把，是我愿意为你们付这个代价
-        const sacrifice = /(让|为了).{0,12}(看到|知道|明白|用上|学会)/.test(text) || /(代价|豁出去|我垫|贷款)/.test(text)
-        let purpose = ''
-        if (sacrifice) {
-          purpose = text.replace(/^.*?(让你们?|就?是为了|为了|也要)/, '').trim().replace(/^让/, '')
-          if (/看到/.test(purpose)) purpose = '都能' + purpose.slice(purpose.indexOf('看到'))
-          else purpose = purpose.replace(/^我(们)?/, '').replace(/^大家/, '').trim()
-          if (!purpose) purpose = '都能看到这期视频'
-        }
-        const sacrificeLine = sacrifice ? '我贷了笔大的，让你们' + purpose : null
+        const sacrifice = /(我贷|我垫|我氪|我熬|我花|押上|豁出去|代价)/.test(text) || /(让|为了).{0,12}(看到|知道|用上|学会)/.test(text)
+        // 只取「目的」那半句，两种模板：让你们 X / 只为了让 X
+        let purpose = text.split(/让你们|让你|为了让|为了|只为了/).pop().trim()
+        purpose = purpose.replace(/^[，,、\s]+/, '').replace(/^(你们|大家|我)/, '')
+        if (/让/.test(purpose)) purpose = purpose.slice(purpose.lastIndexOf('让') + 1).trim()
+        while (purpose.startsWith('让') || purpose.startsWith('使')) purpose = purpose.slice(1)
+        const sacrificeLine = sacrifice ? ('我贷了笔大的，' + (/让你们|让你/.test(text) ? '让你们' + purpose : '只为了让' + purpose)) : null
         const titleSet = new Set(AUTO_LEX.map((e) => e.title))
         const curatedOut = []
         for (const c of CURATED) {
