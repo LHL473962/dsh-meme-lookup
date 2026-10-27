@@ -15,7 +15,7 @@
 const API = 'https://cnmeme.wiki/api/v1/public'
 
 // 版本常量：selftest 会核对它与 package.json 一致（学自 anysearch 的 version.js）
-export const VERSION = '1.5.0'
+export const VERSION = '1.5.1'
 
 export const name = 'meme-lookup'
 export const inject = ['tools', 'webServer']
@@ -57,6 +57,13 @@ async function getJson(url, attempt = 0) {
 }
 
 export function apply(ctx) {
+  // 学自 dsh-tools：参数必须是 JSON Schema（{type:object,properties}），扁平 map 会被 provider 拒
+  const registerTool = (def) => {
+    if (def && def.parameters && def.parameters.type !== 'object') {
+      def.parameters = { type: 'object', properties: def.parameters, additionalProperties: false }
+    }
+    return ctx.tools.register(def)
+  }
   // 设置页（client.js）通过这条路由读写：/api/meme-panel/*
   try {
     ctx.effect(() => ctx.webServer.register({
@@ -125,7 +132,7 @@ export function apply(ctx) {
       },
     }), 'meme-panel: /api/meme-panel 路由')
   } catch (e) { /* 路由挂不上不影响工具 */ }
-  ctx.tools.register({
+  registerTool({
     name: 'meme_lookup',
     description: '查梗：给关键词返回标题/摘要/标签/出处 BV 号；给 slug 返回完整条目。数据来自 cnmeme.wiki 公开库，实时请求。',
     parameters: {
@@ -187,7 +194,7 @@ export function apply(ctx) {
     },
   })
 
-  ctx.tools.register({
+  registerTool({
     name: 'meme_understand',
     description: '看懂一个梗：从图片或 B站视频抽帧做 OCR，提关键词，再去梗库找候选。给的是证据+候选，不是拍脑袋的答案。',
     parameters: {
@@ -269,7 +276,7 @@ export function apply(ctx) {
     },
   })
 
-  ctx.tools.register({
+  registerTool({
     name: 'meme_coach',
     description: '梗教练：输入一段文案/一张图/一个BV，输出「这个梗是什么、出处、能不能用、怎么用、有什么风险」。给的是可用判断，不是搜索结果。',
     parameters: {
@@ -495,7 +502,7 @@ export function apply(ctx) {
     },
   })
 
-  ctx.tools.register({
+  registerTool({
     name: 'meme_chat',
     description: '读一句话：哪些是梗、什么语境（正事/调侃/讽刺/情绪）、该不该用梗回，以及「说这话的人可以给自己贴哪张图」。',
     parameters: {
@@ -577,7 +584,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
     },
   })
 
-  ctx.tools.register({
+  registerTool({
     name: 'meme_suggest',
     description: '主动抛梗：给一段对话上下文，推荐 1~3 个「对方大概率认识、且不冒犯」的梗。只推荐大众认识的，冷门不抛。',
     parameters: {
@@ -688,7 +695,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
   })
 
 
-  ctx.tools.register({
+  registerTool({
     name: 'meme_screen',
     description: '读一张截图（评论区/弹幕/聊天）：OCR 出文字，识别里面的梗、句式、场景。用于看别人评论区怎么玩梗。',
     parameters: {
@@ -720,7 +727,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
   })
 
 
-  ctx.tools.register({
+  registerTool({
     name: 'meme_emote',
     description: '认截图里的 B 站表情包：和本地 360 张素材做模板匹配，返回最像的几个名字和分数。用于看评论区用了哪个表情。',
     parameters: {
@@ -742,7 +749,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
 
 
 
-  ctx.tools.register({
+  registerTool({
     name: 'meme_write',
     description: '写文案时用梗：给一段主题/草稿，挑出能用的梗，说明放在哪、怎么用、要不要署名，按你的玩梗浓度控制数量。',
     parameters: {
@@ -880,7 +887,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
   })
 
 
-  ctx.tools.register({
+  registerTool({
     name: 'meme_persona',
     description: '人格/说话风格：稳重、损友、贴吧、捧场、自嘲、冷面。只管怎么说，不管该不该说。',
     parameters: {
@@ -906,7 +913,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
       return { ok: false, error: 'BAD_ACTION' }
     },
   })
-  ctx.tools.register({
+  registerTool({
     name: 'meme_settings',
     description: '玩梗开关：调「玩梗倾向」（稳重/正常/活泛）和「玩梗浓度」（每条回复最多几个梗），也可开关自动更新。',
     parameters: {
@@ -935,7 +942,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
     },
   })
 
-  ctx.tools.register({
+  registerTool({
     name: 'meme_add',
     description: '手动加梗：用户自己录一条，写清含义和用法。存进用户词表，优先级高于公共库。',
     parameters: {
@@ -980,7 +987,7 @@ if (!AUTO_LEX.some((x) => x.title === title)) {
     },
   })
 
-  ctx.tools.register({
+  registerTool({
     name: 'meme_sync',
     description: '从云端仓库拉取最新梗库（git clone 浅拷贝），合并进当前词表。没有 B 站插件也能更新。',
     parameters: {

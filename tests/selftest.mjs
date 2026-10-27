@@ -133,6 +133,12 @@ await safe('设置写入幂等', async () => {
   if (a !== b) throw new Error('相同内容仍改写了文件')
   return '未改写'
 })
+// 学自 dsh-tools：参数必须是 JSON Schema，扁平 map 会被 provider 拒
+await safe('工具 schema 合法', async () => {
+  const bad = tools.filter((t) => !t.parameters || t.parameters.type !== 'object' || !t.parameters.properties)
+  if (bad.length) throw new Error(`${bad.length} 个工具参数不是 object schema: ${bad.map((b) => b.name).join(',')}`)
+  return `${tools.length} 个都是 object schema`
+})
 const pass = results.filter((r) => r.ok).length
 const fail = results.length - pass
 const report = ['# 自检报告', '', '时间：' + new Date().toISOString(), '', '通过 ' + pass + ' / 失败 ' + fail, '', '| 检查 | 结果 | 说明 |', '|---|---|---|']
