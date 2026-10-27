@@ -785,9 +785,21 @@ import { copyFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 
 const _pkgDir = fileURLToPath(new URL('.', import.meta.url))
-const PY = process.env.DSH_FRAMES_PY || process.env.DSH_PY || 'python'
+// 选一个能用的 Python：环境变量 > 本机已知 venv > PATH 上的 python
+function resolvePython() {
+  const env = process.env.DSH_PY || process.env.DSH_FRAMES_PY || process.env.DSH_OCR_PYEXE
+  if (env && existsSync(env)) return env
+  const cands = [
+    'D:/Apps/dsh-soundcheck-src/engine/venv/Scripts/python.exe',
+    join(homedir2(), '.dsh', 'bili-humanism', 'venv-frames', 'Scripts', 'python.exe'),
+  ]
+  for (const c of cands) { try { if (existsSync(c)) return c } catch {} }
+  return 'python'
+}
+
+const PY = resolvePython()
 const OCR_PY = process.env.DSH_OCR_PY || join(_pkgDir, 'tools', 'ocr_win.py')
-const OCR_PYEXE = process.env.DSH_OCR_PYEXE || process.env.DSH_PY || 'python'
+const OCR_PYEXE = PY
 
 function run(cmd, args, opts = {}) {
   const r = spawnSync(cmd, args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, ...opts })
@@ -929,6 +941,7 @@ async function rerankWithModel(ctxText, candidates) {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: 'Bearer ' + SC.apiKey },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(25000),
     })
     const d = await r.json()
     const text = (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content) || ''
