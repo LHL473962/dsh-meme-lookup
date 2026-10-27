@@ -81,7 +81,7 @@ export function apply(ctx) {
             const KNOWN = ['tendency', 'density', 'allowRisky', 'autoUpdate', 'persona']
             const ignored = Object.keys(patch || {}).filter((k) => !KNOWN.includes(k))
             const cur = normalizeSettings({ ...loadSettings(), ...patch })
-            writeFileAtomic(SETTINGS_FILE, JSON.stringify(cur, null, 2))
+            writeIfChanged(SETTINGS_FILE, JSON.stringify(cur, null, 2))
             return send(200, ignored.length ? { ...cur, ignored } : cur)
           }
           if (sub === '/userlex' && req.method === 'GET') {
@@ -893,7 +893,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
         const found = list.find((p) => p.id === want || p.name === want)
         if (!found) return { ok: false, error: 'UNKNOWN_PERSONA', available: list.map((p) => p.id) }
         const st = loadSettings()
-        writeFileSync(SETTINGS_FILE, JSON.stringify({ ...st, persona: found.id }, null, 2))
+        writeIfChanged(SETTINGS_FILE, JSON.stringify({ ...st, persona: found.id }, null, 2))
         return { ok: true, persona: found }
       }
       return { ok: false, error: 'BAD_ACTION' }
@@ -1772,6 +1772,15 @@ function withLexiconLock(fn, timeoutMs = 2000) {
     }
   }
   try { return fn() } finally { try { rmSync(lock, { force: true }) } catch {} }
+}
+
+// 学自 dsh-im 的 identity 思路：内容没变就不要写盘（避免无谓 mtime 变动与重载）
+function writeIfChanged(file, content) {
+  try {
+    if (readFileSync(file, 'utf8') === content) return false
+  } catch {}
+  writeFileAtomic(file, content)
+  return true
 }
 
 function writeFileAtomic(file, content) {
