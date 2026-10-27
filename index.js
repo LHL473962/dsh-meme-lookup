@@ -90,16 +90,23 @@ export function apply(ctx) {
             return send(200, { items: list })
           }
           if (sub === '/userlex' && req.method === 'POST') {
-            const e = await readBody()
-            if (!e.title) return send(400, { ok: false, error: 'EMPTY_TITLE' })
+            // 学自 workspace-upload：只收白名单字段（strict），多出来的键回报而不是默默写进库
+            const body = await readBody()
+            if (!body.title) return send(400, { ok: false, error: 'EMPTY_TITLE', hint: '梗名必填' })
+            const ENTRY_KEYS = ['title', 'meaning', 'usage', 'avoid', 'tone', 'example', 'source', 'sourceType', 'variants', 'visibility', 'kind']
+            const ignored = Object.keys(body || {}).filter((k) => !ENTRY_KEYS.includes(k))
+            const e = {}
+            for (const k of ENTRY_KEYS) if (body[k] !== undefined) e[k] = body[k]
             let list = []
-            try { list = JSON.parse(readFileSync(USER_LEX_FILE, 'utf8')) || [] } catch {}
-            const idx = list.findIndex((x) => x.title === e.title)
-            const row = { ...e, addedAt: new Date().toISOString(), review: e.visibility === 'public' ? 'pending' : 'private' }
-            if (idx >= 0) list[idx] = row; else list.push(row)
-            writeFileAtomic(USER_LEX_FILE, JSON.stringify(list, null, 2))
+            withLexiconLock(() => {
+              try { list = JSON.parse(readFileSync(USER_LEX_FILE, 'utf8')) || [] } catch {}
+              const idx = list.findIndex((x) => x.title === e.title)
+              const row = { ...e, addedAt: new Date().toISOString(), review: e.visibility === 'public' ? 'pending' : 'private' }
+              if (idx >= 0) list[idx] = row; else list.push(row)
+              writeFileAtomic(USER_LEX_FILE, JSON.stringify(list, null, 2))
+            })
             loadUserLexicon()
-            return send(200, { ok: true, total: list.length })
+            return send(200, ignored.length ? { ok: true, total: list.length, ignored } : { ok: true, total: list.length })
           }
           if (sub === '/userlex' && req.method === 'DELETE') {
             const idx = Number(url.searchParams.get('id'))
