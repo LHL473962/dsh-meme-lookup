@@ -4,7 +4,7 @@
 const API = 'https://cnmeme.wiki/api/v1/public'
 
 export const name = 'meme-lookup'
-export const inject = ['tools']
+export const inject = ['tools', 'webServer']
 
 const textOutput = {
   schema: { type: 'object', properties: {}, additionalProperties: true },
@@ -38,6 +38,53 @@ async function getJson(url, attempt = 0) {
 }
 
 export function apply(ctx) {
+  // 设置页（client.js）通过这条路由读写：/api/meme-panel/*
+  try {
+    ctx.effect(() => ctx.webServer.register({
+      kind: 'prefix',
+      path: '/api/meme-panel',
+      handler: async (req, res) => {
+        const send = (code, body) => { res.writeHead(code, { 'content-type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(body)) }
+        try {
+          const url = new URL(req.url, 'http://127.0.0.1')
+          const sub = url.pathname.replace('/api/meme-panel', '') || '/'
+          const readBody = async () => { let b = ''; for await (const c of req) b += c; try { return JSON.parse(b || '{}') } catch { return {} } }
+          if (sub === '/settings' && req.method === 'GET') return send(200, loadSettings())
+          if (sub === '/settings' && req.method === 'POST') {
+            const cur = { ...loadSettings(), ...(await readBody()) }
+            writeFileSync(SETTINGS_FILE, JSON.stringify(cur, null, 2))
+            return send(200, cur)
+          }
+          if (sub === '/userlex' && req.method === 'GET') {
+            let list = []
+            try { list = JSON.parse(readFileSync(USER_LEX_FILE, 'utf8')) || [] } catch {}
+            return send(200, { items: list })
+          }
+          if (sub === '/userlex' && req.method === 'POST') {
+            const e = await readBody()
+            if (!e.title) return send(400, { ok: false, error: 'EMPTY_TITLE' })
+            let list = []
+            try { list = JSON.parse(readFileSync(USER_LEX_FILE, 'utf8')) || [] } catch {}
+            const idx = list.findIndex((x) => x.title === e.title)
+            const row = { ...e, addedAt: new Date().toISOString(), review: e.visibility === 'public' ? 'pending' : 'private' }
+            if (idx >= 0) list[idx] = row; else list.push(row)
+            writeFileSync(USER_LEX_FILE, JSON.stringify(list, null, 2))
+            loadUserLexicon()
+            return send(200, { ok: true, total: list.length })
+          }
+          if (sub === '/userlex' && req.method === 'DELETE') {
+            const idx = Number(url.searchParams.get('id'))
+            let list = []
+            try { list = JSON.parse(readFileSync(USER_LEX_FILE, 'utf8')) || [] } catch {}
+            if (idx >= 0) list.splice(idx, 1)
+            writeFileSync(USER_LEX_FILE, JSON.stringify(list, null, 2))
+            return send(200, { ok: true, total: list.length })
+          }
+          return send(404, { ok: false, error: 'NOT_FOUND' })
+        } catch (e) { return send(500, { ok: false, error: String((e && e.message) || e) }) }
+      },
+    }), 'meme-panel: /api/meme-panel 路由')
+  } catch (e) { /* 路由挂不上不影响工具 */ }
   ctx.tools.register({
     name: 'meme_lookup',
     description: '查梗：给关键词返回标题/摘要/标签/出处 BV 号；给 slug 返回完整条目。数据来自 cnmeme.wiki 公开库，实时请求。',

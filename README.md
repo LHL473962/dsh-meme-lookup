@@ -52,7 +52,14 @@
 `meme_sync` 用 `git clone --depth 1` 拉本仓库，合并词表；没有 B 站插件也能更新。
 仓库里 `lexicon_danmaku.json` / `lexicon_all.json` 就是云端词库本体。
 
-## 面板
+## 设置页（内置）
+
+插件带 `client.js`，在 DSH 的 **设置 → 梗** 里有一页：玩梗开关 + 记一句 + 我的词条。
+改完重启 DSH 生效（client bundle 在启动时加载）。
+
+## 独立面板（备用）
+
+不重启也能用：`node tools/panel.mjs` → http://127.0.0.1:8797/
 
 - `meme_settings`：玩梗倾向（稳重/正常/活泛）、浓度（0~3）、是否允许慎用级、是否自动更新
 - `meme_add`：用户手动加梗（含义/用法/别用场景/语气/示例/出处/变体），存 `~/.dsh/meme-user-lexicon.json`
