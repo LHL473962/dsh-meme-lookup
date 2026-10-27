@@ -7,9 +7,14 @@ apply({ tools: { register: (t) => tools.push(t) } })
 const get = (n) => tools.find((t) => t.name === n)
 const results = []
 const add = (name, ok, detail) => results.push({ name, ok, detail })
+const addSkip = (name, detail) => results.push({ name, ok: true, skipped: true, detail })
 
 async function safe(name, fn) {
-  try { const d = await fn(); add(name, true, d) } catch (e) { add(name, false, String((e && e.message) || e)) }
+  try {
+    const d = await fn()
+    if (d && d.skip) addSkip(name, d.detail)
+    else add(name, true, d)
+  } catch (e) { add(name, false, String((e && e.message) || e)) }
 }
 
 // 1. 工具齐全
@@ -37,19 +42,22 @@ await safe('句式模板识别', async () => {
   return '贷笔大的 OK'
 })
 
-// 4. 不存在的梗不许编
+// 4. 不存在的梗不许编（上游限流/挂了就 SKIP，别把「查不到」当成「不编造」的证据）
 await safe('假梗不编造', async () => {
   const r = await get('meme_coach').execute({ text: '猫咪陀螺仪' })
+  if (r && (r.error === 'RATE_LIMITED' || r.error === 'UPSTREAM_ERROR')) return { skip: true, detail: r.error + '，本轮跳过' }
   const verdict = String(r.verdict || '')
   const bad = /USABLE|USE_WITH_CARE/.test(verdict)
   if (bad) throw new Error('对假梗给出了 ' + verdict + '，可能编造')
   return '未给正面判定: ' + verdict
 })
 
-// 5. 已知梗有判定
+// 5. 已知梗有判定（只允许限流/上游故障 SKIP；UNKNOWN 一律算 FAIL）
 await safe('已知梗判定', async () => {
   const r = await get('meme_coach').execute({ text: '芭比Q' })
+  if (r && (r.error === 'RATE_LIMITED' || r.error === 'UPSTREAM_ERROR')) return { skip: true, detail: r.error + '，本轮跳过' }
   if (!r.verdict) throw new Error('无 verdict')
+  if (r.verdict === 'UNKNOWN') throw new Error('已知梗被判 UNKNOWN（非上游故障）: ' + String(r.reason || r.label || ''))
   return r.verdict + ' / 出处 ' + r.provenance
 })
 
@@ -111,9 +119,17 @@ await safe('请求体上限覆盖', async () => {
   const { join } = await import('node:path')
   const { fileURLToPath } = await import('node:url')
   const here = fileURLToPath(new URL('..', import.meta.url))
-  // v1.6.0 拆模块后，读 body 的代码可能在 lib/ 里——扫全部源文件，别只扫 index.js
+  // 拆模块后读 body 的代码可能在 lib/ 里（还可能再分层）——递归扫全部 .js
   const files = [join(here, 'index.js')]
-  try { for (const f of (await import('node:fs')).readdirSync(join(here, 'lib'))) if (f.endsWith('.js')) files.push(join(here, 'lib', f)) } catch {}
+  const { readdirSync: rd } = await import('node:fs')
+  const walk = (dir) => {
+    for (const ent of rd(dir, { withFileTypes: true })) {
+      const p = join(dir, ent.name)
+      if (ent.isDirectory()) walk(p)
+      else if (ent.name.endsWith('.js')) files.push(p)
+    }
+  }
+  try { walk(join(here, 'lib')) } catch {}
   let sites = 0
   const bad = []
   for (const file of files) {
@@ -160,10 +176,11 @@ await safe('工具 schema 合法', async () => {
   if (bad.length) throw new Error(`${bad.length} 个工具参数不是 object schema: ${bad.map((b) => b.name).join(',')}`)
   return `${tools.length} 个都是 object schema`
 })
-const pass = results.filter((r) => r.ok).length
-const fail = results.length - pass
-const report = ['# 自检报告', '', '时间：' + new Date().toISOString(), '', '通过 ' + pass + ' / 失败 ' + fail, '', '| 检查 | 结果 | 说明 |', '|---|---|---|']
-  .concat(results.map((r) => '| ' + r.name + ' | ' + (r.ok ? 'PASS' : '**FAIL**') + ' | ' + String(r.detail).replace(/\|/g, '/').slice(0, 120) + ' |'))
+const pass = results.filter((r) => r.ok && !r.skipped).length
+const fail = results.filter((r) => !r.ok).length
+const skip = results.filter((r) => r.skipped).length
+const report = ['# 自检报告', '', '时间：' + new Date().toISOString(), '', '通过 ' + pass + ' / 跳过 ' + skip + ' / 失败 ' + fail, '', '| 检查 | 结果 | 说明 |', '|---|---|---|']
+  .concat(results.map((r) => '| ' + r.name + ' | ' + (r.skipped ? 'SKIP' : r.ok ? 'PASS' : '**FAIL**') + ' | ' + String(r.detail).replace(/\|/g, '/').slice(0, 120) + ' |'))
   .join('\n')
 console.log(report)
 writeFileSync(process.argv[2] || 'selftest-report.md', report, 'utf8')

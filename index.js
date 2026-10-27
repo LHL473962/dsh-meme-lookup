@@ -17,7 +17,7 @@ import { registerPanel } from './lib/panel.js'
 import { registerTools } from './lib/tools.js'
 
 // 版本常量：selftest 会核对它与 package.json 一致
-export const VERSION = '1.6.0'
+export const VERSION = '1.6.1'
 
 export const name = 'meme-lookup'
 export const inject = ['tools', 'webServer']
