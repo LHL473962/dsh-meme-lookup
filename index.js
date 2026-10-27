@@ -457,7 +457,9 @@ export function apply(ctx) {
           evidence: evidence.concat([{ kind: 'db', matched_by: top.via }]),
           age_days: ageDays,
           fish_banned: fish,
-          advice,
+          // 学自 dsh-im live-cot：输出要有界，不能因为条目多就把整份文档撑大
+          advice: advice.slice(0, 12),
+          advice_total: advice.length,
           provenance: provenanceOf(detail),
           heat,
           freshness: fresh,
