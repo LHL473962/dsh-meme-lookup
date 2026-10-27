@@ -2,7 +2,7 @@
 import sys, os, json
 import cv2, numpy as np
 
-EMOTE_DIR = r"D:/VoiceData/house/plugins/dsh-meme-lookup/emotes"
+EMOTE_DIR = os.environ.get("MEME_EMOTE_DIR") or os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "emotes")
 SCALES = [0.2, 0.25, 0.3, 0.4, 0.5, 0.7, 1.0, 1.3]
 THRESH = float(os.environ.get("EMOTE_THRESH", "0.78"))
 

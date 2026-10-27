@@ -17,6 +17,16 @@
 3. 完全退出 DSH 再启动（不是刷新，是退出进程）。
 4. 启动后在工具列表里应该能看到 10 个 `meme_*` 工具。
 
+## 一·五、可选依赖（不装也能用，只是少两个能力）
+
+| 能力 | 需要 | 不装的后果 |
+|---|---|---|
+| 图片 OCR（`meme_screen`） | Python + `pip install winocr pillow` | 截图读不了 |
+| 表情包匹配（`meme_emote`） | 同上 + `pip install opencv-python-headless` | 认不出表情 |
+| 视频抽帧（`meme_understand` 的 BV 模式） | Python + `pip install imageio-ffmpeg` | 只能读图不能读视频 |
+
+路径默认用 `python`，装了别的解释器就设环境变量 `DSH_PY`。
+
 ## 二、第一步：跑自检（30 秒）
 
 在你放插件的目录里执行：

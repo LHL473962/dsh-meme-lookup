@@ -608,7 +608,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
       try {
         const p = String((args && args.path) || '').trim()
         if (!p) return { ok: false, error: 'EMPTY_PATH' }
-        const r = run(OCR_PYEXE, [process.env.DSH_EMOTE_PY || 'D:/VoiceData/house/plugins/dsh-meme-lookup/tools/emote_match.py', p])
+        const r = run(OCR_PYEXE, [process.env.DSH_EMOTE_PY || join(_pkgDir, 'tools', 'emote_match.py'), p])
         if (r.code !== 0) return { ok: false, error: 'MATCH_FAILED', detail: (r.err || '').slice(0, 200) }
         return JSON.parse(r.out.trim() || '{"ok":false}')
       } catch (e) {
@@ -735,9 +735,10 @@ import { fileURLToPath } from 'node:url'
 import { copyFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 
-const PY = process.env.DSH_FRAMES_PY || 'C:/Users/a1599/.dsh/bili-humanism/venv-frames/Scripts/python.exe'
-const OCR_PY = process.env.DSH_OCR_PY || 'C:/Users/a1599/.dsh/input/ocr_win.py'
-const OCR_PYEXE = process.env.DSH_OCR_PYEXE || 'D:/Apps/dsh-soundcheck-src/engine/venv/Scripts/python.exe'
+const _pkgDir = fileURLToPath(new URL('.', import.meta.url))
+const PY = process.env.DSH_FRAMES_PY || process.env.DSH_PY || 'python'
+const OCR_PY = process.env.DSH_OCR_PY || join(_pkgDir, 'tools', 'ocr_win.py')
+const OCR_PYEXE = process.env.DSH_OCR_PYEXE || process.env.DSH_PY || 'python'
 
 function run(cmd, args, opts = {}) {
   const r = spawnSync(cmd, args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, ...opts })
