@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "title": "梗插件 (dsh-meme-lookup)",
+    "description": "查梗、判梗、接梗、抛梗、写文案用梗"
+  },
+  "settings": {
+    "persona": "人格",
+    "tendency": "玩梗倾向",
+    "density": "玩梗浓度"
+  }
+}

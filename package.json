@@ -1,12 +1,14 @@
 {
   "name": "dsh-meme-lookup",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "梗插件：查梗、看懂梗、判断能不能用、接梗、抛梗，附带设置页",
   "type": "module",
   "main": "index.js",
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
     "./package.json": "./package.json"
   },
   "files": [
@@ -31,6 +33,14 @@
     },
     "client": {
       "platform": "web"
+    },
+    "compatibility": {
+      "dsh": ">=0.2.0-rc.1 <0.3.0-0",
+      "dshReleases": {
+        "0.2.0-rc.1": "compatible",
+        "0.2.1-rc.1": "compatible",
+        "0.2.1-rc.2": "compatible"
+      }
     }
   },
   "keywords": [
