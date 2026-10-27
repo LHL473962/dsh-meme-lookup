@@ -484,7 +484,7 @@ export function apply(ctx) {
     async execute(args) {
       try {
         const text = String((args && args.text) || '').trim()
-        if (!text) return { ok: false, error: 'EMPTY_TEXT' }
+        if (!text) return failWithHint('EMPTY_TEXT')
         const clauses = splitClauses(text)
         maybeReloadUserLex()
         const lexMemes = detectMemes(text)
@@ -675,11 +675,11 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
     async execute(args) {
       try {
         const p = String((args && args.path) || '').trim()
-        if (!p) return { ok: false, error: 'EMPTY_PATH' }
+        if (!p) return failWithHint('EMPTY_PATH')
         const o = ocrImage(p)
         // OCR 常把汉字用空格隔开，先并回来再识别
         const text = (o.text || '').replace(/(?<=[\p{Script=Han}]) +(?=[\p{Script=Han}])/gu, '')
-        if (!text) return { ok: false, error: 'NO_TEXT', hint: 'OCR 没读到字' }
+        if (!text) return failWithHint('NO_TEXT')
         const memes = detectMemes(text).concat(detectPatterns(text))
         const scenes = detectReactionScene(text)
         return {
@@ -709,7 +709,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
         const p = String((args && args.path) || '').trim()
         if (!p) return { ok: false, error: 'EMPTY_PATH' }
         const r = run(OCR_PYEXE, [process.env.DSH_EMOTE_PY || join(_pkgDir, 'tools', 'emote_match.py'), p])
-        if (r.code !== 0) return { ok: false, error: 'MATCH_FAILED', detail: (r.err || '').slice(0, 200) }
+        if (r.code !== 0) return failWithHint('MATCH_FAILED', { detail: redactPaths(r.err || '') })
         return JSON.parse(r.out.trim() || '{"ok":false}')
       } catch (e) {
         return { ok: false, error: 'EMOTE_FAILED', message: redactPaths((e && e.message) || e) }
@@ -1764,6 +1764,20 @@ function writeFileAtomic(file, content) {
 }
 
 // 学自 dshmarket：用户可能用记事本改过文件，UTF-8 BOM 会让 JSON.parse 直接失败
+// 学自 dsh-im 的 ERROR_MESSAGES：每个错误码配一句人能照着做的解释
+const ERROR_HINTS = {
+  NO_TEXT: 'OCR 没读到字：图片可能太小、只有表情，或字体被特效覆盖。',
+  MATCH_FAILED: '表情匹配脚本跑失败：多半是 Python 缺 opencv，装一下 opencv-python-headless。',
+  BODY_TOO_LARGE: '请求体超过 32KB：面板一次只接受小请求。',
+  EMPTY_TEXT: '输入是空的，先给一句话。',
+  EMPTY_PATH: '没给图片路径。',
+  DOWNLOAD_FAILED: '视频下载失败：检查 yt-dlp 是否安装、链接是否可访问。',
+  CLONE_FAILED: '拉取云端词库失败：检查 git 与网络。',
+}
+function failWithHint(code, extra) {
+  return { ok: false, error: code, hint: ERROR_HINTS[code] || '', ...(extra || {}) }
+}
+
 function stripBom(text) {
   return text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text
 }

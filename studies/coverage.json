@@ -1,0 +1,302 @@
+[
+ {
+  "plugin": "_smalltailqwq_dsh-client-ui-skin-maid-atelier",
+  "total": 1,
+  "read": 0,
+  "pct": 0
+ },
+ {
+  "plugin": "dsh-ops",
+  "total": 152,
+  "read": 8,
+  "pct": 5
+ },
+ {
+  "plugin": "_avernet-plugin_deepseek-harness-channel-bcn",
+  "total": 14,
+  "read": 1,
+  "pct": 7
+ },
+ {
+  "plugin": "_deepseek-harness-tui_dsh-tui",
+  "total": 20,
+  "read": 2,
+  "pct": 10
+ },
+ {
+  "plugin": "_ethanyoq_dsh-invoice-downloader",
+  "total": 10,
+  "read": 1,
+  "pct": 10
+ },
+ {
+  "plugin": "dsh-plugin-wallpaper-engine",
+  "total": 60,
+  "read": 6,
+  "pct": 10
+ },
+ {
+  "plugin": "dsh-cost-meter",
+  "total": 86,
+  "read": 10,
+  "pct": 12
+ },
+ {
+  "plugin": "dsh-thoughtdag",
+  "total": 17,
+  "read": 2,
+  "pct": 12
+ },
+ {
+  "plugin": "_openviking_dsh-memory-plugin",
+  "total": 32,
+  "read": 4,
+  "pct": 13
+ },
+ {
+  "plugin": "_xmanrui_dsh-im",
+  "total": 413,
+  "read": 52,
+  "pct": 13
+ },
+ {
+  "plugin": "_yunmiao_studymate",
+  "total": 16,
+  "read": 2,
+  "pct": 13
+ },
+ {
+  "plugin": "dsh-vision-router",
+  "total": 176,
+  "read": 22,
+  "pct": 13
+ },
+ {
+  "plugin": "clearai-dsh",
+  "total": 14,
+  "read": 2,
+  "pct": 14
+ },
+ {
+  "plugin": "_struktoai_mirage-dsh",
+  "total": 13,
+  "read": 2,
+  "pct": 15
+ },
+ {
+  "plugin": "ds-harness-remote",
+  "total": 118,
+  "read": 19,
+  "pct": 16
+ },
+ {
+  "plugin": "dsh-free-search",
+  "total": 11,
+  "read": 2,
+  "pct": 18
+ },
+ {
+  "plugin": "dsh-mnemon",
+  "total": 11,
+  "read": 2,
+  "pct": 18
+ },
+ {
+  "plugin": "dsh-pet",
+  "total": 14,
+  "read": 3,
+  "pct": 21
+ },
+ {
+  "plugin": "dsh-pocket",
+  "total": 14,
+  "read": 3,
+  "pct": 21
+ },
+ {
+  "plugin": "_nanmicoder_dsh-agent-teams",
+  "total": 36,
+  "read": 8,
+  "pct": 22
+ },
+ {
+  "plugin": "dsh-openwrite",
+  "total": 25,
+  "read": 6,
+  "pct": 24
+ },
+ {
+  "plugin": "_anysearch_anysearch-dsh",
+  "total": 9,
+  "read": 3,
+  "pct": 33
+ },
+ {
+  "plugin": "_howmp_dsh-pentest",
+  "total": 6,
+  "read": 2,
+  "pct": 33
+ },
+ {
+  "plugin": "_wxg-prc-cpg_dsh-weknora",
+  "total": 6,
+  "read": 2,
+  "pct": 33
+ },
+ {
+  "plugin": "dshmarket",
+  "total": 50,
+  "read": 17,
+  "pct": 34
+ },
+ {
+  "plugin": "_tt-a1i_archify-dsh",
+  "total": 43,
+  "read": 17,
+  "pct": 40
+ },
+ {
+  "plugin": "_linxin666_dsh-web-all",
+  "total": 7,
+  "read": 3,
+  "pct": 43
+ },
+ {
+  "plugin": "_liustack_modlens",
+  "total": 2,
+  "read": 1,
+  "pct": 50
+ },
+ {
+  "plugin": "_vectorize-io_hindsight-coding-agents",
+  "total": 5,
+  "read": 3,
+  "pct": 60
+ },
+ {
+  "plugin": "dsh-mobile",
+  "total": 5,
+  "read": 3,
+  "pct": 60
+ },
+ {
+  "plugin": "_liustack_modsearch",
+  "total": 3,
+  "read": 2,
+  "pct": 67
+ },
+ {
+  "plugin": "_zilliz_memsearch-dsh",
+  "total": 3,
+  "read": 2,
+  "pct": 67
+ },
+ {
+  "plugin": "_agentscope-ai_reme-dsh-plugin",
+  "total": 11,
+  "read": 11,
+  "pct": 100
+ },
+ {
+  "plugin": "_anionex_dsh-vision-toolkit",
+  "total": 23,
+  "read": 23,
+  "pct": 100
+ },
+ {
+  "plugin": "_cloudbase_dsh-plugin",
+  "total": 3,
+  "read": 3,
+  "pct": 100
+ },
+ {
+  "plugin": "_ethanyoq_dsh-ai-novel-writer",
+  "total": 2,
+  "read": 2,
+  "pct": 100
+ },
+ {
+  "plugin": "_linxin666_dsh-client-ui-git-graph",
+  "total": 1,
+  "read": 1,
+  "pct": 100
+ },
+ {
+  "plugin": "_linxin666_dsh-client-ui-skill-explorer",
+  "total": 1,
+  "read": 1,
+  "pct": 100
+ },
+ {
+  "plugin": "_nagi-ovo_dsh-ads",
+  "total": 1,
+  "read": 1,
+  "pct": 100
+ },
+ {
+  "plugin": "_open-pets_dsh",
+  "total": 2,
+  "read": 2,
+  "pct": 100
+ },
+ {
+  "plugin": "billion-context",
+  "total": 1,
+  "read": 1,
+  "pct": 100
+ },
+ {
+  "plugin": "brooks-lint",
+  "total": 3,
+  "read": 3,
+  "pct": 100
+ },
+ {
+  "plugin": "cc-safety-net",
+  "total": 3,
+  "read": 3,
+  "pct": 100
+ },
+ {
+  "plugin": "dsh-api-relay-audit",
+  "total": 1,
+  "read": 1,
+  "pct": 100
+ },
+ {
+  "plugin": "dsh-connect-workbuddy",
+  "total": 1,
+  "read": 1,
+  "pct": 100
+ },
+ {
+  "plugin": "dsh-deja",
+  "total": 3,
+  "read": 3,
+  "pct": 100
+ },
+ {
+  "plugin": "dsh-postiz",
+  "total": 2,
+  "read": 2,
+  "pct": 100
+ },
+ {
+  "plugin": "dsh-univer-office",
+  "total": 3,
+  "read": 3,
+  "pct": 100
+ },
+ {
+  "plugin": "dsh-whale-widget",
+  "total": 1,
+  "read": 1,
+  "pct": 100
+ },
+ {
+  "plugin": "misakanet",
+  "total": 1,
+  "read": 1,
+  "pct": 100
+ }
+]
