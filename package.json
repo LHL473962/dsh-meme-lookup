@@ -1,6 +1,6 @@
 {
   "name": "dsh-meme-lookup",
-  "version": "1.4.16",
+  "version": "1.4.17",
   "description": "梗插件：查梗、看懂梗、判断能不能用、接梗、抛梗，附带设置页",
   "type": "module",
   "main": "index.js",
