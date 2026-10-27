@@ -986,7 +986,9 @@ if (!AUTO_LEX.some((x) => x.title === title)) {
       const repo = String((args && args.repo) || 'https://github.com/LHL473962/dsh-meme-lookup.git')
       const tmp = join(tmpdir(), 'meme-sync-' + Date.now())
       try {
-        const r = run('git', ['clone', '--depth', '1', repo, tmp])
+        const git = findExecutable('git')
+        if (!git) return failWithHint('GIT_MISSING')
+        const r = run(git, ['clone', '--depth', '1', repo, tmp])
         if (r.code !== 0) return { ok: false, error: 'CLONE_FAILED', detail: (r.err || '').slice(0, 300) }
         const merged = { added: 0, updated: 0 }
         for (const f of ['lexicon_danmaku.json', 'lexicon_all.json']) {
@@ -1030,6 +1032,20 @@ import { tmpdir } from 'node:os'
 const _pkgDir = (() => {
   try { return realpathSync(fileURLToPath(new URL('.', import.meta.url))) } catch { return fileURLToPath(new URL('.', import.meta.url)) }
 })()
+// 学自 dsh-memsearch：按 PATH+PATHEXT 找可执行文件，找不到就返回 null（不盲 spawn）
+function findExecutable(command) {
+  const isWin = process.platform === 'win32'
+  const exts = isWin && !/\.[a-z0-9]+$/i.test(command)
+    ? (process.env.PATHEXT || '.COM;.EXE;.BAT;.CMD').split(';').filter(Boolean)
+    : ['']
+  const dirs = /[/\\]/.test(command) ? [''] : String(process.env.PATH || '').split(require('node:path').delimiter).filter(Boolean)
+  for (const d of dirs) for (const ext of exts) {
+    const p = d ? join(d, command + ext) : command + ext
+    try { if (existsSync(p)) return p } catch {}
+  }
+  return null
+}
+
 // 选一个能用的 Python：环境变量 > 本机已知 venv > PATH 上的 python
 function resolvePython() {
   const env = process.env.DSH_PY || process.env.DSH_FRAMES_PY || process.env.DSH_OCR_PYEXE
@@ -1039,7 +1055,7 @@ function resolvePython() {
     join(homedir2(), '.dsh', 'bili-humanism', 'venv-frames', 'Scripts', 'python.exe'),
   ]
   for (const c of cands) { try { if (existsSync(c)) return c } catch {} }
-  return 'python'
+  return findExecutable('python') || 'python'
 }
 
 const PY = resolvePython()
