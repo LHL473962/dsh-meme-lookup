@@ -1762,7 +1762,8 @@ function currentPersona() {
 // 学自 dsh-vision-router：错误文本先脱敏，别把本机路径回传出去
 function redactPaths(text) {
   // 学自 open-pets 的 sanitizeStatusLine：压平换行、去掉 URL、替换路径、截断
-  let s = String(text == null ? '' : text).replace(/[\r\n]+/g, ' ')
+  // 学自 dsh-im 的 clean()：控制字符与格式字符（含零宽）一并清掉
+  let s = String(text == null ? '' : text).replace(/[\p{Cc}\p{Cf}]+/gu, ' ').replace(/\s+/g, ' ')
   s = s.replace(/https?:\/\/\S+/gi, '<url>')
   s = s.replace(/[A-Za-z]:\\[^\s"']+/g, '<path>')
   s = s.replace(/\/(?:home|Users|root)\/[^\s"']+/g, '<path>')
