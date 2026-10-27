@@ -1,0 +1,31 @@
+
+  ctx.tools.register({
+    name: 'meme_screen',
+    description: '读一张截图（评论区/弹幕/聊天）：OCR 出文字，识别里面的梗、句式、场景。用于看别人评论区怎么玩梗。',
+    parameters: {
+      path: { type: 'string', description: '截图路径' },
+    },
+    output: textOutput,
+    async execute(args) {
+      try {
+        const p = String((args && args.path) || '').trim()
+        if (!p) return { ok: false, error: 'EMPTY_PATH' }
+        const o = ocrImage(p)
+        // OCR 常把汉字用空格隔开，先并回来再识别
+        const text = (o.text || '').replace(/(?<=[\p{Script=Han}]) +(?=[\p{Script=Han}])/gu, '')
+        if (!text) return { ok: false, error: 'NO_TEXT', hint: 'OCR 没读到字' }
+        const memes = detectMemes(text).concat(detectPatterns(text))
+        const scenes = detectReactionScene(text)
+        return {
+          ok: true,
+          chars: text.length,
+          text_sample: text.slice(0, 300),
+          memes: memes.map((m) => ({ span: m.span, canonical: m.canonical, tier: m.tier, source: m.source || 'lexicon' })),
+          scenes: scenes.map((s) => ({ name: s.name, reaction: s.reaction.name, cues: s.cues })),
+          limits: ['OCR 读不了彩色 emoji（🥶 这类会整行丢失）', '图片太小或字太密会漏字'],
+        }
+      } catch (e) {
+        return { ok: false, error: 'SCREEN_FAILED', message: String((e && e.message) || e) }
+      }
+    },
+  })

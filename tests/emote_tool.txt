@@ -1,0 +1,20 @@
+
+  ctx.tools.register({
+    name: 'meme_emote',
+    description: '认截图里的 B 站表情包：和本地 360 张素材做模板匹配，返回最像的几个名字和分数。用于看评论区用了哪个表情。',
+    parameters: {
+      path: { type: 'string', description: '截图路径' },
+    },
+    output: textOutput,
+    async execute(args) {
+      try {
+        const p = String((args && args.path) || '').trim()
+        if (!p) return { ok: false, error: 'EMPTY_PATH' }
+        const r = run(OCR_PYEXE, [process.env.DSH_EMOTE_PY || 'D:/VoiceData/house/plugins/dsh-meme-lookup/tools/emote_match.py', p])
+        if (r.code !== 0) return { ok: false, error: 'MATCH_FAILED', detail: (r.err || '').slice(0, 200) }
+        return JSON.parse(r.out.trim() || '{"ok":false}')
+      } catch (e) {
+        return { ok: false, error: 'EMOTE_FAILED', message: String((e && e.message) || e) }
+      }
+    },
+  })

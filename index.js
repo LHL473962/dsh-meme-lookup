@@ -406,7 +406,7 @@ export function apply(ctx) {
 
   ctx.tools.register({
     name: 'meme_chat',
-    description: '读一句话：哪些是梗、什么语境（正事/调侃/讽刺/情绪）、该不该用梗回。给的是回复策略，不是替你说话。',
+    description: '读一句话：哪些是梗、什么语境（正事/调侃/讽刺/情绪）、该不该用梗回，以及「说这话的人可以给自己贴哪张图」。',
     parameters: {
       text: { type: 'string', description: '用户发来的那句话' },
       strict: { type: 'boolean', description: '严格模式：只在确信的梗上标注' },
@@ -425,6 +425,7 @@ export function apply(ctx) {
         for (const m of memes) ctxText = ctxText.split(m.span).join(' ')
         const context = classifyContext(ctxText, memes)
         const policy = replyPolicy(context, memes)
+        const scenes = detectReactionScene(text)
         const heatNotes = []
         for (const m of memes) {
           if (!m.bvid) continue
@@ -446,6 +447,8 @@ export function apply(ctx) {
         return {
           ok: true,
           memes,
+          scenes,
+          self_reaction: scenes.length ? { scene: scenes[0].name, character: scenes[0].reaction.name, note: scenes[0].usage } : null,
           meme_tiers: {
             live: memes.filter((m) => m.tier === 'live').map((m) => m.span),
             fading: memes.filter((m) => m.tier === 'fading').map((m) => m.span),
@@ -551,10 +554,129 @@ export function apply(ctx) {
     },
   })
 
+
+  ctx.tools.register({
+    name: 'meme_screen',
+    description: '读一张截图（评论区/弹幕/聊天）：OCR 出文字，识别里面的梗、句式、场景。用于看别人评论区怎么玩梗。',
+    parameters: {
+      path: { type: 'string', description: '截图路径' },
+    },
+    output: textOutput,
+    async execute(args) {
+      try {
+        const p = String((args && args.path) || '').trim()
+        if (!p) return { ok: false, error: 'EMPTY_PATH' }
+        const o = ocrImage(p)
+        // OCR 常把汉字用空格隔开，先并回来再识别
+        const text = (o.text || '').replace(/(?<=[\p{Script=Han}]) +(?=[\p{Script=Han}])/gu, '')
+        if (!text) return { ok: false, error: 'NO_TEXT', hint: 'OCR 没读到字' }
+        const memes = detectMemes(text).concat(detectPatterns(text))
+        const scenes = detectReactionScene(text)
+        return {
+          ok: true,
+          chars: text.length,
+          text_sample: text.slice(0, 300),
+          memes: memes.map((m) => ({ span: m.span, canonical: m.canonical, tier: m.tier, source: m.source || 'lexicon' })),
+          scenes: scenes.map((s) => ({ name: s.name, reaction: s.reaction.name, cues: s.cues })),
+          limits: ['OCR 读不了彩色 emoji（🥶 这类会整行丢失）', '图片太小或字太密会漏字'],
+        }
+      } catch (e) {
+        return { ok: false, error: 'SCREEN_FAILED', message: String((e && e.message) || e) }
+      }
+    },
+  })
+
+
+  ctx.tools.register({
+    name: 'meme_emote',
+    description: '认截图里的 B 站表情包：和本地 360 张素材做模板匹配，返回最像的几个名字和分数。用于看评论区用了哪个表情。',
+    parameters: {
+      path: { type: 'string', description: '截图路径' },
+    },
+    output: textOutput,
+    async execute(args) {
+      try {
+        const p = String((args && args.path) || '').trim()
+        if (!p) return { ok: false, error: 'EMPTY_PATH' }
+        const r = run(OCR_PYEXE, [process.env.DSH_EMOTE_PY || 'D:/VoiceData/house/plugins/dsh-meme-lookup/tools/emote_match.py', p])
+        if (r.code !== 0) return { ok: false, error: 'MATCH_FAILED', detail: (r.err || '').slice(0, 200) }
+        return JSON.parse(r.out.trim() || '{"ok":false}')
+      } catch (e) {
+        return { ok: false, error: 'EMOTE_FAILED', message: String((e && e.message) || e) }
+      }
+    },
+  })
+
+
+  ctx.tools.register({
+    name: 'meme_settings',
+    description: '玩梗开关：调「玩梗倾向」（稳重/正常/活泛）和「玩梗浓度」（每条回复最多几个梗），也可开关自动更新。',
+    parameters: {
+      action: { type: 'string', description: 'get 读取 / set 设置' },
+      tendency: { type: 'number', description: '0=稳重 1=正常 2=活泛' },
+      density: { type: 'number', description: '0~3，每条回复最多几个梗' },
+      allow_risky: { type: 'boolean', description: '是否允许「慎用」级梗' },
+      auto_update: { type: 'boolean', description: '是否允许自动更新词库' },
+    },
+    output: textOutput,
+    async execute(args) {
+      const a = String((args && args.action) || 'get')
+      const def = { tendency: 1, density: 1, allowRisky: false, autoUpdate: true }
+      let cur = { ...def }
+      try { cur = { ...def, ...(JSON.parse(readFileSync(SETTINGS_FILE, 'utf8')) || {}) } } catch {}
+      if (a === 'get') return { ok: true, settings: cur }
+      if (a === 'set') {
+        if (args.tendency !== undefined) cur.tendency = Math.max(0, Math.min(2, Number(args.tendency) || 0))
+        if (args.density !== undefined) cur.density = Math.max(0, Math.min(3, Number(args.density) || 0))
+        if (args.allow_risky !== undefined) cur.allowRisky = !!args.allow_risky
+        if (args.auto_update !== undefined) cur.autoUpdate = !!args.auto_update
+        writeFileSync(SETTINGS_FILE, JSON.stringify(cur, null, 2))
+        return { ok: true, settings: cur }
+      }
+      return { ok: false, error: 'BAD_ACTION' }
+    },
+  })
+
+  ctx.tools.register({
+    name: 'meme_add',
+    description: '手动加梗：用户自己录一条，写清含义和用法。存进用户词表，优先级高于公共库。',
+    parameters: {
+      title: { type: 'string', description: '梗名' },
+      meaning: { type: 'string', description: '一句话含义' },
+      usage: { type: 'string', description: '什么场景下用' },
+      avoid: { type: 'string', description: '什么场景别用（可选）' },
+      tone: { type: 'string', description: '语气：正经/调侃/自嘲/阴阳（可选）' },
+      example: { type: 'string', description: '示例句子（可选）' },
+      source: { type: 'string', description: '出处 BV 或链接（可选）' },
+      variants: { type: 'string', description: '变体，逗号分隔（可选）' },
+    },
+    output: textOutput,
+    async execute(args) {
+      const title = String((args && args.title) || '').trim()
+      if (!title) return { ok: false, error: 'EMPTY_TITLE' }
+      const entry = {
+        title,
+        meaning: String((args && args.meaning) || '').trim(),
+        usage: String((args && args.usage) || '').trim(),
+        avoid: String((args && args.avoid) || '').trim(),
+        tone: String((args && args.tone) || '').trim(),
+        example: String((args && args.example) || '').trim(),
+        source: String((args && args.source) || '').trim(),
+        variants: String((args && args.variants) || '').split(',').map((s) => s.trim()).filter(Boolean),
+        addedAt: new Date().toISOString(),
+      }
+      let list = []
+      try { list = JSON.parse(readFileSync(USER_LEX_FILE, 'utf8')) || [] } catch {}
+      list = list.filter((e) => e.title !== title)
+      list.push(entry)
+      writeFileSync(USER_LEX_FILE, JSON.stringify(list, null, 2))
+      return { ok: true, added: entry, total: list.length, path: String(USER_LEX_FILE) }
+    },
+  })
 }
 // ============ 梗理解：抽帧 + OCR + 检索 ============
 import { spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
@@ -637,6 +759,8 @@ const HEAT_INDEX_FILE = new URL('./heat_index.json', import.meta.url)
 let HEAT_INDEX = {}
 try { HEAT_INDEX = JSON.parse(readFileSync(HEAT_INDEX_FILE, 'utf8')) || {} } catch {}
 
+const USER_LEX_FILE = join(process.env.DSH_HOME || join(homedir2(), '.dsh'), 'meme-user-lexicon.json')
+const SETTINGS_FILE = join(process.env.DSH_HOME || join(homedir2(), '.dsh'), 'meme-settings.json')
 const HEAT_FILE = join(process.env.DSH_HOME || join(homedir2(), '.dsh'), 'meme-heat-cache.json')
 let HEAT_CACHE = {}
 try { HEAT_CACHE = JSON.parse(readFileSync2(HEAT_FILE, 'utf8')) || {} } catch {}
@@ -921,11 +1045,46 @@ try {
   PATTERNS = (raw && raw.patterns) || []
 } catch {}
 
-const AUTO_FILE = new URL('./lexicon_auto.json', import.meta.url)
+const REACTION_FILE = new URL('./reaction_map.json', import.meta.url)
+let REACTIONS = []
+try {
+  const raw = JSON.parse(readFileSync(REACTION_FILE, 'utf8'))
+  REACTIONS = (raw && raw.scenes) || []
+} catch {}
+
+const VARIANT_FILE = new URL('./variants.json', import.meta.url)
+let VARIANT = { emoji_map: {}, manual: {} }
+try {
+  const raw = JSON.parse(readFileSync(VARIANT_FILE, 'utf8'))
+  VARIANT = { emoji_map: (raw && raw.emoji_map) || {}, manual: (raw && raw.manual) || {} }
+} catch {}
+
+// 变体归一化：emoji → 汉字、去空格标点、压缩重复、小写
+function normalizeVariant(text) {
+  let s = String(text || '')
+  for (const [emo, ch] of Object.entries(VARIANT.emoji_map)) {
+    s = s.split(emo).join(ch)
+  }
+  s = s.toLowerCase().replace(/[\s\p{P}\p{S}]/gu, '')
+  // 「冰冰冰」和「冰」都能对上：不做压缩，交给匹配层
+  return s
+}
+
+const AUTO_FILE = new URL(process.env.DSH_MEME_LEXICON || './lexicon_all.json', import.meta.url)
 let AUTO_LEX = []
 try {
   const raw = JSON.parse(readFileSync(AUTO_FILE, 'utf8'))
   if (Array.isArray(raw)) AUTO_LEX = raw.filter((x) => x && x.title && x.slug)
+} catch {}
+
+// 弹幕高频短语（2026-10-27 扫 160 条热门视频得来）：这些是「正在被使用」的证据
+const DANMAKU_FILE = new URL('./lexicon_danmaku.json', import.meta.url)
+try {
+  const raw = JSON.parse(readFileSync(DANMAKU_FILE, 'utf8'))
+  if (Array.isArray(raw) && raw.length) {
+    const have = new Set(AUTO_LEX.map((e) => e.title))
+    for (const e of raw) if (e.title && !have.has(e.title)) AUTO_LEX.push(e)
+  }
 } catch {}
 
 // 人工复核（见微 2026-10-27）：覆盖自动档位
@@ -985,6 +1144,22 @@ function detectPatterns(text) {
   return out
 }
 
+// 反应梗：对方说的内容属于哪类场景 → 该甩哪张图
+function detectReactionScene(text) {
+  const hits = []
+  for (const s of REACTIONS) {
+    let score = 0
+    const cues = []
+    for (const c of s.cues) {
+      try {
+        if (new RegExp(c).test(text)) { score += 1; cues.push(c) }
+      } catch {}
+    }
+    if (score > 0) hits.push({ id: s.id, name: s.name, score, cues, reaction: s.reaction, usage: s.usage })
+  }
+  return hits.sort((a, b) => b.score - a.score)
+}
+
 function detectMemes(text) {
   const found = []
   const seen = new Set()
@@ -999,6 +1174,35 @@ function detectMemes(text) {
       idx = text.indexOf(word, idx + 1)
     }
   }
+  // 变体匹配：把 emoji/谐音归一化后再找标题
+  const vText = normalizeVariant(text)
+  for (const e of AUTO_LEX) {
+    const w = String(e.title || '')
+    if (w.length < 2) continue
+    const vw = normalizeVariant(w)
+    if (!vw || vw.length < 2) continue
+    if (vText.includes(vw) && !text.includes(w)) {
+      const key = 'v:' + w
+      if (!seen.has(key)) {
+        seen.add(key)
+        found.push({ span: vw, canonical: w, tier: e.tier || 'live', at: 0, confidence: 'medium', source: 'variant', slug: e.slug, bvid: e.bvid || null })
+      }
+    }
+  }
+  // 手写变体表（如 🧊🧊🧊 → 冰冰冰）
+  for (const [canonical, list] of Object.entries(VARIANT.manual || {})) {
+    for (const v of list) {
+      const vv = normalizeVariant(v)
+      if (vv && vText.includes(vv)) {
+        const key = 'm:' + canonical + ':' + vv
+        if (!seen.has(key)) {
+          seen.add(key)
+          found.push({ span: vv, canonical, tier: 'live', at: 0, confidence: 'high', source: 'manual-variant' })
+        }
+      }
+    }
+  }
+
   // 自动词表（含人工复核档位）：标题直接出现在句子里才算
   for (const e of AUTO_LEX) {
     const w = String(e.title || '')
@@ -1009,6 +1213,18 @@ function detectMemes(text) {
     seen.add(key)
     found.push({ span: w, canonical: w, tier: e.tier || 'live', at: text.indexOf(w), confidence: 'high', source: e.tier_source || 'auto', slug: e.slug, bvid: e.bvid || null })
   }
+
+  // 同一 canonical 只留一条（优先 manual-variant / 高置信度）
+  const byCanon = new Map()
+  for (const f of found) {
+    const k = f.canonical
+    const prev = byCanon.get(k)
+    if (!prev) { byCanon.set(k, f); continue }
+    const rank = (x) => (x.source === 'manual-variant' ? 3 : x.source === 'variant' ? 2 : 1)
+    if (rank(f) > rank(prev)) byCanon.set(k, f)
+  }
+  found.length = 0
+  found.push(...byCanon.values())
 
   found.sort((a, b) => b.span.length - a.span.length)
   const kept = []
@@ -1036,12 +1252,22 @@ function classifyContext(text, memes) {
   return { type: ranked[0][0], scores: Object.fromEntries(ranked) }
 }
 
+function loadSettings() {
+  const def = { tendency: 1, density: 1, allowRisky: false, autoUpdate: true }
+  try { return { ...def, ...(JSON.parse(readFileSync(SETTINGS_FILE, "utf8")) || {}) } } catch { return def }
+}
+
 function replyPolicy(context, memes) {
   const real = memes.filter((m) => m.tier === 'live' || m.tier === 'fading')
   const t = context.type
   if (t === '正事') return { use_meme: false, why: '在聊正事，先给答案，别玩梗', max: 0 }
   if (t === '情绪') return { use_meme: false, why: '先接住情绪，玩梗会显得敷衍', max: 0 }
   if (t === '讽刺') return { use_meme: false, why: '对方在阴阳，玩梗等于对喷，先顺着说', max: 0 }
-  if (t === '调侃') return { use_meme: real.length > 0, why: '对方在开玩笑，可以接一个梗，别超过一个', max: 1 }
-  return { use_meme: real.length > 0, why: '普通语气，最多一个轻梗', max: 1 }
+  const st = loadSettings()
+  if (t === '调侃') return {
+    use_meme: real.length > 0 && st.density > 0 && st.tendency > 0,
+    why: st.tendency === 0 ? '你在稳重模式，先不玩梗' : '对方在开玩笑，最多接 ' + st.density + ' 个',
+    max: st.density,
+  }
+  return { use_meme: real.length > 0 && st.density > 0 && st.tendency > 0, why: '普通语气，最多 ' + st.density + ' 个轻梗', max: st.density }
 }

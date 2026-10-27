@@ -1,0 +1,37 @@
+
+  ctx.tools.register({
+    name: 'meme_add',
+    description: '手动加梗：用户自己录一条，写清含义和用法。存进用户词表，优先级高于公共库。',
+    parameters: {
+      title: { type: 'string', description: '梗名' },
+      meaning: { type: 'string', description: '一句话含义' },
+      usage: { type: 'string', description: '什么场景下用' },
+      avoid: { type: 'string', description: '什么场景别用（可选）' },
+      tone: { type: 'string', description: '语气：正经/调侃/自嘲/阴阳（可选）' },
+      example: { type: 'string', description: '示例句子（可选）' },
+      source: { type: 'string', description: '出处 BV 或链接（可选）' },
+      variants: { type: 'string', description: '变体，逗号分隔（可选）' },
+    },
+    output: textOutput,
+    async execute(args) {
+      const title = String((args && args.title) || '').trim()
+      if (!title) return { ok: false, error: 'EMPTY_TITLE' }
+      const entry = {
+        title,
+        meaning: String((args && args.meaning) || '').trim(),
+        usage: String((args && args.usage) || '').trim(),
+        avoid: String((args && args.avoid) || '').trim(),
+        tone: String((args && args.tone) || '').trim(),
+        example: String((args && args.example) || '').trim(),
+        source: String((args && args.source) || '').trim(),
+        variants: String((args && args.variants) || '').split(',').map((s) => s.trim()).filter(Boolean),
+        addedAt: new Date().toISOString(),
+      }
+      let list = []
+      try { list = JSON.parse(readFileSync(USER_LEX_FILE, 'utf8')) || [] } catch {}
+      list = list.filter((e) => e.title !== title)
+      list.push(entry)
+      writeFileSync(USER_LEX_FILE, JSON.stringify(list, null, 2))
+      return { ok: true, added: entry, total: list.length, path: String(USER_LEX_FILE) }
+    },
+  })
