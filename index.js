@@ -1683,7 +1683,10 @@ function redactPaths(text) {
   s = s.replace(/https?:\/\/\S+/gi, '<url>')
   s = s.replace(/[A-Za-z]:\\[^\s"']+/g, '<path>')
   s = s.replace(/\/(?:home|Users|root)\/[^\s"']+/g, '<path>')
-  return s.trim().slice(0, 400)
+  s = s.trim().slice(0, 400)
+  // 学自 dsh-im：按字节再兜一层（多字节字符按字符截断可能仍然过长）
+  if (Buffer.byteLength(s) > 1200) s = s.slice(0, 300) + '…'
+  return s
 }
 // 学自 dshmarket：原子写，崩在写一半也不会把设置/词表截断
 // 学自 dsh-vision-toolkit：Windows 上杀毒/索引会短暂锁住刚写的文件（EBUSY/EPERM/EACCES），重试几次再报错
