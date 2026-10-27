@@ -318,7 +318,9 @@ export function apply(ctx) {
         const fresh = await freshnessOf(detail && detail.title, tags)
         const FRESH_TEXT = { fresh: '还在有人用', usable: '不算过时', stale: '已经过时', unknown: '说不准' }
         advice.push('时效：' + FRESH_TEXT[fresh.label] + (fresh.last_used_days !== null ? '（最近有人用是 ' + fresh.last_used_days + ' 天前）' : ''))
-        if (fresh.label === 'stale') advice.push('慎用：老梗，现在玩只会尴尬')
+        const ev = detectEvasion(rawText)
+        if (ev.some((x) => x.level >= 2)) advice.push("风险：侮辱性/脏话类，别当玩笑甩（" + ev.map((x) => x.canonical).join("、") + "）")
+      if (fresh.label === 'stale') advice.push('慎用：老梗，现在玩只会尴尬')
         if (fresh.applicability >= 0.7) advice.push('易用性高：场景广、好套用，所以寿命比同类长')
         const HEAT_TEXT = { broad: '大众都认识', medium: '不少人认识', narrow: '小圈子居多', niche: '圈内才懂', unknown: '热度未知' }
         advice.push('认识度：' + HEAT_TEXT[heat.level] + (heat.view ? '（源视频 ' + heat.view + ' 播放）' : ''))
