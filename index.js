@@ -1683,11 +1683,25 @@ function redactPaths(text) {
   return s.trim().slice(0, 400)
 }
 // 学自 dshmarket：原子写，崩在写一半也不会把设置/词表截断
+// 学自 dsh-vision-toolkit：Windows 上杀毒/索引会短暂锁住刚写的文件（EBUSY/EPERM/EACCES），重试几次再报错
+function withWindowsRetry(fn, attempts = 4) {
+  let last
+  for (let i = 1; i <= attempts; i++) {
+    try { return fn() } catch (e) {
+      last = e
+      const transient = process.platform === 'win32' && (e.code === 'EBUSY' || e.code === 'EPERM' || e.code === 'EACCES')
+      if (!transient || i === attempts) throw e
+      try { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 120 * i) } catch {}
+    }
+  }
+  throw last
+}
+
 function writeFileAtomic(file, content) {
   const tmp = file + '.tmp-' + process.pid + '-' + Date.now()
   try {
-    writeFileSync(tmp, content)
-    renameSync(tmp, file)
+    withWindowsRetry(() => writeFileSync(tmp, content))
+    withWindowsRetry(() => renameSync(tmp, file))
   } catch (e) {
     try { rmSync(tmp, { force: true }) } catch {}
     throw e

@@ -10873,99 +10873,9 @@
  },
  {
   "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\channel-QgAPgGF-.js",
-  "bytes": 113,
-  "lines": 2,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
   "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\init-Gi6I4Gst.js",
   "bytes": 147,
   "lines": 2,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\chunk-2Q5K7J3B-BmQEcP8h.js",
-  "bytes": 193,
-  "lines": 2,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\chunk-JWPE2WC7-CdRJ6kBA.js",
-  "bytes": 227,
-  "lines": 2,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\chunk-XXDRQBXY-Drhu5v24.js",
-  "bytes": 268,
-  "lines": 2,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\chunk-5VM5RSS4-DKJBePVV.js",
-  "bytes": 366,
-  "lines": 16,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\stateDiagram-v2-MP3YSRHH-BX7lcuqZ.js",
-  "bytes": 460,
-  "lines": 2,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\classDiagram-v2-VYDZK3BY-D8wNhbrQ.js",
-  "bytes": 499,
-  "lines": 2,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\chunk-POPQ4Y6H-BDYDkuxR.js",
-  "bytes": 506,
-  "lines": 2,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\swimlanesDiagram-VR7AAH4N-IakTN_SD.js",
-  "bytes": 580,
-  "lines": 9,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\infoDiagram-27XIBGKW-jXLA_CBg.js",
-  "bytes": 614,
-  "lines": 3,
   "dup": null,
   "vendored": false,
   "minified": false
@@ -11002,15 +10912,6 @@
   "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\lib\\runtime\\backup-write.cjs",
   "bytes": 2973,
   "lines": 57,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\diagram-Z3DM3KII-1zk_FC3Z.js",
-  "bytes": 4243,
-  "lines": 25,
   "dup": null,
   "vendored": false,
   "minified": false
@@ -11062,45 +10963,9 @@
  },
  {
   "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\diagram-UQ7AKVKN-CAvUPAbB.js",
-  "bytes": 6111,
-  "lines": 42,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\pieDiagram-E7YTZNPT-DReyguTU.js",
-  "bytes": 6325,
-  "lines": 40,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
   "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\lib\\runtime\\terminal.cjs",
   "bytes": 6687,
   "lines": 106,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\diagram-S7CK7UJ4-Flm4VUup.js",
-  "bytes": 8187,
-  "lines": 31,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\cynefinDiagram-5FMLGOSQ-B6qmrvDV.js",
-  "bytes": 10113,
-  "lines": 63,
   "dup": null,
   "vendored": false,
   "minified": false
@@ -11116,27 +10981,9 @@
  },
  {
   "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\chunk-SVP7TREG-Bmht0rVh.js",
-  "bytes": 15735,
-  "lines": 89,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
   "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\lib\\runtime\\agents\\pi.cjs",
   "bytes": 16861,
   "lines": 346,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\ishikawaDiagram-5VMMS53U-B02sRVWY.js",
-  "bytes": 17502,
-  "lines": 71,
   "dup": null,
   "vendored": false,
   "minified": false
@@ -11152,15 +10999,6 @@
  },
  {
   "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\kanban-definition-UXKFOSKX-B0rBHlLD.js",
-  "bytes": 20327,
-  "lines": 90,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
   "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\lib\\runtime\\agents\\claude.cjs",
   "bytes": 21564,
   "lines": 344,
@@ -11170,72 +11008,9 @@
  },
  {
   "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\mindmap-definition-YA3MSWOX-D7b3iNTU.js",
-  "bytes": 23210,
-  "lines": 97,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
   "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\lib\\runtime\\agents\\codex.cjs",
   "bytes": 23334,
   "lines": 394,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\journeyDiagram-3NMN7TZE-tiTfDPR1.js",
-  "bytes": 23608,
-  "lines": 140,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\gitGraphDiagram-WWUBYQGX-2meRVhiw.js",
-  "bytes": 29454,
-  "lines": 107,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\timeline-definition-24CTP7MA-BR1xUcM0.js",
-  "bytes": 30872,
-  "lines": 121,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\chunk-IMKFNOWR-Bf4nKNg9.js",
-  "bytes": 38121,
-  "lines": 232,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\chunk-TICWLB2K-BkmKatR2.js",
-  "bytes": 49244,
-  "lines": 207,
-  "dup": null,
-  "vendored": false,
-  "minified": false
- },
- {
-  "plugin": "dsh-thoughtdag",
-  "path": "D:\\VoiceData\\house\\plugins\\dsh-meme-lookup\\studies\\tmp\\dsh-thoughtdag\\dist-app\\assets\\ganttDiagram-EL5Y4UJY-Cxp-UGcp.js",
-  "bytes": 69718,
-  "lines": 293,
   "dup": null,
   "vendored": false,
   "minified": false
