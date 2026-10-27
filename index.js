@@ -609,7 +609,8 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
           if (e.provenance !== 'complete') continue
           if (e.tier !== 'live' && e.tier !== 'fading') continue
           const tags = e.tags_raw || []
-          if (tags.some((t) => RISKY_TAGS.some((r) => String(t).includes(r)))) continue
+          // allowRisky 开关要真生效（此前只存不用，是个死设置）
+          if (!loadSettings().allowRisky && tags.some((t) => RISKY_TAGS.some((r) => String(t).includes(r)))) continue
           const view = HEAT_INDEX[e.bvid] || 0
           const tierOk = e.tier === undefined || e.tier === 'live' || e.tier === 'fading'
           if (!tierOk) continue
@@ -808,6 +809,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
         const want = new Set()
         for (const m of TOPIC) if (m.keys.some((k) => text.includes(k))) m.tags.forEach((t) => want.add(t))
 
+        const allowRiskyNow = loadSettings().allowRisky
         const cands = []
         for (const e of AUTO_LEX) {
           const t = String(e.title || '')
