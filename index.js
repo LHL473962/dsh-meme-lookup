@@ -525,6 +525,7 @@ if (policy && policy.use_meme && evasionNow.some((e) => e.level >= 3)) {
             policy.why,
             memes.length ? '梗：' + memes.map((m) => m.span).join('、') : '这句话里没识别到梗',
             infoClauses.length ? '有 ' + infoClauses.length + ' 句是需要正面回答的信息' : '',
+            '别用「好的/确实/你说得对」开场；先给反应，再给立场',
           ].filter(Boolean),
         }
       } catch (e) {
