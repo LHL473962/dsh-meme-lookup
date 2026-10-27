@@ -73,7 +73,7 @@ async function safe(name, fn) {
 
 // 1. 工具齐全
 await safe('工具注册', async () => {
-  const need = ['meme_lookup','meme_understand','meme_coach','meme_chat','meme_suggest','meme_screen','meme_emote','meme_settings','meme_add','meme_sync']
+  const need = ['meme_lookup','meme_understand','meme_coach','meme_chat','meme_suggest','meme_screen','meme_emote','meme_settings','meme_add','meme_sync','meme_feedback']
   const have = tools.map((t) => t.name)
   const miss = need.filter((n) => !have.includes(n))
   if (miss.length) throw new Error('缺工具: ' + miss.join(','))
@@ -166,6 +166,13 @@ await safe('面板服务', async () => {
   await route.handler({ url: '/settings', method: 'GET', headers: {} }, res)
   const data = JSON.parse(body)
   if (typeof data.tendency !== 'number') throw new Error('路由返回不是设置: ' + String(body).slice(0, 120))
+  let body2 = null
+  const res2 = { writeHead: () => {}, end: (s) => { body2 = s } }
+  await route.handler({ url: '/feedback', method: 'GET', headers: {} }, res2)
+  const fb = JSON.parse(body2)
+  if (!Array.isArray(fb.items) || typeof fb.samples !== 'number' || !fb.weights) {
+    throw new Error('反馈接口返回不对: ' + String(body2).slice(0, 120))
+  }
   try {
     const r = await fetch('http://127.0.0.1:8797/', { signal: AbortSignal.timeout(1500) })
     if (r.ok) return '路由 OK + 独立面板 HTTP ' + r.status
@@ -235,6 +242,60 @@ await safe('工具 schema 合法', async () => {
   const bad = tools.filter((t) => !t.parameters || t.parameters.type !== 'object' || !t.parameters.properties)
   if (bad.length) throw new Error(`${bad.length} 个工具参数不是 object schema: ${bad.map((b) => b.name).join(',')}`)
   return `${tools.length} 个都是 object schema`
+})
+
+// 13. 反馈写入：字段齐全、上限不超、权重不被自检污染
+await safe('反馈写入', async () => {
+  const { readFileSync: rf, writeFileSync: wf } = await import('node:fs')
+  const { join } = await import('node:path')
+  const { homedir } = await import('node:os')
+  const { loadWeights, saveWeights } = await import('../lib/feedback.js')
+  const p = join(process.env.DSH_HOME || join(homedir(), '.dsh'), 'meme-feedback.json')
+  const before = JSON.parse(JSON.stringify(loadWeights()))
+  const beforeLen = (() => { try { const d = JSON.parse(rf(p, 'utf8')); return (Array.isArray(d) ? d : d.items).length } catch { return 0 } })()
+  try {
+    const r = await get('meme_feedback').execute({ query: '自检反馈查询', title: '自检反馈条目', grade: 'off', note: 'selftest' })
+    if (!r.ok) throw new Error('工具返回失败: ' + JSON.stringify(r).slice(0, 200))
+    const d = JSON.parse(rf(p, 'utf8'))
+    const items = Array.isArray(d) ? d : d.items
+    if (!Array.isArray(items)) throw new Error('反馈文件结构不对')
+    const rec = items[items.length - 1]
+    for (const k of ['ts', 'query', 'grade', 'feats', 'score']) if (!(k in rec)) throw new Error('缺字段 ' + k)
+    if (!rec.feats || typeof rec.feats.kw !== 'number') throw new Error('feats 不完整')
+    if (items.length > 5000) throw new Error('超过 5000 上限')
+    if (items.length !== beforeLen + 1) throw new Error('没追加成功')
+    // 清理：移掉自检条目
+    const keep = items.filter((x) => !(x.note === 'selftest' && x.query === '自检反馈查询'))
+    wf(p, JSON.stringify({ version: 1, items: keep }, null, 2))
+    return `${items.length} 条，字段齐全`
+  } finally {
+    saveWeights(before) // 反馈会触发学习，别改用户权重
+  }
+})
+
+// 14. 权重生效：kw 从 1.0 调到 0.1，同一查询排序必须变化
+await safe('权重生效', async () => {
+  const { rankCandidates, loadWeights, saveWeights } = await import('../lib/feedback.js')
+  // 固定夹具：A 靠关键词胜出，B 靠热度；调低 kw 后 B 应该反超
+  const items = [
+    { title: '芭比Q', tags_raw: [], provenance: 'missing', tier: 'stale' },
+    { title: '芭比', tags_raw: [], provenance: 'missing', tier: 'stale', view: 24 },
+  ]
+  const base = { kw: 1, tag: 1, heat: 1, fresh: 1, prov: 1 }
+  const a = rankCandidates('芭比Q', items, base)
+  const b = rankCandidates('芭比Q', items, { ...base, kw: 0.1 })
+  if (a[0].item.title === b[0].item.title) {
+    throw new Error('kw 1.0→0.1 排序没变: ' + a.map((x) => x.item.title + '=' + x.score).join(' > '))
+  }
+  const before = JSON.parse(JSON.stringify(loadWeights()))
+  try {
+    saveWeights({ ...before, w: { ...before.w, kw: 0.1 }, locked: { ...before.locked, kw: false } })
+    const c = rankCandidates('芭比Q', items)
+    if (c[0].item.title !== b[0].item.title) throw new Error('权重没接进打分（落盘后排序不一致）')
+  } finally {
+    saveWeights(before)
+  }
+  return `排序变化: ${a[0].item.title} → ${b[0].item.title}`
 })
 const pass = results.filter((r) => r.ok && !r.skipped && !r.warned).length
 const fail = results.filter((r) => !r.ok).length
