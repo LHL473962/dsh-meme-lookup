@@ -2,3 +2,4 @@ node_modules/
 *.log
 *.bak*
 *.good*
+selftest-report.md

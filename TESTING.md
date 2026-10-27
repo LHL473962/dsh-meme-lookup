@@ -4,18 +4,19 @@
 
 ## 一、安装
 
-1. 解压包，把 `dsh-meme-lookup` 整个目录放到：
+1. 解压包，把 `dsh-meme-lookup` 整个目录放到
    `<用户目录>\.dsh\profiles\desktop\node_modules\dsh-meme-lookup`
-   （Windows 一般是 `C:\Users\<用户名>\.dsh\...`）
-2. 编辑 `<用户目录>\.dsh\profiles\desktop\cordis.patch.yml`，确认存在：
-   ```yaml
-   - insert:
-       - id: meme-lookup
-         name: 'dsh-meme-lookup'
+   （Windows 一般是 `C:\Users\<用户名>\.dsh\...`）。
+2. profile 的 `package.json` **两处都要有它**：
+   ```json
+   "dependencies": { "dsh-meme-lookup": "link:D:/VoiceData/house/plugins/dsh-meme-lookup" },
+   "dsh": { "profile": { "bundles": ["…", "dsh-meme-lookup"] } }
    ```
-   注意：文件是 YAML 数组，`- insert:` 要和已有的 `- insert:` 平级。
+   - `dependencies`：不写会被 `pnpm install` 当成多余目录清掉
+   - `bundles`：客户端半端（设置页）只认这里；只往 `cordis.patch.yml` 加
+     `- insert:` 只有服务端，**设置页永远不出现**
 3. 完全退出 DSH 再启动（不是刷新，是退出进程）。
-4. 启动后在工具列表里应该能看到 10 个 `meme_*` 工具。
+4. 启动后工具列表应有 **12 个** `meme_*` 工具，设置 → 梗 有页面。
 
 ## 一·五、可选依赖（不装也能用，只是少两个能力）
 
@@ -35,9 +36,9 @@
 node tests/selftest.mjs selftest-report.md
 ```
 
-期望输出：**通过 8 / 失败 0**。
+期望输出：**通过 12 / 失败 0**。
 
-8 项分别是：工具注册、emoji 变体、句式模板、假梗不编造、已知梗判定、设置读写、用户加梗生效、面板服务。
+12 项分别是：工具注册、emoji 变体、句式模板、假梗不编造、已知梗判定、设置读写、用户加梗生效、面板服务（含 `/api/meme-panel` 路由）、请求体上限覆盖、版本一致、设置写入幂等、工具 schema 合法。
 
 **任何一项 FAIL 都要原样记录**，包括报错文本。
 
@@ -91,7 +92,7 @@ meme_coach：尊嘟假嘟
 ## 四、反馈格式（照抄）
 
 ```
-【环境】Windows 版本 / DSH 版本 / 插件版本 v1.5.0
+【环境】Windows 版本 / DSH 版本 / 插件版本 v1.6.0
 【自检】通过 X / 失败 Y（贴报告）
 【失败项】哪一条、报错文本
 【人测】

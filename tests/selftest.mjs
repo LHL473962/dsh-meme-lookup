@@ -83,15 +83,26 @@ await safe('用户加梗生效', async () => {
   return mark + ' OK'
 })
 
-// 8. 面板服务（可选）
+// 8. 面板服务：先验 apply 真的注册了 /api/meme-panel（设置页的数据源），再看独立面板在不在
 await safe('面板服务', async () => {
+  let route = null
+  const fake = {
+    tools: { register: () => {} },
+    effect: (fn) => fn(),
+    webServer: { register: (r) => { route = r } },
+  }
+  apply(fake)
+  if (!route || route.path !== '/api/meme-panel') throw new Error('apply 没注册 /api/meme-panel 路由')
+  let body = null
+  const res = { writeHead: () => {}, end: (s) => { body = s } }
+  await route.handler({ url: '/settings', method: 'GET', headers: {} }, res)
+  const data = JSON.parse(body)
+  if (typeof data.tendency !== 'number') throw new Error('路由返回不是设置: ' + String(body).slice(0, 120))
   try {
     const r = await fetch('http://127.0.0.1:8797/', { signal: AbortSignal.timeout(1500) })
-    if (!r.ok) throw new Error('HTTP ' + r.status)
-    return 'HTTP ' + r.status
-  } catch {
-    return '未启动（可选，node tools/panel.mjs 才有）'
-  }
+    if (r.ok) return '路由 OK + 独立面板 HTTP ' + r.status
+  } catch {}
+  return '路由 OK（独立面板未启动，可选）'
 })
 
 // 学自 dsh-ops 的 verify-body-caps：不变量要有测试盯着
@@ -100,11 +111,21 @@ await safe('请求体上限覆盖', async () => {
   const { join } = await import('node:path')
   const { fileURLToPath } = await import('node:url')
   const here = fileURLToPath(new URL('..', import.meta.url))
-  const src = rf(join(here, 'index.js'), 'utf8')
-  const sites = [...src.matchAll(/for await \(const c of req\)/g)].map((m) => m.index)
-  const bad = sites.filter((i) => !/32 \* 1024|MAX_BODY|maxBytes/.test(src.slice(i, i + 320)))
-  if (bad.length) throw new Error(`${bad.length} 处读请求体没有字节上限` )
-  return `${sites.length} 处都有上限`
+  // v1.6.0 拆模块后，读 body 的代码可能在 lib/ 里——扫全部源文件，别只扫 index.js
+  const files = [join(here, 'index.js')]
+  try { for (const f of (await import('node:fs')).readdirSync(join(here, 'lib'))) if (f.endsWith('.js')) files.push(join(here, 'lib', f)) } catch {}
+  let sites = 0
+  const bad = []
+  for (const file of files) {
+    const src = rf(file, 'utf8')
+    for (const m of src.matchAll(/for await \(const c of req\)/g)) {
+      sites++
+      if (!/32 \* 1024|MAX_BODY|maxBytes/.test(src.slice(m.index, m.index + 320))) bad.push(file + ':' + m.index)
+    }
+  }
+  if (!sites) throw new Error('没找到读请求体的代码——不变量没人盯着了')
+  if (bad.length) throw new Error(`${bad.length} 处读请求体没有字节上限: ${bad.join(', ')}`)
+  return `${files.length} 个文件，${sites} 处都有上限`
 })
 
 // 学自 anysearch 的 version.js：版本常量必须与 package.json 一致
