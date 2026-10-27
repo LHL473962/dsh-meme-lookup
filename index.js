@@ -1763,8 +1763,13 @@ function writeFileAtomic(file, content) {
   }
 }
 
+// 学自 dshmarket：用户可能用记事本改过文件，UTF-8 BOM 会让 JSON.parse 直接失败
+function stripBom(text) {
+  return text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text
+}
+
 function loadSettings() {
-  try { return normalizeSettings(JSON.parse(readFileSync(SETTINGS_FILE, "utf8"))) } catch { return normalizeSettings(null) }
+  try { return normalizeSettings(JSON.parse(stripBom(readFileSync(SETTINGS_FILE, 'utf8')))) } catch { return normalizeSettings(null) }
 }
 
 function replyPolicy(context, memes) {
