@@ -473,7 +473,10 @@ export function apply(ctx) {
         // 语境判断前先摘掉梗本身，避免「难崩」里的「崩」被当成情绪词
         let ctxText = text
         for (const m of memes) ctxText = ctxText.split(m.span).join(' ')
-        const context = classifyContext(ctxText, memes)
+        // 摘掉梗再判语境有时会误伤（「笑死，这也能崩」被当成情绪），原句也判一次
+        const ctxRaw = classifyContext(text, memes)
+        let context = classifyContext(ctxText, memes)
+        if (ctxRaw.type === '调侃' && context.type === '情绪') context = ctxRaw
         const evasionNow = detectEvasion(text)
         const policy = replyPolicy(context, memes)
 // 脏话类（含避审写法）不接
