@@ -56,35 +56,6 @@
    "domain": "通用"
   },
   {
-   "title": "笑死",
-   "tier": "slang",
-   "tags": [
-    "口语"
-   ],
-   "aliases": [
-    "笑死我了",
-    "笑不活了",
-    "笑麻了",
-    "笑拥了"
-   ],
-   "meaning": "笑到不行",
-   "domain": "通用"
-  },
-  {
-   "title": "无语",
-   "tier": "slang",
-   "tags": [
-    "口语"
-   ],
-   "aliases": [
-    "我无语了",
-    "无语子",
-    "无大语"
-   ],
-   "meaning": "说不出话",
-   "domain": "通用"
-  },
-  {
    "title": "服了",
    "tier": "slang",
    "tags": [
@@ -96,19 +67,6 @@
     "服气"
    ],
    "meaning": "认输或无奈",
-   "domain": "通用"
-  },
-  {
-   "title": "绝了",
-   "tier": "slang",
-   "tags": [
-    "口语"
-   ],
-   "aliases": [
-    "真绝了",
-    "太绝了"
-   ],
-   "meaning": "好到或离谱到极致",
    "domain": "通用"
   },
   {
@@ -202,20 +160,6 @@
     "急死了"
    ],
    "meaning": "被戳到痛处",
-   "domain": "通用"
-  },
-  {
-   "title": "离谱",
-   "tier": "slang",
-   "tags": [
-    "口语"
-   ],
-   "aliases": [
-    "离大谱",
-    "离谱他妈",
-    "离谱到家"
-   ],
-   "meaning": "不合常理",
    "domain": "通用"
   },
   {
@@ -360,32 +304,6 @@
     "不至于吧"
    ],
    "meaning": "觉得反应过度",
-   "domain": "通用"
-  },
-  {
-   "title": "行吧",
-   "tier": "slang",
-   "tags": [
-    "口语"
-   ],
-   "aliases": [
-    "那行吧",
-    "好吧"
-   ],
-   "meaning": "勉强接受",
-   "domain": "通用"
-  },
-  {
-   "title": "可以",
-   "tier": "slang",
-   "tags": [
-    "口语"
-   ],
-   "aliases": [
-    "这个可以",
-    "行了"
-   ],
-   "meaning": "认可",
    "domain": "通用"
   },
   {
@@ -1580,19 +1498,6 @@
    "domain": "职场"
   },
   {
-   "title": "加班",
-   "tier": "slang",
-   "tags": [
-    "口语",
-    "职场"
-   ],
-   "aliases": [
-    "加了个班"
-   ],
-   "meaning": "延长工时",
-   "domain": "职场"
-  },
-  {
    "title": "996",
    "tier": "slang",
    "tags": [
@@ -1603,19 +1508,6 @@
     "早九晚九"
    ],
    "meaning": "高强度工时",
-   "domain": "职场"
-  },
-  {
-   "title": "开会",
-   "tier": "slang",
-   "tags": [
-    "口语",
-    "职场"
-   ],
-   "aliases": [
-    "开个会"
-   ],
-   "meaning": "集体会议",
    "domain": "职场"
   },
   {
